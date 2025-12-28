@@ -1,116 +1,229 @@
-# 🛡️ Security & System Administration
+# 🛡️ Security & Linux System Administration Scripts
 
-> Production-ready automation scripts for offensive security, defensive operations, and Linux infrastructure management.
+> Practical, production-oriented automation scripts for Linux system administration, security operations, and infrastructure hardening.
 
-[![License](https://img.shields.io/badge/License-MIT-blue.svg?logo=opensourceinitiative&logoColor=white)](https://github.com/solo2121/sysadmin-security-scripts/blob/main/LICENSE)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg?logo=opensourceinitiative&logoColor=white)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/solo2121/sysadmin-security-scripts?logo=github&color=yellow)](https://github.com/solo2121/sysadmin-security-scripts/stargazers)
-[![PRs](https://img.shields.io/badge/PRs-Welcome-brightgreen.svg?logo=git&logoColor=white)](https://github.com/solo2121/sysadmin-security-scripts/blob/main/CONTRIBUTING.md)
+[![PRs](https://img.shields.io/badge/PRs-Welcome-brightgreen.svg?logo=git&logoColor=white)](CONTRIBUTING.md)
 [![Maintained](https://img.shields.io/badge/Maintained-Yes-2ea44f?logo=githubactions&logoColor=white)](https://github.com/solo2121/sysadmin-security-scripts/commits/main)
-[![Contributors](https://img.shields.io/github/contributors/solo2121/sysadmin-security-scripts?logo=peopleware&logoColor=white)](https://github.com/solo2121/sysadmin-security-scripts/graphs/contributors)
 
 ---
 
 ## 📌 Overview
 
-This repository provides **battle-tested automation solutions** for security professionals and system administrators:
+This repository contains **real-world automation scripts** developed for:
 
-- **Red Team Operations** – Reconnaissance, exploitation & post-exploitation workflows
-- **Blue Team Defense** – Security monitoring, log analysis & hardening procedures
-- **Infrastructure Management** – Compliance auditing, maintenance automation & alerting
+- Linux system administration
+- Infrastructure hardening
+- Security monitoring and incident response
+- Network reconnaissance and validation tasks
 
-All scripts are:
+The focus is on **clarity, safety, and maintainability**, making the scripts suitable for:
 
-- POSIX-compliant
-- Designed for **non-interactive** execution
-- Validated in **production environments**
-- Depend on **minimal external packages**
+- Remote Linux administration
+- Security operations (Blue Team / IR)
+- Controlled Red Team testing
+- Learning and training environments
+
+### Design Principles
+
+All scripts are built to be:
+
+- ✔️ POSIX-compliant where possible
+- ✔️ Safe for **non-interactive execution**
+- ✔️ Minimal in external dependencies
+- ✔️ Readable, commented, and auditable
+- ✔️ Tested on real Linux systems
+
+---
+
+## 🎯 Intended Audience
+
+This repository is designed for:
+
+- Linux System Administrators (on-prem & remote)
+- Infrastructure / Platform Engineers
+- Security Operations & Incident Response teams
+- SREs supporting Linux-based systems
+
+The scripts emphasize:
+
+- Safe execution in remote environments
+- Clear logging and predictable output
+- Minimal dependencies
+- Easy auditing and rollback
+
+---
+
+## 🧩 Repository Structure
+
+scripts/
+├── recon/ # Network discovery and validation
+├── hardening/ # System and service hardening
+├── monitoring/ # Logs, alerts, and health checks
+├── incident/ # Incident response helpers
+└── maintenance/ # Backup, cleanup, and admin tasks
+
+Each directory contains scripts focused on a specific operational task. See per-directory sections below.
 
 ---
 
 ## ✨ Capabilities
 
-### 🔍 Offensive Security
-- Network reconnaissance & service mapping
-- Vulnerability exploitation frameworks
+### 🔍 Offensive / Validation Tasks
+
+Used for **authorized security testing and validation**:
+
+- Network discovery and service enumeration
 - Privilege escalation checks
-- Forensic data collection
+- Host and network data collection
+- Baseline security validation
 
 ### 🛡️ Defensive Security
-- SIEM integration templates
-- Anomaly detection algorithms
-- Automated patching systems
-- Incident response playbooks
 
-### ⚙️ System Management
-- CIS benchmark compliance auditing
-- Log analysis pipelines
-- Backup & recovery solutions
-- Resource monitoring automation
+Focused on **detection, response, and hardening**:
+
+- Log inspection and filtering
+- CIS-style configuration checks
+- Incident response helpers
+- Patch and update automation
+
+### ⚙️ Linux System Administration
+
+Day-to-day operational tooling:
+
+- System health and resource monitoring
+- Backup and recovery helpers
+- Maintenance automation
+- Compliance and audit support
 
 ---
 
 ## 🚀 Quick Start
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/solo2121/sysadmin-security-scripts.git
-   cd sysadmin-security-scripts
-   ```
+### 1️⃣ Clone the repository
 
-2. **Install dependencies** (optional)
-   ```bash
-   chmod +x install.sh
-   ./install.sh
-   ```
+```bash
+git clone https://github.com/solo2121/sysadmin-security-scripts.git
+cd sysadmin-security-scripts
 
-3. **Run example script**
-   ```bash
-   ./scripts/recon/quick-nmap.sh 192.168.1.0/24 --output=scan_report.xml
-   ```
+2️⃣ Review scripts before execution
 
----
+less scripts/recon/quick-nmap.sh
 
-## ⚠️ Critical Usage Notice
+3️⃣ Run an example (authorized environments only)
 
-> [!WARNING]
-> **Legal Requirement**: Unauthorized use violates computer crime laws.
-> - Use **only** on systems you own or have explicit permission to test
-> - Maintain comprehensive audit logs
-> - No warranty provided - use at your own risk
+./scripts/recon/quick-nmap.sh 192.168.1.0/24 --output scan_report.xml
 
-### Operational Guidelines
-- Review all scripts before execution
-- Test in isolated environments first
-- Adjust parameters for your specific infrastructure
+    💡 Most scripts include comments and can be adapted easily to your environment.
 
----
+⚠️ Legal & Ethical Notice
 
-## 🤝 Contributing
+    IMPORTANT
 
-We welcome contributions through:
-- 🐛 Issue reports
-- 💡 Feature requests
-- 🔄 Pull requests
+    These tools are intended for authorized use only.
 
-### Development Standards
-- Maintain POSIX shell compatibility
-- Include comprehensive documentation
-- Use descriptive naming conventions
-- Validate across multiple distributions
+        Use only on systems you own or have explicit permission to test
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for complete guidelines.
+        Follow applicable laws and organizational policies
 
----
+        Review scripts carefully before running in production
 
-## 💙 Contributors
+        No warranty is provided — use at your own risk
 
-[![Contributors](https://img.shields.io/github/contributors/solo2121/sysadmin-security-scripts?style=flat-square)](https://github.com/solo2121/sysadmin-security-scripts/graphs/contributors)
+🤝 Contributing
 
-Thanks to all who have contributed to this project!
+Contributions are welcome and encouraged.
 
----
+You can help by:
 
-## 📄 License
+    🐛 Reporting bugs
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+    💡 Suggesting improvements
+
+    🔄 Submitting pull requests
+
+Contribution Guidelines
+
+    Keep scripts readable and well-commented
+
+    Prefer POSIX-compatible shell
+
+    Avoid hard-coded secrets
+
+    Test changes on at least one Linux distribution
+
+See CONTRIBUTING.md
+for details.
+📄 License
+
+This project is licensed under the MIT License.
+See the LICENSE
+file for details.
+⭐ Why This Repo Exists
+
+This repository reflects hands-on experience in:
+
+    Linux administration
+
+    Security operations
+
+    Network troubleshooting
+
+    Teaching and documenting complex topics clearly
+
+It is actively maintained and evolves as real operational needs change.
+📁 Per-Directory Mini-README Examples
+scripts/recon/
+
+# Reconnaissance Scripts
+Scripts in this directory support **authorized network discovery and validation**.
+
+## Purpose
+- Identify live hosts and open services
+- Validate firewall and network configurations
+- Assist with troubleshooting and baseline assessments
+
+## Example
+./quick-nmap.sh 192.168.1.0/24 --output scan.xml
+
+scripts/hardening/
+
+# System Hardening Scripts
+Scripts focused on **improving Linux system security posture**.
+
+## Purpose
+- Enforce baseline security settings
+- Identify insecure configurations
+- Assist with compliance and audits
+
+scripts/monitoring/
+
+# Monitoring & Observability Scripts
+Lightweight monitoring helpers for Linux systems.
+
+## Purpose
+- Detect abnormal behavior
+- Monitor system health and resources
+- Assist in troubleshooting incidents
+
+scripts/incident/
+
+# Incident Response Helpers
+Scripts intended to assist during **security incidents or investigations**.
+
+## Purpose
+- Rapid data collection
+- Log preservation
+- Triage support
+
+scripts/maintenance/
+
+# Maintenance & Administration Scripts
+Scripts for routine Linux system administration tasks.
+
+## Purpose
+- Reduce manual work
+- Improve consistency
+- Support remote operations
 ```
