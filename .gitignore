@@ -1,15 +1,15 @@
-# -------------------------
+# =========================
 # Operating System Files
-# -------------------------
+# =========================
 .DS_Store
 ._*
 Thumbs.db
 desktop.ini
 *.lnk
 
-# -------------------------
-# Editor/IDE Files
-# -------------------------
+# =========================
+# Editor / IDE Files
+# =========================
 .vscode/
 .idea/
 *.swp
@@ -18,26 +18,34 @@ desktop.ini
 *.orig
 idea/workspace.xml   # JetBrains secrets
 
-# -------------------------
-# Language/Runtime Files
-# -------------------------
-# Node
+# =========================
+# Python
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# =========================
+# Node / JavaScript
+# =========================
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.egg-info/
-venv/
-env/
-.venv/
-
-# Java/Kotlin/Scala
+# =========================
+# Java / Kotlin / Scala
+# =========================
 *.class
 *.jar
 *.war
@@ -47,7 +55,9 @@ env/
 build/
 target/
 
+# =========================
 # Go
+# =========================
 *.exe
 *.exe~
 *.dll
@@ -55,27 +65,40 @@ target/
 *.dylib
 vendor/
 
+# =========================
 # Rust
+# =========================
 /target/
-# Cargo.lock          # Uncomment for libraries, keep for binaries
+# Cargo.lock   # Uncomment for libraries, keep for binaries
 
+# =========================
 # .NET
+# =========================
 bin/
 obj/
 *.user
 *.suo
 
+# =========================
 # Ruby
+# =========================
 *.gem
 .bundle/
 vendor/bundle
 
+# =========================
 # PHP
+# =========================
 /vendor/
 
-# -------------------------
-# Logs/Databases
-# -------------------------
+# =========================
+# Vagrant / Labs
+# =========================
+.vagrant/
+
+# =========================
+# Logs / Databases
+# =========================
 *.log
 *.log.*
 *.sqlite
@@ -84,28 +107,34 @@ vendor/bundle
 *.seed
 *.pid.lock
 
-# -------------------------
-# Secrets/Configs
-# -------------------------
+# =========================
+# Secrets / Sensitive Files
+# =========================
 .env*
-!.env.example        # Allow example files
+!.env.example
 *.key
 *.pem
 *.secret
 *.token
 secrets.yaml
 credentials.*
-config.json          # ⚠️ Only if contains secrets
 vault.yml
 
-# -------------------------
-# Temporary Files
-# -------------------------
+# Only ignore config.json if it contains secrets
+config.json
+
+# =========================
+# Temporary / Cache Files
+# =========================
 tmp/
 temp/
 *.tmp
 *.bak
 *.save
 *.backup
-.cache/.gitconfig
-.gitconfig
+.cache/
+
+# =========================
+# Local Overrides (Safe)
+# =========================
+.gitconfig.local
