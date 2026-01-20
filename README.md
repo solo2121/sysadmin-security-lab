@@ -1,5 +1,15 @@
 # 🛡️ Security & Linux System Administration Toolkit
 
+> ⚠️ **DISCLAIMER**
+>
+> This repository is provided **solely for educational, research, and authorized security testing purposes**.
+>
+> The tools and scripts contained here may only be used on systems that you **own** or for which you have **explicit written authorization** to test.
+>
+> **Unauthorized use is strictly prohibited** and may violate local, national, or international laws.
+>
+> The author assumes **no responsibility or liability** for misuse, damage, or legal consequences resulting from the use of this repository.
+
 > A comprehensive collection of **security**, **system administration**, and **training tools** for Linux environments — designed for clarity, safety, and hands‑on learning.
 
 [![License](https://img.shields.io/badge/License-MIT-blue.svg?logo=opensourceinitiative&logoColor=white)](LICENSE)
