@@ -1,229 +1,240 @@
-# 🛡️ Security & Linux System Administration Scripts
+# 🛡️ Security & Linux System Administration Toolkit
 
-> Practical, production-oriented automation scripts for Linux system administration, security operations, and infrastructure hardening.
+> A comprehensive collection of **security**, **system administration**, and **training tools** for Linux environments — designed for clarity, safety, and hands-on learning.
 
 [![License](https://img.shields.io/badge/License-MIT-blue.svg?logo=opensourceinitiative&logoColor=white)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/solo2121/sysadmin-security-scripts?logo=github&color=yellow)](https://github.com/solo2121/sysadmin-security-scripts/stargazers)
-[![PRs](https://img.shields.io/badge/PRs-Welcome-brightgreen.svg?logo=git&logoColor=white)](CONTRIBUTING.md)
+[![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen.svg?logo=git&logoColor=white)](CONTRIBUTING.md)
 [![Maintained](https://img.shields.io/badge/Maintained-Yes-2ea44f?logo=githubactions&logoColor=white)](https://github.com/solo2121/sysadmin-security-scripts/commits/main)
+
+[![Security](https://img.shields.io/badge/Security-Tools-red?logo=shield&logoColor=white)](#security-tools)  
+[![Sysadmin](https://img.shields.io/badge/Sysadmin-Tools-blue?logo=linux&logoColor=white)](#system-administration)  
+[![Labs](https://img.shields.io/badge/Labs-Environments-green?logo=vagrant&logoColor=white)](#lab-environments)  
+[![Docs](https://img.shields.io/badge/Documentation-yellow?logo=book&logoColor=white)](#documentation)
+
+---
+
+## 📌 Table of Contents
+
+1. [Overview](#overview)
+2. [Design Principles](#design-principles)
+3. [Repository Structure](#repository-structure)
+4. [Capabilities](#capabilities-by-category)
+   - [Security Tools](#security-tools)
+   - [System Administration](#system-administration)
+   - [Lab Environments](#lab-environments)
+   - [Documentation](#documentation)
+5. [Quick Start](#quick-start)
+6. [Legal & Ethical Usage](#legal--ethical-usage-notice)
+7. [Contributing](#contributing)
+8. [License](#license)
+9. [Why This Repository Exists](#why-this-repository-exists)
+10. [Learning Paths](#learning-paths)
+11. [Acknowledgments](#acknowledgments)
 
 ---
 
 ## 📌 Overview
 
-This repository contains **real-world automation scripts** developed for:
+This repository provides a **practical toolkit** for:
 
-- Linux system administration
-- Infrastructure hardening
-- Security monitoring and incident response
-- Network reconnaissance and validation tasks
+- 🔒 Security testing and auditing (authorized only)
+- 🖥️ Linux system administration & automation
+- 🧪 Hands-on labs for learning and practice
+- 📚 In-depth documentation and tutorials
 
-The focus is on **clarity, safety, and maintainability**, making the scripts suitable for:
+Designed for:
 
-- Remote Linux administration
-- Security operations (Blue Team / IR)
-- Controlled Red Team testing
-- Learning and training environments
-
-### Design Principles
-
-All scripts are built to be:
-
-- ✔️ POSIX-compliant where possible
-- ✔️ Safe for **non-interactive execution**
-- ✔️ Minimal in external dependencies
-- ✔️ Readable, commented, and auditable
-- ✔️ Tested on real Linux systems
+- Professionals performing authorized security assessments
+- Linux sysadmins managing infrastructure
+- Blue Team / Incident Response practitioners
+- Students and security enthusiasts
+- Infrastructure hardening & compliance
 
 ---
 
-## 🎯 Intended Audience
+## 🎯 Design Principles
 
-This repository is designed for:
+All scripts and tools follow these core principles:
 
-- Linux System Administrators (on-prem & remote)
-- Infrastructure / Platform Engineers
-- Security Operations & Incident Response teams
-- SREs supporting Linux-based systems
-
-The scripts emphasize:
-
-- Safe execution in remote environments
-- Clear logging and predictable output
-- Minimal dependencies
-- Easy auditing and rollback
+- ✔️ **Readable** – clean, commented, maintainable code
+- ✔️ **Safe** – built-in safeguards and warnings
+- ✔️ **Modular** – single-purpose, composable tools
+- ✔️ **Documented** – usage examples included
+- ✔️ **Cross-distribution** – works on major Linux distros
 
 ---
 
-## 🧩 Repository Structure
+## 🏗️ Repository Structure
 
-scripts/
-├── recon/ # Network discovery and validation
-├── hardening/ # System and service hardening
-├── monitoring/ # Logs, alerts, and health checks
-├── incident/ # Incident response helpers
-└── maintenance/ # Backup, cleanup, and admin tasks
+```text
+.
+├── CONTRIBUTING.md
+├── docs/                  # Documentation and tutorials
+├── labs/                  # Training lab environments
+│   └── ad-pentest-lab/
+├── security/              # Security & pentest tools
+│   ├── audit/
+│   ├── enumeration/
+│   ├── exploitation/
+│   ├── network/
+│   ├── post-exploitation/
+│   ├── reconnaissance/
+│   └── wireless/
+├── sysadmin/              # Linux system administration
+│   ├── automation/
+│   ├── git/
+│   ├── monitoring/
+│   ├── security/
+│   └── utilities/
+├── LICENSE
+└── README.md
+🛠️ Capabilities by Category
+🔍 Security Tools (/security)
 
-Each directory contains scripts focused on a specific operational task. See per-directory sections below.
+Authorized security testing tools:
 
----
+Reconnaissance: nmap_menu.py, amass-scan.py, port-scanner.py
 
-## ✨ Capabilities
+Exploitation: sql_injection.py, exploit.py
 
-### 🔍 Offensive / Validation Tasks
+Network Analysis: ettercap-menu.py, scapy-port-scan.py, tcpdump_wrapper.py
 
-Used for **authorized security testing and validation**:
+Wireless Security: evil-twin.py
 
-- Network discovery and service enumeration
-- Privilege escalation checks
-- Host and network data collection
-- Baseline security validation
+Auditing: cisco-switch-audit.py, llm_security_validator.py
 
-### 🛡️ Defensive Security
+🖥️ System Administration (/sysadmin)
 
-Focused on **detection, response, and hardening**:
+Linux infrastructure scripts:
 
-- Log inspection and filtering
-- CIS-style configuration checks
-- Incident response helpers
-- Patch and update automation
+Monitoring: system_monitor.sh, log_analyzer.sh, sec_monitor.sh
 
-### ⚙️ Linux System Administration
+Automation: update.sh, pacstall-maintenance.sh, rhino-update.py
 
-Day-to-day operational tooling:
+Security & Auditing: linaudit.sh, user_audit.sh, rootkit_scan.sh
 
-- System health and resource monitoring
-- Backup and recovery helpers
-- Maintenance automation
-- Compliance and audit support
+Utilities: ufw-manager.sh, timeshift-manager.sh, bind-manager.sh
 
----
+🧪 Lab Environments (/labs)
+Active Directory Pentest Lab
 
-## 🚀 Quick Start
+Windows Server 2025 AD environment
 
-### 1️⃣ Clone the repository
+Vagrant-based (VirtualBox/libvirt supported)
 
-```bash
+Pre-configured attacker and victim machines
+
+cd labs/ad-pentest-lab
+vagrant up
+
+
+📄 Documentation: docs/Windows Server 2025 Active Directory Assessment.md
+
+📚 Documentation (/docs)
+
+Git & version control
+
+KVM/QEMU & Vagrant tutorials
+
+Pacstall / TimeShift CLI guides
+
+Security tooling overview & AD assessments
+
+🚀 Quick Start
+1️⃣ Clone the repository
 git clone https://github.com/solo2121/sysadmin-security-scripts.git
 cd sysadmin-security-scripts
 
-2️⃣ Review scripts before execution
+2️⃣ Explore Documentation
+ls docs/
+less "docs/Complete Git Tutorial for Linux Users.md"
 
-less scripts/recon/quick-nmap.sh
+3️⃣ Run a Security Tool (Authorized Only)
+cd security/reconnaissance
+python3 nmap_menu.py --help
 
-3️⃣ Run an example (authorized environments only)
+4️⃣ Use Sysadmin Tools
+cd sysadmin/monitoring
+./system_monitor.sh
 
-./scripts/recon/quick-nmap.sh 192.168.1.0/24 --output scan_report.xml
+⚠️ Legal & Ethical Usage Notice
 
-    💡 Most scripts include comments and can be adapted easily to your environment.
+IMPORTANT: Tools are for authorized and ethical use only.
 
-⚠️ Legal & Ethical Notice
+✅ Allowed
 
-    IMPORTANT
+Owned systems
 
-    These tools are intended for authorized use only.
+Systems with explicit written permission
 
-        Use only on systems you own or have explicit permission to test
+Isolated lab environments
 
-        Follow applicable laws and organizational policies
+Educational purposes
 
-        Review scripts carefully before running in production
+🚫 Prohibited
 
-        No warranty is provided — use at your own risk
+Unauthorized scanning or testing
+
+Malicious activity
+
+Violating laws or policies
+
+📋 Checklist
+
+Obtain written authorization
+
+Define testing scope
+
+Notify stakeholders
+
+Use isolated environment
+
+Log activities
+
+Review scripts before running
 
 🤝 Contributing
 
-Contributions are welcome and encouraged.
+🐛 Report issues
 
-You can help by:
+💡 Suggest improvements
 
-    🐛 Reporting bugs
+🔄 Submit pull requests
 
-    💡 Suggesting improvements
+📚 Improve documentation
 
-    🔄 Submitting pull requests
+📄 See: CONTRIBUTING.md
 
-Contribution Guidelines
-
-    Keep scripts readable and well-commented
-
-    Prefer POSIX-compatible shell
-
-    Avoid hard-coded secrets
-
-    Test changes on at least one Linux distribution
-
-See CONTRIBUTING.md
-for details.
 📄 License
 
-This project is licensed under the MIT License.
-See the LICENSE
-file for details.
-⭐ Why This Repo Exists
+MIT License – free to use, modify, distribute. No warranty. See LICENSE for details.
 
-This repository reflects hands-on experience in:
+🌟 Why This Repository Exists
 
-    Linux administration
+Reflects years of experience in:
 
-    Security operations
+Linux System Administration
 
-    Network troubleshooting
+Security Operations (Blue/Red Team)
 
-    Teaching and documenting complex topics clearly
+Infrastructure Automation
 
-It is actively maintained and evolves as real operational needs change.
-📁 Per-Directory Mini-README Examples
-scripts/recon/
+Technical Education
 
-# Reconnaissance Scripts
-Scripts in this directory support **authorized network discovery and validation**.
+🎓 Learning Paths
 
-## Purpose
-- Identify live hosts and open services
-- Validate firewall and network configurations
-- Assist with troubleshooting and baseline assessments
+Beginner: Git tutorial → sysadmin utilities → labs
+Intermediate: KVM/QEMU guides → security tools → contribute
+Advanced: Extend security tools → build labs → share expertise
 
-## Example
-./quick-nmap.sh 192.168.1.0/24 --output scan.xml
+🙏 Acknowledgments
 
-scripts/hardening/
+Open-source security community
 
-# System Hardening Scripts
-Scripts focused on **improving Linux system security posture**.
+Tool authors referenced in scripts
 
-## Purpose
-- Enforce baseline security settings
-- Identify insecure configurations
-- Assist with compliance and audits
+Contributors and reviewers
 
-scripts/monitoring/
-
-# Monitoring & Observability Scripts
-Lightweight monitoring helpers for Linux systems.
-
-## Purpose
-- Detect abnormal behavior
-- Monitor system health and resources
-- Assist in troubleshooting incidents
-
-scripts/incident/
-
-# Incident Response Helpers
-Scripts intended to assist during **security incidents or investigations**.
-
-## Purpose
-- Rapid data collection
-- Log preservation
-- Triage support
-
-scripts/maintenance/
-
-# Maintenance & Administration Scripts
-Scripts for routine Linux system administration tasks.
-
-## Purpose
-- Reduce manual work
-- Improve consistency
-- Support remote operations
+Ethical security researchers
 ```
