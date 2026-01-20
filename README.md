@@ -254,4 +254,3 @@ This project reflects years of experience in:
 - Tool authors referenced in scripts
 - Contributors and reviewers
 - Ethical security researchers
-  Your branch is up to date with 'origin/master'.
