@@ -2,6 +2,8 @@
 
 > ⚠️ **DISCLAIMER**
 >
+> ![sysadmin-security-scripts](https://raw.githubusercontent.com/solo2121/sysadmin-security-scripts/main/assets/My_github_card.png)
+>
 > This repository is provided **solely for educational, research, and authorized security testing purposes**.
 >
 > The tools and scripts contained here may only be used on systems that you **own** or for which you have **explicit written authorization** to test.
