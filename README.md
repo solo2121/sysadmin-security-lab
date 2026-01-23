@@ -1,23 +1,21 @@
 # 🛡️ Security & Linux System Administration Toolkit
 
+![GitHub Card](https://github.com/solo2121/sysadmin-security-scripts/raw/main/assets/my_github_card.png)
+
 > ⚠️ **DISCLAIMER**
 >
-> ![sysadmin-security-scripts](https://raw.githubusercontent.com/solo2121/sysadmin-security-scripts/main/assets/My_github_card.png)
->
 > This repository is provided **solely for educational, research, and authorized security testing purposes**.
->
-> The tools and scripts contained here may only be used on systems that you **own** or for which you have **explicit written authorization** to test.
->
-> **Unauthorized use is strictly prohibited** and may violate local, national, or international laws.
->
-> The author assumes **no responsibility or liability** for misuse, damage, or legal consequences resulting from the use of this repository.
+> Unauthorized use is strictly prohibited and may violate local, national, or international laws.
+> The author assumes **no responsibility** for misuse, damage, or legal consequences.
 
-> A comprehensive collection of **security**, **system administration**, and **training tools** for Linux environments — designed for clarity, safety, and hands‑on learning.
+---
 
-[![License](https://img.shields.io/badge/License-MIT-blue.svg?logo=opensourceinitiative&logoColor=white)](LICENSE)
+### 🌟 Key Stats
+
 [![Stars](https://img.shields.io/github/stars/solo2121/sysadmin-security-scripts?logo=github&color=yellow)](https://github.com/solo2121/sysadmin-security-scripts/stargazers)
 [![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen.svg?logo=git&logoColor=white)](CONTRIBUTING.md)
 [![Maintained](https://img.shields.io/badge/Maintained-Yes-2ea44f?logo=githubactions&logoColor=white)](https://github.com/solo2121/sysadmin-security-scripts/commits/main)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg?logo=opensourceinitiative&logoColor=white)](LICENSE)
 
 [![Security](https://img.shields.io/badge/Security-Tools-red?logo=shield&logoColor=white)](#security-tools)
 [![Sysadmin](https://img.shields.io/badge/Sysadmin-Tools-blue?logo=linux&logoColor=white)](#system-administration)
@@ -51,9 +49,9 @@ All scripts and tools follow these core principles:
 
 - ✔️ **Readable** – clean, commented, maintainable code
 - ✔️ **Safe** – built‑in safeguards and warnings
-- ✔️ **Modular** – single‑purpose, composable tools
+- ✔️ **Modular** – single-purpose, composable tools
 - ✔️ **Documented** – usage examples included
-- ✔️ **Cross‑distribution** – works on major Linux distros
+- ✔️ **Cross-distribution** – works on major Linux distros
 
 ---
 
@@ -71,7 +69,6 @@ All scripts and tools follow these core principles:
 │   ├── exploitation/
 │   ├── network/
 │   ├── post-exploitation/
-│   ├── reconnaissance/
 │   └── wireless/
 ├── sysadmin/              # Linux system administration
 │   ├── automation/
@@ -81,178 +78,163 @@ All scripts and tools follow these core principles:
 │   └── utilities/
 ├── LICENSE
 └── README.md
-```
-
----
-
-## 🛠️ Capabilities by Category
-
-### 🔍 Security Tools (`/security`)
+🛠️ Capabilities by Category
+🔍 Security Tools (/security)
 
 Authorized security testing tools:
 
-- **Reconnaissance**: `nmap_menu.py`, `amass-scan.py`, `port-scanner.py`
-- **Exploitation**: `sql_injection.py`, `exploit.py`
-- **Network Analysis**: `ettercap-menu.py`, `scapy-port-scan.py`, `tcpdump_wrapper.py`
-- **Wireless Security**: `evil-twin.py`
-- **Auditing**: `cisco-switch-audit.py`, `llm_security_validator.py`
+Reconnaissance: nmap_menu.py, amass-scan.py, port-scanner.py
 
-### 🖥️ System Administration (`/sysadmin`)
+Exploitation: sql_injection.py, exploit.py
+
+Network Analysis: ettercap-menu.py, scapy-port-scan.py, tcpdump_wrapper.py
+
+Wireless Security: evil-twin.py
+
+Auditing: cisco-switch-audit.py, llm_security_validator.py
+
+🖥️ System Administration (/sysadmin)
 
 Linux infrastructure scripts:
 
-- **Monitoring**: `system_monitor.sh`, `log_analyzer.sh`, `sec_monitor.sh`
-- **Automation**: `update.sh`, `pacstall-maintenance.sh`, `rhino-update.py`
-- **Security & Auditing**: `linaudit.sh`, `user_audit.sh`, `rootkit_scan.sh`
-- **Utilities**: `ufw-manager.sh`, `timeshift-manager.sh`, `bind-manager.sh`
+Monitoring: system_monitor.sh, log_analyzer.sh, sec_monitor.sh
 
----
+Automation: update.sh, pacstall-maintenance.sh, rhino-update.py
 
-## 🧪 Lab Environments
+Security & Auditing: linaudit.sh, user_audit.sh, rootkit_scan.sh
 
-### Active Directory Pentest Lab (`/labs/ad-pentest-lab`)
+Utilities: ufw-manager.sh, timeshift-manager.sh, bind-manager.sh
 
-- Windows Server 2022/2025 AD environment
-- Vagrant‑based (✅ **libvirt/KVM supported**)
-- Pre‑configured attacker and victim machines
-- Designed for realistic **enterprise AD attack chains**
+🧪 Lab Environments
+Active Directory Pentest Lab (/labs/ad-pentest-lab)
 
-```bash
+Windows Server 2022/2025 AD environment
+
+Vagrant‑based (✅ libvirt/KVM supported)
+
+Pre‑configured attacker and victim machines
+
+Designed for realistic enterprise AD attack chains
+
 cd labs/ad-pentest-lab
 vagrant up
-```
 
----
+🌐 Networking Model (Libvirt/KVM)
+Network Segments
 
-## 🌐 Networking Model (IMPORTANT – libvirt)
+Management Network (NAT) – Internet access for updates and tooling
 
-This project is **optimized for libvirt/KVM**, which behaves differently from VirtualBox.
+Corporate Internal Network (Isolated LAN) – Subnet 172.28.128.0/24, fully isolated, all attack traffic remains internal
 
-### Network Segments
+⚠️ Each VM uses two NICs:
+NIC 1 → NAT (management)
+NIC 2 → Isolated corporate LAN
+Static IPs are required for AD reliability. private_network alone is insufficient; the lab defines a libvirt network with forward_mode: none.
 
-1. **Management Network (NAT)**
-   - Internet access for updates and tooling
-   - Provided by libvirt’s `default` NAT network
-   - Not used for attack simulations
+🚀 Quick Start
 
-2. **Corporate Internal Network (Isolated LAN)**
-   - Subnet: `172.28.128.0/24`
-   - Fully isolated Layer‑2 network
-   - No external routing
-   - All attack traffic remains internal
+1️⃣ Clone the repository:
 
-### libvirt‑Correct Design
-
-- Each VM uses **two NICs**:
-  - **NIC 1**: NAT (management)
-  - **NIC 2**: Isolated corporate LAN
-
-- **Static IPs are required** for AD reliability
-- A **named libvirt network** is used (not host‑only)
-
-> ⚠️ `private_network` alone is **not sufficient** on libvirt. The lab explicitly defines a libvirt network with `forward_mode: none` to ensure isolation.
-
----
-
-## 🚀 Quick Start
-
-1️⃣ Clone the repository
-
-```bash
 git clone https://github.com/solo2121/sysadmin-security-scripts.git
 cd sysadmin-security-scripts
-```
 
-2️⃣ Explore documentation
 
-```bash
+2️⃣ Explore documentation:
+
 ls docs/
 less "docs/Complete Git Tutorial for Linux Users.md"
-```
 
-3️⃣ Run a security tool (authorized use only)
 
-```bash
+3️⃣ Run a security tool (authorized use only):
+
 cd security/reconnaissance
 python3 nmap_menu.py --help
-```
 
-4️⃣ Use sysadmin tools
 
-```bash
+4️⃣ Use sysadmin tools:
+
 cd sysadmin/monitoring
 ./system_monitor.sh
-```
 
----
+⚠️ Legal & Ethical Usage Notice
 
-## ⚠️ Legal & Ethical Usage Notice
+IMPORTANT: Tools are for authorized and ethical use only.
 
-**IMPORTANT:** Tools are for **authorized and ethical use only**.
+✅ Allowed
 
-### ✅ Allowed
+Owned systems
 
-- Owned systems
-- Systems with explicit written permission
-- Isolated lab environments
-- Educational purposes
+Systems with explicit written permission
 
-### 🚫 Prohibited
+Isolated lab environments
 
-- Unauthorized scanning or testing
-- Malicious activity
-- Violating laws or organizational policies
+Educational purposes
 
-### 📋 Checklist
+🚫 Prohibited
 
-- Obtain written authorization
-- Define testing scope
-- Notify stakeholders
-- Use isolated environments
-- Log activities
-- Review scripts before execution
+Unauthorized scanning or testing
 
----
+Malicious activity
 
-## 🤝 Contributing
+Violating laws or organizational policies
 
-- 🐛 Report issues
-- 💡 Suggest improvements
-- 🔄 Submit pull requests
-- 📚 Improve documentation
+📋 Checklist
 
-See: `CONTRIBUTING.md`
+Obtain written authorization
 
----
+Define testing scope
 
-## 📄 License
+Notify stakeholders
 
-MIT License — free to use, modify, and distribute. **No warranty provided**.
+Use isolated environments
 
----
+Log activities
 
-## 🌟 Why This Repository Exists
+Review scripts before execution
+
+🤝 Contributing
+
+🐛 Report issues
+
+💡 Suggest improvements
+
+🔄 Submit pull requests
+
+📚 Improve documentation
+
+See: CONTRIBUTING.md
+
+📄 License
+
+MIT License — free to use, modify, and distribute. No warranty provided.
+
+🌟 Why This Repository Exists
 
 This project reflects years of experience in:
 
-- Linux System Administration
-- Security Operations (Blue & Red Team)
-- Infrastructure Automation
-- Technical Education
+Linux System Administration
 
----
+Security Operations (Blue & Red Team)
 
-## 🎓 Learning Paths
+Infrastructure Automation
 
-- **Beginner**: Git tutorial → sysadmin utilities → labs
-- **Intermediate**: KVM/libvirt guides → security tools → contribute
-- **Advanced**: Extend tools → build labs → share expertise
+Technical Education
 
----
+🎓 Learning Paths
 
-## 🙏 Acknowledgments
+Beginner: Git tutorial → sysadmin utilities → labs
 
-- Open‑source security community
-- Tool authors referenced in scripts
-- Contributors and reviewers
-- Ethical security researchers
+Intermediate: KVM/libvirt guides → security tools → contribute
+
+Advanced: Extend tools → build labs → share expertise
+
+🙏 Acknowledgments
+
+Open‑source security community
+
+Tool authors referenced in scripts
+
+Contributors and reviewers
+
+Ethical security researchers
+```
