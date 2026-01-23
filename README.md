@@ -1,6 +1,6 @@
 # 🛡️ Security & Linux System Administration Toolkit
 
-![GitHub Card](https://github.com/solo2121/sysadmin-security-scripts/raw/main/assets/my_github_card.png)
+![GitHub Card](https://raw.githubusercontent.com/solo2121/sysadmin-security-scripts/main/assets/my_github_card.png)
 
 > ⚠️ **DISCLAIMER**
 >
