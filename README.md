@@ -1,7 +1,5 @@
 # 🛡️ Security & Linux System Administration Toolkit
 
-![GitHub Card](https://github.com/solo2121/sysadmin-security-scripts/raw/main/assets/my_github_card.png)
-
 > ⚠️ **DISCLAIMER**
 >
 > This repository is provided **solely for educational, research, and authorized security testing purposes**.
