@@ -1,5 +1,7 @@
 # 🛡️ Security & Linux System Administration Toolkit
 
+![GitHub Card](https://github.com/solo2121/sysadmin-security-scripts/raw/main/assets/my_github_card.png)
+
 > ⚠️ **DISCLAIMER**
 >
 > This repository is provided **solely for educational, research, and authorized security testing purposes**.
@@ -28,8 +30,8 @@ This repository provides a **practical toolkit** for:
 
 - 🔒 Authorized security testing and auditing
 - 🖥️ Linux system administration & automation
-- 🧪 Hands‑on labs for learning and practice
-- 📚 In‑depth documentation and tutorials
+- 🧪 Hands-on labs for learning and practice
+- 📚 In-depth documentation and tutorials
 
 Designed for:
 
@@ -46,7 +48,7 @@ Designed for:
 All scripts and tools follow these core principles:
 
 - ✔️ **Readable** – clean, commented, maintainable code
-- ✔️ **Safe** – built‑in safeguards and warnings
+- ✔️ **Safe** – built-in safeguards and warnings
 - ✔️ **Modular** – single-purpose, composable tools
 - ✔️ **Documented** – usage examples included
 - ✔️ **Cross-distribution** – works on major Linux distros
@@ -108,9 +110,9 @@ Active Directory Pentest Lab (/labs/ad-pentest-lab)
 
 Windows Server 2022/2025 AD environment
 
-Vagrant‑based (✅ libvirt/KVM supported)
+Vagrant-based (✅ libvirt/KVM supported)
 
-Pre‑configured attacker and victim machines
+Pre-configured attacker and victim machines
 
 Designed for realistic enterprise AD attack chains
 
@@ -156,7 +158,7 @@ cd sysadmin/monitoring
 
 ⚠️ Legal & Ethical Usage Notice
 
-IMPORTANT: Tools are for authorized and ethical use only.
+Tools are for authorized and ethical use only.
 
 ✅ Allowed
 
@@ -228,7 +230,7 @@ Advanced: Extend tools → build labs → share expertise
 
 🙏 Acknowledgments
 
-Open‑source security community
+Open-source security community
 
 Tool authors referenced in scripts
 
