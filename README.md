@@ -1,7 +1,8 @@
 ````markdown
 # Security & System Administration Toolkit
 
-A comprehensive collection of **security**, **system administration**, and **training tools** for Linux environments. Designed for clarity, safety, and hands-on learning.
+A comprehensive collection of **security**, **system administration**, and **training tools** for Linux environments.  
+Includes **PJPT-focused Active Directory labs**, tutorials, and automation scripts for practical hands-on learning.
 
 ---
 
@@ -10,9 +11,11 @@ A comprehensive collection of **security**, **system administration**, and **tra
 - [Overview](#overview)
 - [Features](#features)
 - [Quick Start](#quick-start)
+- [Labs](#labs)
+- [Tutorials](#tutorials)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Folder Structure](#folder-structure)
+- [Repository Structure](#repository-structure)
 - [Contribution](#contribution)
 - [Community Guidelines](#community-guidelines)
 - [License](#license)
@@ -21,22 +24,22 @@ A comprehensive collection of **security**, **system administration**, and **tra
 
 ## Overview
 
-This repository provides a variety of scripts and tools for:
+This repository provides a set of tools, scripts, and labs for:
 
-- **Linux system administration** automation
-- **Security auditing** and penetration testing
-- **Educational labs** for hands-on learning
+- **Linux system administration automation**
+- **Security auditing and penetration testing**
+- **Educational labs**, including PJPT-style Active Directory exercises
 
-All scripts are intended for use on systems you own or have explicit authorization to test. Unauthorized use is strictly prohibited and may violate local laws.
+> All scripts and labs are intended for use on systems you **own** or have **explicit authorization** to test. Unauthorized use is strictly prohibited.
 
 ---
 
 ## Features
 
-- Modular and organized scripts for security and sysadmin tasks
-- Easy-to-follow setup and usage
-- Pre-configured development environment for contributors
-- Clear documentation and headers in all scripts
+- Modular scripts organized by category (security, sysadmin)
+- **PJPT-aligned Active Directory lab** with attack chains and network design
+- Tutorials and reference guides for tools, Linux, KVM/QEMU, and AD administration
+- Clear documentation and usage instructions
 
 ---
 
@@ -56,23 +59,53 @@ Install development dependencies:
 ./scripts/setup-dev-env.sh
 ```
 
-Run any script by following usage instructions included in headers:
+Run scripts according to headers in each file.
 
-```bash
-./sysadmin/monitoring/example-script.sh
-```
+---
+
+## Labs
+
+### Active Directory Pentest Lab (PJPT)
+
+- **Location:** `labs/ad-pentest-lab/`
+- **Focus:** Enterprise-style AD attack chains, post-exploitation, AD CS abuse, lateral movement
+- **Setup:** Vagrant + libvirt/KVM
+- **Contents:**
+  - `README.md` — Lab documentation, attack chains, and network topology
+  - `scripts/` — Automation scripts for attacks and lab management
+  - `configs/` — Vagrantfile and lab configuration YAML
+  - `requirements.txt` — Python dependencies
+
+> [View PJPT AD Lab Documentation](labs/ad-pentest-lab/README.md)
+
+---
+
+## Tutorials
+
+All tutorials are located in `tutorials/`:
+
+- **AD MITRE log source playbook**
+- **AppArmor configuration guide**
+- **Complete Git tutorial for Linux users**
+- **Pacstall AUR tutorial for Ubuntu**
+- **KVM/QEMU installation and CLI management**
+- **TimeShift CLI backup guide**
+- **Vagrant management tutorial**
+- **Windows Server 2025 Active Directory assessment**
+
+> Each tutorial includes step-by-step instructions and practical examples.
 
 ---
 
 ## Installation
 
-All scripts are self-contained. For Python scripts, install dependencies using:
+For Python scripts:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-For Bash scripts, ensure `shellcheck` and other dependencies are installed:
+For Bash scripts:
 
 ```bash
 sudo apt install shellcheck
@@ -82,50 +115,49 @@ sudo apt install shellcheck
 
 ## Usage
 
-Each script includes a header with:
+Each script contains:
 
 - Script name
 - Description
 - Usage instructions
 - Author
 
-Run scripts according to instructions in the headers. Scripts are grouped by function and category for clarity.
+Run scripts according to instructions. Scripts are **grouped by category** for clarity.
 
 ---
 
-## Folder Structure
+## Repository Structure
 
 ```
-sysadmin-security-scripts/
-├── security/       # Security tools (recon, audit, exploitation, network)
-├── sysadmin/       # System administration scripts (monitoring, automation, utilities)
-├── labs/           # Educational labs and environments
-├── docs/           # Documentation
-├── scripts/        # Helper and setup scripts
-├── LICENSE
-├── README.md
-└── CONTRIBUTING.md
+assets/                  ← Images, GitHub card
+labs/                     ← Complete lab environments
+└── ad-pentest-lab/       ← PJPT-focused Active Directory lab
+    ├── README.md         ← Lab documentation
+    ├── scripts/          ← Python/Bash automation scripts
+    ├── configs/          ← Vagrantfile and YAML configs
+    └── requirements.txt  ← Python dependencies
+tutorials/                ← Tutorials and reference guides
+security/                 ← Security scripts (audit, exploitation, reconnaissance, network, post-exploitation, wireless)
+sysadmin/                 ← System administration scripts (automation, monitoring, utilities)
+LICENSE                   ← Project license
+CONTRIBUTING.md           ← Contribution guidelines
 ```
-
-Each folder contains a README.md explaining its purpose and usage.
 
 ---
 
 ## Contribution
 
-We welcome contributions from the community.
-Please review our [CONTRIBUTING.md](CONTRIBUTING.md) before submitting pull requests.
+We welcome contributions.
+Please review [CONTRIBUTING.md](CONTRIBUTING.md) before submitting pull requests.
 
 ---
 
 ## Community Guidelines
 
-Please adhere to:
-
 - [Code of Conduct](CODE_OF_CONDUCT.md)
 - [Security Policy](SECURITY.md)
 
-For questions or discussions, visit our [Discussions](https://github.com/solo2121/sysadmin-security-scripts/discussions).
+For questions or discussions, visit [Discussions](https://github.com/solo2121/sysadmin-security-scripts/discussions).
 
 ---
 
@@ -134,5 +166,6 @@ For questions or discussions, visit our [Discussions](https://github.com/solo212
 This project is licensed under the [MIT License](LICENSE).
 
 ```
+
 
 ```
