@@ -1,5 +1,3 @@
-Here’s a cleaned-up, more professional version of your Markdown with all emojis removed and formatting preserved:
-
 ````markdown
 # Contribution Guidelines
 
@@ -131,10 +129,3 @@ Please review our:
 For questions, join our [Discussions](https://github.com/solo2121/sysadmin-security-scripts/discussions).
 
 ---
-
-```
-
-I kept all headings, code blocks, links, and formatting intact—just removed emojis to make it look more formal and professional.
-
-If you want, I can also **refine the headings and wording slightly** so it reads even cleaner for professional documentation. Do you want me to do that?
-```
