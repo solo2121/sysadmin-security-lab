@@ -1,176 +1,251 @@
-# Security & Linux System Administration Toolkit
+````markdown
+# Security & System Administration Toolkit
 
-![GitHub Card](https://raw.githubusercontent.com/solo2121/sysadmin-security-scripts/main/assets/my_github_card.png)
+A comprehensive collection of **security**, **system administration**, and **training tools** for Linux environments. Designed for clarity, safety, and hands-on learning.
 
-> **DISCLAIMER**
-> This repository is intended solely for educational, research, and authorized security testing purposes.
-> Unauthorized use is prohibited and may violate laws. The author is not responsible for misuse or damage.
+---
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Features](#features)
+- [Quick Start](#quick-start)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Folder Structure](#folder-structure)
+- [Contribution](#contribution)
+- [Community Guidelines](#community-guidelines)
+- [License](#license)
 
 ---
 
 ## Overview
 
-A practical toolkit for:
+This repository provides a variety of scripts and tools for:
 
-- Authorized security testing and auditing
-- Linux system administration and automation
-- Hands-on labs for learning
-- Detailed documentation and tutorials
+- **Linux system administration** automation
+- **Security auditing** and penetration testing
+- **Educational labs** for hands-on learning
 
-**Audience:** Security professionals, Linux sysadmins, students, and infrastructure teams.
-
----
-
-## Principles
-
-- **Readable** – clean, commented, maintainable code
-- **Safe** – built-in safeguards
-- **Modular** – single-purpose, composable tools
-- **Documented** – usage examples included
-- **Cross-distribution** – compatible with major Linux distributions
+All scripts are intended for use on systems you own or have explicit authorization to test. Unauthorized use is strictly prohibited and may violate local laws.
 
 ---
 
-## Repository Structure
+## Features
 
-```
-.
-├── CONTRIBUTING.md
-├── docs/                  # Documentation
-├── labs/                  # Training labs
-│   └── ad-pentest-lab/
-├── security/              # Security tools
-│   ├── audit/
-│   ├── enumeration/
-│   ├── exploitation/
-│   ├── network/
-│   └── wireless/
-├── sysadmin/              # Sysadmin tools
-│   ├── automation/
-│   ├── monitoring/
-│   ├── security/
-│   └── utilities/
-├── LICENSE
-└── README.md
-```
-
----
-
-## Security Tools (`/security`)
-
-- **Reconnaissance:** `nmap_menu.py`, `amass-scan.py`
-- **Exploitation:** `sql_injection.py`, `exploit.py`
-- **Network Analysis:** `ettercap-menu.py`, `scapy-port-scan.py`
-- **Wireless Security:** `evil-twin.py`
-- **Auditing:** `cisco-switch-audit.py`, `llm_security_validator.py`
-
-## System Administration (`/sysadmin`)
-
-- **Monitoring:** `system_monitor.sh`, `log_analyzer.sh`
-- **Automation:** `update.sh`, `pacstall-maintenance.sh`
-- **Security & Auditing:** `linaudit.sh`, `user_audit.sh`
-- **Utilities:** `ufw-manager.sh`, `timeshift-manager.sh`
-
----
-
-## Lab Environments (`/labs`)
-
-**Active Directory Pentest Lab:**
-
-- Windows Server 2022/2025 AD
-- Vagrant-based (Libvirt/KVM supported)
-- Pre-configured attacker and victim machines
-
-```
-cd labs/ad-pentest-lab
-vagrant up
-```
-
-**Network:**
-
-- NIC 1 → NAT (management)
-- NIC 2 → Isolated LAN (172.28.128.0/24)
-- Static IPs required for AD reliability
+- Modular and organized scripts for security and sysadmin tasks
+- Easy-to-follow setup and usage
+- Pre-configured development environment for contributors
+- Clear documentation and headers in all scripts
 
 ---
 
 ## Quick Start
 
-1. Clone the repository:
+Clone the repository:
 
-```
+```bash
 git clone https://github.com/solo2121/sysadmin-security-scripts.git
 cd sysadmin-security-scripts
 ```
+````
 
-2. Explore documentation:
+Install development dependencies:
 
-```
-ls docs/
-less "docs/Complete Git Tutorial for Linux Users.md"
-```
-
-3. Run a security tool (authorized use only):
-
-```
-cd security/reconnaissance
-python3 nmap_menu.py --help
+```bash
+./scripts/setup-dev-env.sh
 ```
 
-4. Use sysadmin tools:
+Run any script by following usage instructions included in headers:
 
-```
-cd sysadmin/monitoring
-./system_monitor.sh
+```bash
+./sysadmin/monitoring/example-script.sh
 ```
 
 ---
 
-## Legal and Ethical Usage
+## Installation
 
-**Allowed:** Systems you own, systems with written permission, isolated labs, educational use
-**Prohibited:** Unauthorized scanning, malicious activity, illegal actions
+All scripts are self-contained. For Python scripts, install dependencies using:
 
-**Checklist:** Written authorization, defined scope, stakeholder notification, isolated environment, activity logging, script review
+```bash
+pip install -r requirements.txt
+```
+
+For Bash scripts, ensure `shellcheck` and other dependencies are installed:
+
+```bash
+sudo apt install shellcheck
+```
 
 ---
 
-## Contributing
+## Usage
 
-- Report issues
-- Suggest improvements
-- Submit pull requests
-- Improve documentation
+Each script includes a header with:
 
-See `CONTRIBUTING.md`.
+- Script name
+- Description
+- Usage instructions
+- Author
+
+Run scripts according to instructions in the headers. Scripts are grouped by function and category for clarity.
+
+---
+
+## Folder Structure
+
+```
+sysadmin-security-scripts/
+├── security/       # Security tools (recon, audit, exploitation, network)
+├── sysadmin/       # System administration scripts (monitoring, automation, utilities)
+├── labs/           # Educational labs and environments
+├── docs/           # Documentation
+├── scripts/        # Helper and setup scripts
+├── LICENSE
+├── README.md
+└── CONTRIBUTING.md
+```
+
+Each folder contains a README.md explaining purpose and usage.
+
+---
+
+## Contribution
+
+We welcome contributions from the community. Please review our [Contribution Guidelines](CONTRIBUTING.md) before submitting pull requests.
+
+---
+
+## Community Guidelines
+
+Please adhere to:
+
+- [Code of Conduct](CODE_OF_CONDUCT.md)
+- [Security Policy](SECURITY.md)
+
+For questions or discussions, visit our [Discussions](https://github.com/solo2121/sysadmin-security-scripts/discussions).
 
 ---
 
 ## License
 
-MIT License — free to use, modify, and distribute. No warranty provided.
+This project is licensed under the [MIT License](LICENSE).
+
+````
 
 ---
 
-## Purpose
+## **File 2: `CONTRIBUTING.md`**
 
-Reflects years of experience in:
+```markdown
+# Contribution Guidelines
 
-- Linux System Administration
-- Security Operations (Red & Blue Team)
-- Infrastructure Automation
-- Technical Education
-
-**Learning Paths:**
-
-- Beginner: Git tutorial → sysadmin utilities → labs
-- Intermediate: KVM/libvirt guides → security tools → contribute
-- Advanced: Extend tools → build labs → share expertise
+Thank you for your interest in improving the Security & System Administration Toolkit! We welcome contributions of all kinds, including code, documentation, and feature suggestions.
 
 ---
 
-## Acknowledgments
-
-Open-source community, tool authors, contributors, and ethical security researchers.
+## Table of Contents
+- [Ways to Contribute](#ways-to-contribute)
+- [Development Workflow](#development-workflow)
+- [Code Standards](#code-standards)
+- [Pull Request Process](#pull-request-process)
+- [Local Setup](#local-setup)
 
 ---
+
+## Ways to Contribute
+
+### Issue Reporting
+- **Bug Reports:** Use the [bug report template](https://github.com/solo2121/sysadmin-security-scripts/issues/new?template=bug_report.md)
+- **Feature Requests:** Use the [feature request template](https://github.com/solo2121/sysadmin-security-scripts/issues/new?template=feature_request.md)
+- **Documentation Improvements:** Open a regular issue with `[Docs]` prefix
+
+### Code Contributions
+1. Fork the repository
+2. Create a descriptive branch:
+   - `feat/` for new features
+   - `fix/` for bug fixes
+   - `docs/` for documentation
+3. Commit your changes with conventional messages
+4. Push to your fork
+5. Open a pull request
+
+---
+
+## Development Workflow
+
+### Pre-Commit Checks
+Run our pre-commit hook to ensure scripts pass linting:
+
+```bash
+ln -sf ../../scripts/pre-commit.sh .git/hooks/pre-commit
+````
+
+---
+
+## Code Standards
+
+### Shell Script Guidelines
+
+```bash
+#!/usr/bin/env bash
+# [Optional] For POSIX compliance: #!/usr/bin/env sh
+```
+
+- Pass all `shellcheck` validations
+- Include detailed header comments in all scripts:
+
+```bash
+#!/usr/bin/env bash
+#
+# Script Name: example.sh
+# Description: Brief description of script functionality
+# Author: Your Name
+# Usage: ./example.sh [options]
+#
+```
+
+### Dependency Management
+
+- Limit external dependencies to ≤3 per script
+- Document dependencies in script headers
+
+---
+
+## Pull Request Process
+
+### PR Checklist
+
+- [ ] Scripts pass linting (`shellcheck` / `pylint`)
+- [ ] Tested on multiple platforms
+- [ ] Documentation updated
+- [ ] CHANGELOG.md updated
+- [ ] Follows existing code style
+
+### Commit Message Format
+
+```
+type(scope): brief description
+
+Optional body explaining changes in detail
+```
+
+**Types**: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
+
+---
+
+## Local Setup
+
+Clone the repository:
+
+```bash
+git clone https://github.com/solo2121/sysadmin-security-scripts.git
+cd sysadmin-security-scripts
+```
+
+Install development dependencies:
+
+```bash
+./scripts/setup-dev-env.sh
+```
