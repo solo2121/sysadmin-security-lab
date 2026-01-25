@@ -1,7 +1,3 @@
-Great! Here’s a **professional, concise version** of your README. It’s clean, icon-free, and optimized for quick readability on GitHub without overwhelming the reader.
-
----
-
 # Security & Linux System Administration Toolkit
 
 ![GitHub Card](https://raw.githubusercontent.com/solo2121/sysadmin-security-scripts/main/assets/my_github_card.png)
