@@ -174,7 +174,3 @@ Reflects years of experience in:
 Open-source community, tool authors, contributors, and ethical security researchers.
 
 ---
-
-If you want, I can **also make an “ultra-condensed one-page version”** that fits entirely on GitHub’s first view without scrolling—professional and ready for recruiters or enterprise audiences.
-
-Do you want me to make that too?
