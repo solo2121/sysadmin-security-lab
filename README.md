@@ -1,7 +1,7 @@
 ````markdown
 # Security & System Administration Toolkit
 
-A comprehensive collection of **security**, **system administration**, and **training tools** for Linux environments. Designed for clarity, safety, and hands-on learning.
+A comprehensive collection of **security**, **system administration**, and **training tools** for Linux environments. Designed for clarity, safety, and hands-on learning
 
 ---
 
