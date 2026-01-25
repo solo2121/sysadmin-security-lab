@@ -1,0 +1,229 @@
+# Active Directory Pentest Lab (libvirt/KVM)
+
+**Enterprise-style Active Directory attack-chain documentation** for a deliberately vulnerable lab environment using **Vagrant with libvirt/KVM**.
+
+> **Warning**
+> This lab is intentionally insecure and designed **only** for controlled training, research, and documentation.
+> Do **not** expose this environment to the internet or production networks.
+
+---
+
+## 1. Document Scope and Operator Intent
+
+This document describes the **architecture, networking model, and intended attack paths** of the Active Directory Pentest Lab.
+
+It is designed to:
+
+- Document **enterprise-style attack chains**
+- Prevent **libvirt/KVM networking misconfiguration**
+- Serve as **authoritative lab documentation** (not deployment automation)
+- Support **CRTP / CRTO / PJPT-style training and self-study**
+
+This document assumes the operator already understands basic Active Directory concepts.
+
+---
+
+## 2. Environment Architecture Overview
+
+The lab simulates a **modern hybrid enterprise environment**, combining:
+
+- On-premises Active Directory
+- Active Directory Certificate Services (AD CS)
+- Legacy and modern Windows systems
+- Linux infrastructure
+- Cloud and container-adjacent attack surfaces
+- Vulnerable web applications
+
+All attack paths are **intentional, scoped, and repeatable**.
+
+---
+
+## 3. Network Architecture (Critical – libvirt/KVM)
+
+This environment is **explicitly designed for libvirt/KVM**.
+Networking behavior **differs from VirtualBox and VMware**.
+
+### 3.1 Network Segments
+
+#### Management Network (NAT)
+
+- Provided by libvirt `default` network
+- Used for:
+  - Internet access
+  - Package updates
+  - Tool installation
+
+- **Not used for attack traffic**
+
+#### Corporate Internal Network (Isolated LAN)
+
+- Subnet: `172.28.128.0/24`
+- Fully isolated Layer 2 network
+- No routing to external networks
+- All attack traffic remains internal
+
+---
+
+### 3.2 Network Topology Diagram
+
+```mermaid
+graph TD
+    Kali[Kali Attacker]
+    DC[DC01<br>Domain Controller]
+    CA[CA01<br>AD CS]
+    DB[DB01<br>SQL Server]
+    WIN10[WIN10<br>Workstation]
+    Linux[Linux Targets]
+    Web[Web Applications]
+
+    Kali -->|Internal LAN| DC
+    Kali -->|Internal LAN| CA
+    Kali -->|Internal LAN| DB
+    Kali -->|Internal LAN| WIN10
+    Kali -->|Internal LAN| Linux
+    Kali -->|Internal LAN| Web
+```
+
+---
+
+## 4. libvirt Design Rules (Mandatory)
+
+- **Two NICs per virtual machine**
+  - NIC 1: NAT (management)
+  - NIC 2: Corporate internal LAN
+
+- Static IP addressing is **required**
+
+- Corporate LAN must be a **named libvirt network** with `forward_mode: none`
+
+- No DHCP assumptions
+
+- No host-only or bridged networking
+
+> Misconfigured networking will break DNS, Kerberos, SMB relay, and certificate-based attack paths.
+
+---
+
+## 5. Systems and Roles
+
+| Hostname        | IP            | Role                    |
+| --------------- | ------------- | ----------------------- |
+| kali-libvirt    | 172.28.128.10 | Attacker                |
+| DC01            | 172.28.128.21 | Domain Controller       |
+| DB01            | 172.28.128.23 | SQL / Kerberoast target |
+| CA01            | 172.28.128.24 | AD Certificate Services |
+| WIN10           | 172.28.128.30 | Domain workstation      |
+| vuln-ubuntu     | 172.28.128.11 | Cloud / DevOps target   |
+| metasploitable2 | 172.28.128.12 | Legacy Linux            |
+| metasploitable3 | 172.28.128.13 | Web server              |
+| msf-win2k8      | 172.28.128.14 | Legacy Windows          |
+| juice-shop      | 172.28.128.15 | OWASP web application   |
+
+---
+
+## 6. Attack Chain Overview (CRTP / CRTO Aligned)
+
+### 6.1 Initial Access
+
+- LLMNR / NetBIOS poisoning
+- AS-REP roasting
+- Credential capture via misconfigurations
+- Web application exploitation
+
+---
+
+### 6.2 Credential Access
+
+```mermaid
+graph LR
+    User[Low-Priv User] -->|AS-REP| Hashes
+    Hashes -->|Cracking| Creds
+    Creds -->|Kerberos| TGS[Service Tickets]
+    TGS -->|Kerberoast| Escalation
+```
+
+- AS-REP roasting
+- Kerberoasting (SQL SPNs)
+- Cleartext and reusable credentials
+
+---
+
+### 6.3 Lateral Movement
+
+- SMB relay
+- Credential reuse
+- Service account abuse
+- WinRM / SMB / WMI movement
+
+---
+
+### 6.4 Privilege Escalation
+
+- ACL abuse
+- Delegation abuse
+- AdminSDHolder misconfiguration
+- Local privilege escalation on endpoints
+
+---
+
+### 6.5 AD Certificate Services Abuse
+
+```mermaid
+graph TD
+    User --> Template[Vulnerable Template]
+    Template --> Cert[Issued Certificate]
+    Cert --> TGT[Kerberos TGT]
+    TGT --> DA[Domain Admin]
+```
+
+- ESC1: Template misconfiguration
+- ESC6: SAN abuse
+- ESC8: Web enrollment relay
+- ESC9: Weak certificate binding
+
+---
+
+### 6.6 Cloud and Container Attack Paths
+
+- Hardcoded cloud credentials
+- Terraform state file exposure
+- Docker socket abuse
+- Kubernetes misconfigurations
+
+These systems act as **pivot points** back into the domain.
+
+---
+
+## 7. Post-Boot Validation Checklist
+
+### Windows Systems
+
+- DNS configured **only** to `DC01 (172.28.128.21)`
+- Domain traffic bound to internal LAN NIC
+- NAT NIC has **no DNS configured**
+
+### Kali Linux
+
+- Internet access via NAT
+- All attack traffic routed via `172.28.128.0/24`
+
+---
+
+## 8. Rules of Engagement
+
+- Never expose the lab to real networks
+- Never reuse credentials outside the lab
+- Do not mix lab traffic with production systems
+- Authorized training and research use only
+
+---
+
+## 9. References and Tooling
+
+- SpecterOps Active Directory Attack Path documentation
+- Microsoft Active Directory and AD CS documentation
+- BloodHound
+- Impacket
+- Certipy
+
+---
