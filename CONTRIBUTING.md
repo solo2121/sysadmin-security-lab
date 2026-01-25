@@ -1,8 +1,10 @@
 ````markdown
 # Contribution Guidelines
 
-Welcome to the Security & System Administration Toolkit contribution guide!
+Welcome to the Security & System Administration Toolkit contribution guide.  
 We appreciate your interest in helping improve this project.
+
+---
 
 ## Table of Contents
 
@@ -11,6 +13,7 @@ We appreciate your interest in helping improve this project.
 - [Code Standards](#code-standards)
 - [Pull Request Process](#pull-request-process)
 - [Local Setup](#local-setup)
+- [Community Guidelines](#community-guidelines)
 
 ---
 
@@ -18,12 +21,14 @@ We appreciate your interest in helping improve this project.
 
 ### Issue Reporting
 
-- **Bug Reports**:
-  [Use bug report template](https://github.com/solo2121/sysadmin-security-scripts/issues/new?template=bug_report.md)
-- **Feature Requests**:
-  [Use feature request template](https://github.com/solo2121/sysadmin-security-scripts/issues/new?template=feature_request.md)
-- **Documentation Improvements**:
-  Open a regular issue with "[Docs]" prefix
+- **Bug Reports**  
+  Use the [bug report template](https://github.com/solo2121/sysadmin-security-scripts/issues/new?template=bug_report.md)
+
+- **Feature Requests**  
+  Use the [feature request template](https://github.com/solo2121/sysadmin-security-scripts/issues/new?template=feature_request.md)
+
+- **Documentation Improvements**  
+  Open a regular issue with the `[Docs]` prefix in the title.
 
 ### Code Contributions
 
@@ -31,7 +36,7 @@ We appreciate your interest in helping improve this project.
 2. Create a descriptive branch name:
    - `feat/` for new features
    - `fix/` for bug fixes
-   - `docs/` for documentation
+   - `docs/` for documentation updates
 3. Commit your changes
 4. Push to your fork
 5. Open a pull request
@@ -42,12 +47,14 @@ We appreciate your interest in helping improve this project.
 
 ### Pre-Commit Checks
 
-We recommend setting up our pre-commit hook:
+We recommend setting up the pre-commit hook:
 
 ```bash
 ln -sf ../../scripts/pre-commit.sh .git/hooks/pre-commit
 ```
 ````
+
+This ensures all scripts are automatically linted before committing.
 
 ---
 
@@ -60,23 +67,23 @@ ln -sf ../../scripts/pre-commit.sh .git/hooks/pre-commit
 # [Optional] For POSIX compliance: #!/usr/bin/env sh
 ```
 
-- Pass all `shellcheck` validations
-- Include detailed header comments:
+- Scripts must pass all `shellcheck` validations.
+- Include detailed header comments in each script:
 
-  ```bash
-  #!/usr/bin/env bash
-  #
-  # Script Name: example.sh
-  # Description: Brief description of script functionality
-  # Author: Your Name
-  # Usage: ./example.sh [options]
-  #
-  ```
+```bash
+#!/usr/bin/env bash
+#
+# Script Name: example.sh
+# Description: Brief description of script functionality
+# Author: Your Name
+# Usage: ./example.sh [options]
+#
+```
 
 ### Dependency Management
 
-- Keep external dependencies to ≤3 per script
-- Document requirements in script headers
+- Limit external dependencies to ≤3 per script.
+- Document all requirements in script headers.
 
 ---
 
@@ -84,7 +91,7 @@ ln -sf ../../scripts/pre-commit.sh .git/hooks/pre-commit
 
 ### PR Checklist
 
-- [ ] All scripts pass `shellcheck`
+- [ ] All scripts pass linting (`shellcheck` / `pylint` if Python)
 - [ ] Tested on multiple platforms
 - [ ] Documentation updated
 - [ ] CHANGELOG.md updated
@@ -98,34 +105,37 @@ type(scope): brief description
 Optional body explaining changes in detail
 ```
 
-**Types**: feat, fix, docs, style, refactor, test, chore
+**Common Types**:
+`feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
 
 ---
 
 ## Local Setup
 
-1. Clone repository:
+1. Clone the repository:
 
-   ```bash
-   git clone https://github.com/solo2121/sysadmin-security-scripts.git
-   cd sysadmin-security-scripts
-   ```
+```bash
+git clone https://github.com/solo2121/sysadmin-security-scripts.git
+cd sysadmin-security-scripts
+```
 
 2. Install development dependencies:
 
-   ```bash
-   ./scripts/setup-dev-env.sh
-   ```
+```bash
+./scripts/setup-dev-env.sh
+```
 
 ---
 
 ## Community Guidelines
 
-Please review our:
+Please review:
 
 - [Code of Conduct](CODE_OF_CONDUCT.md)
 - [Security Policy](SECURITY.md)
 
-For questions, join our [Discussions](https://github.com/solo2121/sysadmin-security-scripts/discussions).
+For questions or discussions, visit our [Discussions](https://github.com/solo2121/sysadmin-security-scripts/discussions).
 
----
+```
+
+```
