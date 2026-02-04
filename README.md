@@ -1,8 +1,14 @@
-# Security & System Administration Toolkit
+# Sysadmin Security Lab
 
-A comprehensive collection of **security**, **system administration**, and **enterprise penetration testing labs** for Linux-based environments.
+![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
+![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)
+![Bash](https://img.shields.io/badge/Bash-5.x-blue.svg)
+![Vagrant](https://img.shields.io/badge/Vagrant-Libvirt-green.svg)
+![Security](https://img.shields.io/badge/Security-Pentesting-red.svg)
 
-This repository includes **PJPT-aligned Active Directory labs**, **Linux and cloud targets**, **AI/LLM security practice**, and automation scripts designed for **hands-on offensive security training**.
+A professional and comprehensive **security and system administration toolkit** for Linux environments, including **enterprise Active Directory pentest labs**, **cloud and container targets**, **LLM/AI security training**, and automation scripts designed for **hands-on learning and offensive/defensive practice**.
+
+> ⚠️ Use only in environments you own or are explicitly authorized to test. Unauthorized use is strictly prohibited.
 
 ---
 
@@ -18,37 +24,34 @@ This repository includes **PJPT-aligned Active Directory labs**, **Linux and clo
 - [Usage](#usage)
 - [Repository Structure](#repository-structure)
 - [Contribution](#contribution)
-- [Community Guidelines](#community-guidelines)
 - [License](#license)
 
 ---
 
 ## Overview
 
-This repository provides a curated set of tools, scripts, and intentionally vulnerable lab environments for:
+This repository provides a **curated set of scripts, tools, and lab environments** for:
 
-- **Linux system administration automation**
-- **Enterprise penetration testing**
-- **Active Directory attack chains**
-- **Cloud and container security**
-- **Web application security**
-- **LLM and AI security testing**
-
-> ⚠️ All labs and scripts are intended **only for systems you own or are explicitly authorized to test**.  
-> Unauthorized use is strictly prohibited.
+- Linux system administration automation
+- Enterprise penetration testing
+- Active Directory attack chains
+- Network, cloud, and container security
+- Web application testing
+- AI / LLM security experimentation
 
 ---
 
 ## Features
 
 - Modular **security and sysadmin scripts**
-- **PJPT-focused Active Directory pentest lab**
-- Full **enterprise attack chain simulation**
+- PJPT-aligned Active Directory pentest lab
+- Full enterprise attack chain simulation
+- VLAN-based enterprise lab for realistic network segmentation
 - Windows, Linux, cloud, and container targets
-- **LLM01 AI/Language Model security lab**
+- LLM / AI security labs
 - OWASP Top 10 and modern API vulnerabilities
-- Vagrant + libvirt/KVM based environments
-- Clear documentation and repeatable setups
+- Vagrant + Libvirt/KVM environments
+- Clear documentation with repeatable setups
 
 ---
 
@@ -57,19 +60,11 @@ This repository provides a curated set of tools, scripts, and intentionally vuln
 Clone the repository:
 
 ```bash
-git clone https://github.com/solo2121/sysadmin-security-scripts.git
-cd sysadmin-security-scripts
+git clone https://github.com/solo2121/sysadmin-security-lab.git
+cd sysadmin-security-lab
 ```
 
-````
-
-Install development dependencies:
-
-```bash
-./scripts/setup-dev-env.sh
-```
-
-Follow instructions in each lab or script directory.
+Follow instructions inside each **lab** or **script** directory.
 
 ---
 
@@ -77,44 +72,37 @@ Follow instructions in each lab or script directory.
 
 ### Active Directory Pentest Lab (PJPT)
 
-- **Location:** `labs/ad-pentest-lab/`
-- **Setup:** Vagrant + libvirt/KVM
+- **Path:** `labs/ad-pentest-lab/`
+- **Platform:** Vagrant + Libvirt/KVM
 - **Focus:**
   - Enterprise Active Directory attack chains
   - AD CS abuse (ESC1, ESC6, ESC8, ESC9)
-  - Kerberoasting, AS-REP Roasting
-  - SMB relay and lateral movement
+  - Kerberoasting / AS-REP Roasting
+  - SMB relay & lateral movement
   - Privilege escalation and persistence
-
-- **Expanded Scope:**
-  - Linux, cloud, container, and AI/LLM targets
-  - OWASP Top 10 web vulnerabilities
-  - Full internal network simulation
 
 **Contents:**
 
 - `README.md` — Detailed lab documentation
 - `Vagrantfile` — VM orchestration
-- `configs/` — Lab configuration files
-- `scripts/` — Automation and attack helpers
+- `configs/` — Lab configuration
+- `scripts/` — Automation & attack helpers
 - `requirements.txt` — Python dependencies
 
-> 📘 [View PJPT AD Lab Documentation](labs/ad-pentest-lab/README.md)
+📘 [View PJPT AD Lab Documentation](labs/ad-pentest-lab/README.md)
 
 ---
 
 ### VLAN-Based Enterprise Lab (Advanced)
 
-- **Location:** `labs/ad-pentest-lab-vlan/`
-- **Focus:**
-  - VLAN segmentation
-  - Linux bridges
-  - Realistic enterprise network isolation
+- **Path:** `labs/ad-pentest-lab-vlan/`
+- **Focus:** VLAN segmentation, Linux bridges, realistic enterprise network isolation
 
-- **Includes:**
-  - Network diagrams (Mermaid)
-  - VLAN automation scripts
-  - Troubleshooting and networking documentation
+**Includes:**
+
+- Network diagrams (Mermaid)
+- VLAN automation scripts
+- Networking troubleshooting docs
 
 ---
 
@@ -122,37 +110,31 @@ Follow instructions in each lab or script directory.
 
 ### LLM01 – Language Model Security Lab
 
-The **LLM01 VM** introduces **AI and LLM attack surfaces** into the enterprise environment.
+**Purpose:** Introduces AI and LLM attack surfaces into enterprise environments.
 
 **Training Coverage:**
 
-- Prompt Injection (direct and indirect)
-- AI API abuse and weak authentication
-- Sensitive data disclosure through context manipulation
+- Prompt injection
+- API abuse & weak authentication
+- Sensitive data exposure via context manipulation
 - Misconfigured containerized AI services
-- Cloud credential leakage via AI integrations
-- AI supply-chain and dependency risks
-
-**Purpose:**
-
-LLM01 bridges **traditional pentesting** with **modern AI security testing**, allowing realistic practice against AI-enabled enterprise systems.
+- Cloud credential leaks via AI integrations
+- AI supply-chain / dependency risks
 
 ---
 
 ## Tutorials
 
-Tutorials and guides are located in `tutorials/` and include:
+Tutorials and guides are located in `tutorials/` and cover:
 
-- Active Directory MITRE log source playbooks
-- AppArmor configuration guides
-- Git fundamentals for Linux users
-- Pacstall AUR tutorial
-- KVM/QEMU installation and CLI management
-- TimeShift CLI backup management
-- Vagrant and libvirt usage
-- Windows Server Active Directory assessment
-
-Each tutorial includes **step-by-step instructions** and **practical examples**.
+- AD MITRE log source playbooks
+- AppArmor guides
+- Git fundamentals for Linux
+- Pacstall (AUR) package management
+- KVM/QEMU CLI and setup
+- TimeShift backups
+- Vagrant & Libvirt management
+- Windows AD pentesting
 
 ---
 
@@ -164,7 +146,7 @@ Each tutorial includes **step-by-step instructions** and **practical examples**.
 pip install -r requirements.txt
 ```
 
-### Bash / Linting Tools
+### Bash Tooling
 
 ```bash
 sudo apt install shellcheck
@@ -174,36 +156,36 @@ sudo apt install shellcheck
 
 ## Usage
 
-Each script and lab includes:
+Scripts and labs include:
 
-- Description
+- Purpose & description
 - Usage instructions
 - Configuration notes
-- Author information
+- Safety considerations
 
-Scripts are grouped by **category** for clarity and maintainability.
+Scripts are organized by **category** for clarity and maintainability.
 
 ---
 
 ## Repository Structure
 
 ```
-assets/                     ← Images and GitHub visuals
+assets/                     # Images & GitHub visuals
 labs/
-├── ad-pentest-lab/          ← PJPT Enterprise AD Pentest Lab
+├── ad-pentest-lab/          # PJPT AD Pentest Lab
 │   ├── README.md
 │   ├── Vagrantfile
 │   ├── configs/
 │   ├── scripts/
 │   └── requirements.txt
-├── ad-pentest-lab-vlan/     ← VLAN-based enterprise lab
+├── ad-pentest-lab-vlan/     # VLAN Enterprise Lab
 │   ├── diagrams/
 │   ├── docs/
 │   ├── scripts/
 │   └── Vagrantfile
-tutorials/                  ← Tutorials and guides
-security/                   ← Security scripts
-sysadmin/                   ← System administration tools
+tutorials/                  # Step-by-step guides
+security/                   # Security tooling
+sysadmin/                   # Sysadmin automation scripts
 LICENSE
 CONTRIBUTING.md
 ```
@@ -212,24 +194,12 @@ CONTRIBUTING.md
 
 ## Contribution
 
-Contributions are welcome.
-
+Contributions are welcome!  
 Please review [CONTRIBUTING.md](CONTRIBUTING.md) before submitting pull requests.
-
----
-
-## Community Guidelines
-
-- [Code of Conduct](CODE_OF_CONDUCT.md)
-- [Security Policy](SECURITY.md)
-
-For discussions and questions, visit **GitHub Discussions**.
 
 ---
 
 ## License
 
-This project is licensed under the **MIT License**.
-See the [LICENSE](LICENSE) file for details.
-
-````
+Licensed under the **MIT License**.  
+See [LICENSE](LICENSE) for details.
