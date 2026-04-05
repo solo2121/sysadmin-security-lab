@@ -137,4 +137,4 @@ temp/
 # =========================
 # Local Overrides (Safe)
 # =========================
-.gitconfig.local
+.gitconfig.local.codex
