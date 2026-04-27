@@ -1,7 +1,7 @@
 
 ---
 
-# LLM Security Hands-On Lab 2026 – COMPLETE PRODUCTION EDITION
+# LLM Security Hands-On Lab 2026
 
 **CompTIA SecAI+ Aligned • OWASP LLM Top 10 • MITRE ATLAS • EU AI Act • NIST RMF**
 
