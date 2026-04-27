@@ -119,8 +119,4 @@ node_modules/
 - Use `git rm --cached` to untrack files *without* deleting them locally.  
 - Global Git config lives in `~/.gitconfig` (Linux/macOS) or `%UserProfile%\.gitconfig` (Windows).  
 
-**Need adjustments?** Let me know! 🚀  
-
 --- 
-
-This version keeps the tutorial clean while addressing your specific request. Would you like any sections expanded?
