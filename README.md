@@ -2,22 +2,20 @@
 ```md
 # Sysadmin Security Lab
 
-div align="center">
+<div align="center">
 
 ![License](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)
 ![Python](https://img.shields.io/badge/Python-3.10+-3776AB.svg?style=for-the-badge&logo=python&logoColor=white)
 ![Bash](https://img.shields.io/badge/Bash-5.x-4EAA25.svg?style=for-the-badge&logo=gnubash&logoColor=white)
 ![Vagrant](https://img.shields.io/badge/Vagrant-2.x-1563FF.svg?style=for-the-badge&logo=vagrant&logoColor=white)
-![KVM](https://img.shields.io/badge/KVM%2FQEMU-FF6600.svg?style=for-the-badge&logo=qemu&logoColor=white)
-![Security](https://img.shields.io/badge/Security-Pentesting-red.svg?style=for-the-badge&logo=hackaday&logoColor=white)
+![KVM/QEMU](https://img.shields.io/badge/KVM%2FQEMU-FF6600.svg?style=for-the-badge&logo=qemu&logoColor=white)
+![Pentesting](https://img.shields.io/badge/Pentesting-red.svg?style=for-the-badge&logo=hackaday&logoColor=white)
 ![Active Directory](https://img.shields.io/badge/Active%20Directory-Lab-FF8C00.svg?style=for-the-badge)
 ![LLM Security](https://img.shields.io/badge/LLM%20Security-8A2BE2.svg?style=for-the-badge)
 
 </div>
 
 ---
-
-# Sysadmin Security Lab
 
 ## Overview
 
@@ -26,7 +24,6 @@ The **Sysadmin Security Lab** is a reproducible, modular infrastructure platform
 It combines **Linux system administration, DevOps engineering, and offensive security** into a unified learning ecosystem.
 
 It integrates:
-
 - Linux system administration (LFCS / RHCSA level)
 - DevOps infrastructure automation
 - Kubernetes cluster environments
@@ -42,7 +39,6 @@ The goal is to provide a realistic, scalable, and repeatable environment for tec
 ## Target Audience
 
 This project is designed for:
-
 - Linux system administrators
 - DevOps engineers
 - Cloud infrastructure engineers
@@ -56,7 +52,6 @@ This project is designed for:
 
 ```text
 Sysadmin Security Lab Platform
-
 ├── Infrastructure Layer (DevOps Lab)
 │   └── Terraform + Ansible + Kubernetes + Monitoring
 │
@@ -75,99 +70,88 @@ Sysadmin Security Lab Platform
 
 ## Core Capabilities
 
-* Full local enterprise infrastructure simulation using Vagrant + Libvirt
-* Multi-node Linux environments
-* Kubernetes cluster deployment (kubeadm-based)
-* Infrastructure as Code (Terraform + Ansible)
-* Observability stack (Prometheus, Grafana, Loki)
-* Active Directory attack chain simulation
-* Network segmentation using VLANs
-* Offensive security tooling workflows
-* AI / LLM security experimentation
+- Full local enterprise infrastructure simulation using **Vagrant + Libvirt + KVM**
+- Multi-node Linux environments
+- Kubernetes cluster deployment (kubeadm-based)
+- Infrastructure as Code (Terraform + Ansible)
+- Observability stack (Prometheus, Grafana, Loki)
+- Active Directory attack chain simulation
+- Network segmentation using VLANs
+- Offensive security tooling workflows
+- AI / LLM security experimentation
 
 ---
 
 ## Labs
 
 ### DevOps Linux Lab (Core Platform)
-
-Path: `labs/devops-linux-lab/`
+**Path:** `labs/devops-linux-lab/`
 
 This is the main infrastructure and DevOps environment.
 
-Includes:
-
-* Kubernetes cluster (kubeadm-based)
-* Terraform provisioning layer
-* Ansible configuration management
-* Helm application deployment
-* Monitoring stack (Prometheus, Grafana, Loki)
-* Linux certification practice environments
+**Includes:**
+- Kubernetes cluster (kubeadm-based)
+- Terraform provisioning layer
+- Ansible configuration management
+- Helm application deployment
+- Monitoring stack (Prometheus, Grafana, Loki)
+- Linux certification practice environments
 
 ---
 
 ### Active Directory Pentest Lab
+**Path:** `labs/ad-pentest/`
 
-Path: `labs/ad-pentest/`
-
-Focus areas:
-
-* Active Directory enumeration
-* Kerberos attacks (Kerberoasting, AS-REP roasting)
-* Certificate Services exploitation (ESC attacks)
-* SMB relay and lateral movement
-* Privilege escalation and persistence
+**Focus areas:**
+- Active Directory enumeration
+- Kerberos attacks (Kerberoasting, AS-REP roasting)
+- Certificate Services exploitation (ESC attacks)
+- SMB relay and lateral movement
+- Privilege escalation and persistence
 
 ---
 
 ### VLAN Enterprise Lab
+**Path:** `labs/ad-pentest-vlan/`
 
-Path: `labs/ad-pentest-vlan/`
+**Focus areas:**
+- Network segmentation and isolation
+- VLAN configuration and testing
+- Multi-subnet enterprise simulation
+- Network topology analysis
 
-Focus areas:
-
-* Network segmentation and isolation
-* VLAN configuration and testing
-* Multi-subnet enterprise simulation
-* Network topology analysis
-
-Includes:
-
-* Architecture diagrams
-* Automation scripts
-* Troubleshooting guides
+**Includes:**
+- Architecture diagrams
+- Automation scripts
+- Troubleshooting guides
 
 ---
 
 ## Security Tooling
 
 This repository includes categorized tools for:
-
-* Network reconnaissance and scanning
-* Credential attacks and brute force techniques
-* Web application exploitation
-* Post-exploitation workflows
-* Wireless security testing
-* Active Directory exploitation techniques
+- Network reconnaissance and scanning
+- Credential attacks and brute force techniques
+- Web application exploitation
+- Post-exploitation workflows
+- Wireless security testing
+- Active Directory exploitation techniques
 
 ---
 
 ## AI / LLM Security Research
 
 This section focuses on security risks in modern AI systems:
-
-* Prompt injection attacks
-* Context manipulation and data leakage
-* API abuse and weak authentication
-* Misconfigured AI deployments
-* Supply chain vulnerabilities
-* Credential leakage via integrations
+- Prompt injection attacks
+- Context manipulation and data leakage
+- API abuse and weak authentication
+- Misconfigured AI deployments
+- Supply chain vulnerabilities
+- Credential leakage via integrations
 
 ---
 
 ## Quick Start
-
-Clone the repository:
 
 ```bash
 git clone https://github.com/solo2121/sysadmin-security-lab.git
@@ -177,8 +161,8 @@ cd sysadmin-security-lab
 Install dependencies:
 
 ```bash
-pip install -r requirements.txt
-sudo apt install qemu-kvm libvirt-daemon-system virt-manager vagrant
+sudo apt update
+sudo apt install qemu-kvm libvirt-daemon-system virt-manager vagrant -y
 ```
 
 ---
@@ -192,19 +176,13 @@ cd labs/ad-pentest
 vagrant up
 ```
 
-Each lab includes:
-
-* Setup instructions
-* Architecture overview
-* Execution steps
-* Troubleshooting guides
+Each lab includes setup instructions, architecture overview, execution steps, and troubleshooting guides.
 
 ---
 
 ## Learning Path
 
 Recommended progression:
-
 1. Linux system administration fundamentals
 2. Virtualization and networking concepts
 3. Infrastructure automation (Ansible, Terraform)
@@ -233,15 +211,16 @@ sysadmin-security-lab/
 
 ## Contributing
 
-Contributions are welcome.
-
+Contributions are welcome!  
 Please review `CONTRIBUTING.md` before submitting pull requests.
 
 ---
 
 ## License
 
-This project is licensed under the MIT License.
+This project is licensed under the **MIT License**.  
+See [`LICENSE`](LICENSE) for details.
 
-See `LICENSE` for details.
 ```
+
+---
