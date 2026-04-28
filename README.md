@@ -1,4 +1,5 @@
 
+---
 
 ````md
 # Sysadmin Security Lab
@@ -18,15 +19,13 @@
 ![Active Directory](https://img.shields.io/badge/Active_Directory-Lab-FF8C00?style=flat-square)
 ![LLM Security](https://img.shields.io/badge/LLM-Security-8A2BE2?style=flat-square)
 
-A modular Linux, DevOps, and security engineering lab platform designed for hands-on learning, infrastructure simulation, and practical offensive and defensive security training.
-
 ---
 
 ## Overview
 
-The Sysadmin Security Lab is a reproducible local infrastructure platform designed to simulate real-world enterprise environments.
+The **Sysadmin Security Lab** is a reproducible, modular infrastructure platform designed to simulate real-world enterprise environments for hands-on learning.
 
-It combines system administration, DevOps automation, and security engineering into a unified learning environment.
+It combines **Linux system administration, DevOps engineering, and offensive security** into a unified learning ecosystem.
 
 It integrates:
 
@@ -35,16 +34,16 @@ It integrates:
 - Kubernetes cluster environments
 - Active Directory attack and defense labs
 - Network segmentation and virtualization (VLANs)
-- Offensive security tooling and workflows
+- Offensive security tooling workflows
 - AI / LLM security research scenarios
 
-The goal is to provide a realistic, modular, and scalable environment for hands-on technical learning.
+The goal is to provide a realistic, scalable, and repeatable environment for technical mastery.
 
 ---
 
 ## Target Audience
 
-This platform is designed for:
+This project is designed for:
 
 - Linux system administrators
 - DevOps engineers
@@ -220,7 +219,7 @@ Recommended progression:
 
 ## Repository Structure
 
-```
+```text
 sysadmin-security-lab/
 ├── labs/
 ├── security/
