@@ -10,7 +10,7 @@ A complete **local DevOps + SysAdmin + Kubernetes lab** designed for:
 
 ---
 
-## 🧠 Overview
+## Overview
 
 This lab simulates a **real production-like environment** entirely locally using:
 
@@ -20,7 +20,7 @@ This lab simulates a **real production-like environment** entirely locally using
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ```text
 DevOps Node (Control)
@@ -43,7 +43,7 @@ Linux Study Nodes
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```text
 devops-linux-lab/
@@ -59,7 +59,7 @@ devops-linux-lab/
 
 ---
 
-## ⚙️ Requirements
+## Requirements
 
 * Vagrant
 * Libvirt / KVM
@@ -67,7 +67,7 @@ devops-linux-lab/
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ```bash
 vagrant up
@@ -81,7 +81,7 @@ Optional VM manager:
 
 ---
 
-## 🌐 Access
+## Access
 
 | Service    | URL                   |
 | ---------- | --------------------- |
@@ -92,7 +92,7 @@ Optional VM manager:
 
 ---
 
-## 🧪 Linux Practice
+## Linux Practice
 
 Use lab nodes for certification training:
 
@@ -112,7 +112,7 @@ Topics:
 
 ---
 
-## ☸️ Kubernetes Setup (Manual Learning)
+## Kubernetes Setup (Manual Learning)
 
 ```bash
 vagrant ssh k8s-cp
@@ -129,7 +129,7 @@ kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
 
 ---
 
-## 📦 DevOps Workflow
+## DevOps Workflow
 
 1. Terraform provisions infrastructure
 2. Ansible configures nodes
@@ -140,7 +140,7 @@ kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
 
 ---
 
-## 🔐 Security Concepts
+## Security Concepts
 
 * RBAC
 * Secrets management
@@ -149,7 +149,7 @@ kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
 
 ---
 
-## 📈 Learning Goals
+## Learning Goals
 
 * Build Kubernetes from scratch (no shortcuts)
 * Understand Infrastructure as Code
@@ -159,7 +159,7 @@ kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
 
 ---
 
-## 🚀 Future Enhancements
+## Future Enhancements
 
 * Full Ansible automation
 * ArgoCD auto-bootstrap
@@ -169,6 +169,6 @@ kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
 
 ---
 
-## 📄 License
+## License
 
 MIT
