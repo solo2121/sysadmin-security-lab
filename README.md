@@ -3,10 +3,23 @@
 ````md
 # Sysadmin Security Lab
 
-![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
-![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)
-![Bash](https://img.shields.io/badge/Bash-5.x-blue.svg)
-![Vagrant](https://img.shields.io/badge/Vagrant-Libvirt-green.svg)
+# Sysadmin Security Lab
+
+![License](https://img.shields.io/github/license/solo2121/sysadmin-security-lab?style=for-the-badge)
+![Stars](https://img.shields.io/github/stars/solo2121/sysadmin-security-lab?style=for-the-badge)
+![Forks](https://img.shields.io/github/forks/solo2121/sysadmin-security-lab?style=for-the-badge)
+
+![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![Bash](https://img.shields.io/badge/Bash-5.x-4EAA25?style=for-the-badge&logo=gnubash&logoColor=white)
+![Vagrant](https://img.shields.io/badge/Vagrant-Libvirt-1563FF?style=for-the-badge&logo=vagrant&logoColor=white)
+![KVM/QEMU](https://img.shields.io/badge/KVM-QEMU-FF6600?style=for-the-badge&logo=qemu&logoColor=white)
+
+![Linux](https://img.shields.io/badge/Linux-Labs-FCC624?style=for-the-badge&logo=linux&logoColor=black)
+![DevOps](https://img.shields.io/badge/DevOps-Automation-0A66C2?style=for-the-badge&logo=githubactions&logoColor=white)
+![Security](https://img.shields.io/badge/Security-Pentesting-red?style=for-the-badge&logo=hackaday&logoColor=white)
+![Active Directory](https://img.shields.io/badge/AD-Lab-FF8C00?style=for-the-badge)
+
+![LLM Security](https://img.shields.io/badge/LLM-Security-8A2BE2?style=for-the-badge)
 
 A modular Linux, DevOps, and security engineering lab platform designed for hands-on learning, infrastructure simulation, and practical offensive and defensive security training.
 
