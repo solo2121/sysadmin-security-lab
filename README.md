@@ -1,5 +1,3 @@
-
-```md
 # Sysadmin Security Lab
 
 <p align="center">
@@ -218,7 +216,3 @@ Please review `CONTRIBUTING.md` before submitting pull requests.
 
 This project is licensed under the **MIT License**.  
 See [`LICENSE`](LICENSE) for details.
-
-```
-
----
