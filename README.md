@@ -6,19 +6,20 @@
 
 <div align="center">
 
-<img src="https://img.shields.io/github/license/solo2121/sysadmin-security-lab?style=flat-square" />
-<img src="https://img.shields.io/github/stars/solo2121/sysadmin-security-lab?style=flat-square" />
-<img src="https://img.shields.io/github/forks/solo2121/sysadmin-security-lab?style=flat-square" />
+![License](https://img.shields.io/github/license/solo2121/sysadmin-security-lab?style=flat-square)
+![Stars](https://img.shields.io/github/stars/solo2121/sysadmin-security-lab?style=flat-square)
+![Forks](https://img.shields.io/github/forks/solo2121/sysadmin-security-lab?style=flat-square)
 
-<img src="https://img.shields.io/badge/Python-3.10+-3776AB?style=flat-square&logo=python&logoColor=white" />
-<img src="https://img.shields.io/badge/Bash-5.x-4EAA25?style=flat-square&logo=gnubash&logoColor=white" />
-<img src="https://img.shields.io/badge/Vagrant-Libvirt-1563FF?style=flat-square&logo=vagrant&logoColor=white" />
-<img src="https://img.shields.io/badge/KVM-QEMU-FF6600?style=flat-square&logo=qemu&logoColor=white" />
-<img src="https://img.shields.io/badge/Linux-Systems-FCC624?style=flat-square&logo=linux&logoColor=black" />
-<img src="https://img.shields.io/badge/DevOps-Automation-0A66C2?style=flat-square&logo=githubactions&logoColor=white" />
-<img src="https://img.shields.io/badge/Security-Pentesting-red?style=flat-square" />
-<img src="https://img.shields.io/badge/Active_Directory-Lab-FF8C00?style=flat-square" />
-<img src="https://img.shields.io/badge/LLM-Security-8A2BE2?style=flat-square" />
+![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=flat-square&logo=python&logoColor=white)
+![Bash](https://img.shields.io/badge/Bash-5.x-4EAA25?style=flat-square&logo=gnubash&logoColor=white)
+![Vagrant](https://img.shields.io/badge/Vagrant-Libvirt-1563FF?style=flat-square&logo=vagrant&logoColor=white)
+![KVM/QEMU](https://img.shields.io/badge/KVM-QEMU-FF6600?style=flat-square&logo=qemu&logoColor=white)
+
+![Linux](https://img.shields.io/badge/Linux-Systems-FCC624?style=flat-square&logo=linux&logoColor=black)
+![DevOps](https://img.shields.io/badge/DevOps-Automation-0A66C2?style=flat-square&logo=githubactions&logoColor=white)
+![Security](https://img.shields.io/badge/Security-Pentesting-red?style=flat-square)
+![Active Directory](https://img.shields.io/badge/Active_Directory-Lab-FF8C00?style=flat-square)
+![LLM Security](https://img.shields.io/badge/LLM-Security-8A2BE2?style=flat-square)
 
 </div>
 
