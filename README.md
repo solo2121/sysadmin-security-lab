@@ -3,7 +3,14 @@
 # Sysadmin Security Lab
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Sysadmin_Security_Lab-MIT_Python_Bash_Vagrant_KVM-red?style=for-the-badge">
+  <img src="https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge">
+  <img src="https://img.shields.io/badge/Python-3.10+-3776AB.svg?style=for-the-badge&logo=python&logoColor=white">
+  <img src="https://img.shields.io/badge/Bash-5.x-4EAA25.svg?style=for-the-badge&logo=gnubash&logoColor=white">
+  <img src="https://img.shields.io/badge/Vagrant-Libvirt-1563FF.svg?style=for-the-badge&logo=vagrant&logoColor=white">
+  <img src="https://img.shields.io/badge/KVM_QEMU-FF6600.svg?style=for-the-badge&logo=qemu&logoColor=white">
+  <img src="https://img.shields.io/badge/Security-Pentesting-red.svg?style=for-the-badge">
+  <img src="https://img.shields.io/badge/AD-Lab-FF8C00.svg?style=for-the-badge">
+  <img src="https://img.shields.io/badge/LLM-Security-8A2BE2.svg?style=for-the-badge">
 </p>
 
 ---
