@@ -32,6 +32,19 @@ The goal is to provide a realistic, scalable, and repeatable environment for tec
 
 ---
 
+## ⚠️ Authorized Use
+
+**This repository contains offensive security content.** Before using:
+
+1. **Read** [`docs/SECURITY-SCOPE.md`](docs/SECURITY-SCOPE.md) — Authorized vs. prohibited uses
+2. **Verify** you have explicit permission to test any infrastructure
+3. **Isolate** labs on VMs you control (never on production networks)
+4. **Report** security issues privately to `security@solo2121.com`
+
+**TL;DR:** Use only in authorized, isolated lab environments. See [Security & Authorized Use](docs/SECURITY-SCOPE.md) for details.
+
+---
+
 ## Target Audience
 
 This project is designed for:
@@ -62,6 +75,8 @@ Sysadmin Security Lab Platform
     └── AI / LLM security testing
 ```
 
+Full architecture breakdown: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
+
 ---
 
 ## Core Capabilities
@@ -81,7 +96,7 @@ Sysadmin Security Lab Platform
 ## Labs
 
 ### DevOps Linux Lab (Core Platform)
-**Path:** `labs/devops-linux-lab/`
+**Path:** `labs/infrastructure/devops-linux-lab/`
 
 This is the main infrastructure and DevOps environment.
 
@@ -96,7 +111,7 @@ This is the main infrastructure and DevOps environment.
 ---
 
 ### Active Directory Pentest Lab
-**Path:** `labs/ad-pentest/`
+**Path:** `labs/security/ad-pentest/`
 
 **Focus areas:**
 - Active Directory enumeration
@@ -108,7 +123,7 @@ This is the main infrastructure and DevOps environment.
 ---
 
 ### VLAN Enterprise Lab
-**Path:** `labs/ad-pentest-vlan/`
+**Path:** `labs/security/ad-pentest-vlan/`
 
 **Focus areas:**
 - Network segmentation and isolation
@@ -161,6 +176,8 @@ sudo apt update
 sudo apt install qemu-kvm libvirt-daemon-system virt-manager vagrant -y
 ```
 
+See [`INSTALLATION.md`](INSTALLATION.md) for detailed setup instructions.
+
 ---
 
 ## Running Labs
@@ -168,11 +185,13 @@ sudo apt install qemu-kvm libvirt-daemon-system virt-manager vagrant -y
 Example:
 
 ```bash
-cd labs/ad-pentest
+cd labs/security/ad-pentest
 vagrant up
 ```
 
 Each lab includes setup instructions, architecture overview, execution steps, and troubleshooting guides.
+
+For more details, see [`labs/README.md`](labs/README.md).
 
 ---
 
@@ -193,22 +212,57 @@ Recommended progression:
 
 ```text
 sysadmin-security-lab/
-├── labs/
-├── security/
-├── sysadmin/
-├── tutorials/
-├── assets/
-├── LICENSE
-├── CONTRIBUTING.md
-└── README.md
+├── docs/                    # Repository governance & architecture
+│   ├── ARCHITECTURE.md      # Directory structure and design
+│   ├── SECURITY-SCOPE.md    # Authorized use & ethical boundaries
+│   └── WORKFLOWS.md         # CI/CD patterns (coming soon)
+│
+├── labs/                    # Hands-on learning environments
+│   ├── infrastructure/      # DevOps, Kubernetes labs
+│   ├── security/            # AD, VLAN, pentest labs
+│   └── README.md            # Labs index
+│
+├── security/                # Standalone security tools
+├── sysadmin/                # System administration scripts
+├── tutorials/               # Educational documentation
+├── assets/                  # Diagrams, templates, references
+├── LICENSE                  # MIT License
+├── CONTRIBUTING.md          # Contribution guidelines
+├── INSTALLATION.md          # Setup instructions
+├── TROUBLESHOOTING.md       # Common issues & fixes
+├── SECURITY.md              # Vulnerability reporting
+└── README.md                # This file
 ```
+
+**See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for detailed structure.**
+
+---
+
+## 📖 Documentation
+
+| Document | Purpose |
+|----------|---------|
+| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Repository design, directory structure, contribution workflow |
+| [`docs/SECURITY-SCOPE.md`](docs/SECURITY-SCOPE.md) | Authorized use boundaries, ethical framework, lab requirements |
+| [`CONTRIBUTING.md`](CONTRIBUTING.md) | Contribution guidelines |
+| [`INSTALLATION.md`](INSTALLATION.md) | Dependency setup and troubleshooting |
+| [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md) | Common issues and fixes |
+| [`SECURITY.md`](SECURITY.md) | Vulnerability reporting policy |
 
 ---
 
 ## Contributing
 
-Contributions are welcome!  
-Please review `CONTRIBUTING.md` before submitting pull requests.
+Contributions are welcome! Please review:
+1. [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — Understand the repo design
+2. [`CONTRIBUTING.md`](CONTRIBUTING.md) — Follow the contribution guidelines
+3. [`docs/SECURITY-SCOPE.md`](docs/SECURITY-SCOPE.md) — Ensure content is in scope
+
+Submit pull requests that:
+- Add new labs or tools with complete documentation
+- Improve existing labs/tools
+- Fix bugs or security issues
+- Enhance documentation
 
 ---
 
@@ -216,3 +270,13 @@ Please review `CONTRIBUTING.md` before submitting pull requests.
 
 This project is licensed under the **MIT License**.  
 See [`LICENSE`](LICENSE) for details.
+
+---
+
+## Support
+
+For issues, questions, or suggestions:
+- Check existing [GitHub Issues](https://github.com/solo2121/sysadmin-security-lab/issues)
+- Review [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md) for common problems
+- Consult lab-specific README files
+- For security concerns, see [`SECURITY.md`](SECURITY.md)
