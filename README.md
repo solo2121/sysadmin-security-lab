@@ -1,165 +1,218 @@
 
----
 
-# ![Sysadmin Security Lab](assets/banner.png)
+````md
+# Sysadmin Security Lab
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
 ![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)
 ![Bash](https://img.shields.io/badge/Bash-5.x-blue.svg)
 ![Vagrant](https://img.shields.io/badge/Vagrant-Libvirt-green.svg)
-![Security](https://img.shields.io/badge/Security-Pentesting-red.svg)
-![AD Lab](https://img.shields.io/badge/ActiveDirectory-Lab-orange.svg)
-![LLM Lab](https://img.shields.io/badge/LLM-AI_Security-purple.svg)
 
-> Enterprise-grade system administration and offensive security lab designed for hands-on learning, realistic attack simulation, and AI/LLM security research.
+A modular Linux, DevOps, and security engineering lab platform designed for hands-on learning, infrastructure simulation, and practical offensive and defensive security training.
 
 ---
 
 ## Overview
 
-The **Sysadmin Security Lab** is a modular and reproducible environment built to simulate real-world enterprise infrastructure and attack scenarios.
+The Sysadmin Security Lab is a reproducible local environment that simulates real-world enterprise infrastructure for technical practice and experimentation.
 
-It combines:
+It integrates:
 
-* Linux system administration automation
-* Active Directory attack and defense labs
-* Segmented enterprise network environments (VLANs)
-* Offensive security tooling and workflows
-* AI / LLM security experimentation
+- Linux system administration environments
+- Infrastructure and DevOps workflows
+- Active Directory attack and defense labs
+- Network segmentation and virtualization (VLANs)
+- Offensive security tooling and workflows
+- AI / LLM security research scenarios
+
+The platform is designed for iterative learning across infrastructure, security, and automation domains.
+
+---
+
+## Target Audience
 
 This project is intended for:
 
-* System administrators developing security skills
-* Penetration testers and red teamers
-* Security engineers
-* Researchers exploring AI security risks in enterprise systems
+- Linux system administrators (LFCS / RHCSA / Linux+)
+- DevOps engineers
+- Security engineers and penetration testers
+- Red team and blue team practitioners
+- Researchers exploring AI security risks
 
 ---
 
-## Key Capabilities
+## Architecture
 
-* Reproducible enterprise lab environments using Vagrant and Libvirt
-* End-to-end Active Directory attack chain simulation
-* VLAN-based network segmentation and isolation testing
-* Integrated offensive security tooling
-* Hands-on AI/LLM vulnerability research
-* Modular structure for incremental learning and experimentation
+```text
+Sysadmin Security Lab Platform
+
+├── Infrastructure Layer (DevOps Lab)
+│   └── Kubernetes + Terraform + Ansible + Monitoring
+│
+├── Security Layer
+│   ├── Active Directory Pentest Lab
+│   └── VLAN Enterprise Lab
+│
+├── System Administration Layer
+│   └── Linux automation and hardening tools
+│
+└── Research Layer
+    └── AI / LLM security testing
+````
 
 ---
 
-## Offensive Security Toolkit
+## Core Capabilities
 
-| Category                          | Tools                             |
-| --------------------------------- | --------------------------------- |
-| AD Enumeration & Lateral Movement | NetExec, CrackMapExec, BloodHound |
-| Protocol Exploitation             | Impacket                          |
-| Credential Attacks                | Responder, mimikatz               |
-| Certificate Abuse                 | Certipy                           |
-| Web Exploitation                  | sqlmap                            |
+* Local enterprise-grade infrastructure simulation using Vagrant + Libvirt
+* Multi-node Linux and Windows-like environments
+* Active Directory attack chain simulation
+* Network segmentation using VLANs and virtual networking
+* Infrastructure as Code practices (Terraform + Ansible)
+* Kubernetes cluster deployment and management
+* Observability stack integration (Prometheus, Grafana, Loki)
+* Security tooling for reconnaissance, exploitation, and post-exploitation
+* AI/LLM security experimentation scenarios
+
+---
+
+## Labs
+
+### DevOps Linux Lab (Core Platform)
+
+Path: `labs/devops-linux-lab/`
+
+This is the primary environment of the platform.
+
+Includes:
+
+* Kubernetes (kubeadm-based cluster)
+* Terraform infrastructure provisioning
+* Ansible configuration management
+* Helm application deployment
+* Monitoring stack (Prometheus, Grafana, Loki)
+* Linux certification practice environments
+
+---
+
+### Active Directory Pentest Lab
+
+Path: `labs/ad-pentest/`
+
+Focus areas:
+
+* Active Directory enumeration and attack chains
+* Kerberos-based attacks (Kerberoasting, AS-REP roasting)
+* Certificate Services exploitation (ESC attacks)
+* SMB relay and lateral movement
+* Privilege escalation and persistence techniques
+
+---
+
+### VLAN Enterprise Lab
+
+Path: `labs/ad-pentest-vlan/`
+
+Focus areas:
+
+* Network segmentation and isolation
+* VLAN configuration and testing
+* Multi-subnet enterprise simulation
+* Network topology analysis
+
+Includes:
+
+* Architecture diagrams
+* Automation scripts
+* Troubleshooting guides
+
+---
+
+## Security Tooling
+
+The repository includes categorized security tools for:
+
+* Network reconnaissance and scanning
+* Credential attacks
+* Web exploitation techniques
+* Post-exploitation workflows
+* Wireless security testing
+* Active Directory exploitation
+
+---
+
+## AI / LLM Security Research
+
+This section explores security risks in modern AI systems, including:
+
+* Prompt injection attacks
+* Context manipulation and data leakage
+* API abuse and authentication weaknesses
+* Misconfiguration in AI deployments
+* Supply chain risks in AI systems
+* Integration-based credential exposure
 
 ---
 
 ## Quick Start
+
+Clone the repository:
 
 ```bash
 git clone https://github.com/solo2121/sysadmin-security-lab.git
 cd sysadmin-security-lab
 ```
 
-### Install dependencies
+Install dependencies:
 
 ```bash
 pip install -r requirements.txt
-sudo apt install qemu-kvm libvirt-daemon-system virt-manager vagrant shellcheck
+sudo apt install qemu-kvm libvirt-daemon-system virt-manager vagrant
 ```
 
-### Launch a lab (example)
+---
+
+## Running Labs
+
+Example:
 
 ```bash
-cd labs/ad-pentest-lab
+cd labs/ad-pentest
 vagrant up
 ```
 
-Each lab contains detailed documentation covering setup, execution, and validation steps.
+Each lab includes:
+
+* Setup instructions
+* Architecture documentation
+* Execution steps
+* Troubleshooting guides
 
 ---
 
-## Labs
+## Learning Path
 
-### Active Directory Pentest Lab (PJPT-aligned)
+Recommended progression:
 
-**Path:** `labs/ad-pentest-lab/`
-**Platform:** Vagrant + Libvirt/KVM
-
-Focus areas:
-
-* Active Directory Certificate Services exploitation (ESC1, ESC6, ESC8, ESC9)
-* Kerberoasting and AS-REP Roasting
-* SMB relay and lateral movement
-* Privilege escalation and persistence
-
----
-
-### VLAN Enterprise Lab
-
-**Path:** `labs/ad-pentest-lab-vlan/`
-
-Focus areas:
-
-* VLAN segmentation
-* Linux bridges
-* Enterprise network isolation
-
-Includes:
-
-* Network diagrams (Mermaid)
-* Automation scripts
-* Troubleshooting documentation
-
----
-
-## AI / LLM Security Lab
-
-This lab focuses on risks associated with deploying AI systems in enterprise environments.
-
-Coverage includes:
-
-* Prompt injection attacks
-* Data exfiltration via context manipulation
-* API abuse and weak authentication
-* Misconfigured AI services and containers
-* Supply-chain vulnerabilities
-* Cloud credential leakage via integrations
-
-Aligned with the OWASP Top 10 for LLM Applications.
-
----
-
-## Tutorials
-
-Located in `tutorials/`:
-
-* Active Directory logging and MITRE mapping
-* AppArmor configuration and hardening
-* Git fundamentals for Linux environments
-* KVM/QEMU setup and usage
-* Backup strategies with TimeShift
-* Vagrant and Libvirt management
-* Windows Active Directory pentesting
+1. Linux fundamentals and system administration
+2. Virtualization and networking concepts
+3. Infrastructure automation (Ansible, Terraform)
+4. Kubernetes and container orchestration
+5. Active Directory attack simulation
+6. Privilege escalation and persistence techniques
+7. AI / LLM security testing
 
 ---
 
 ## Repository Structure
 
-```
+```text
 sysadmin-security-lab/
-├── assets/
 ├── labs/
-│   ├── ad-pentest-lab/
-│   ├── ad-pentest-lab-vlan/
-├── tutorials/
 ├── security/
 ├── sysadmin/
+├── tutorials/
+├── assets/
 ├── LICENSE
 ├── CONTRIBUTING.md
 └── README.md
@@ -167,28 +220,11 @@ sysadmin-security-lab/
 
 ---
 
-## Suggested Learning Path
-
-1. Linux system administration fundamentals
-2. Virtualization and networking
-3. Active Directory enumeration
-4. Credential attacks and lateral movement
-5. Privilege escalation techniques
-6. AI / LLM security testing
-
----
-
 ## Contributing
 
 Contributions are welcome.
 
-Please review:
-
-```
-CONTRIBUTING.md
-```
-
-before submitting pull requests.
+Please review `CONTRIBUTING.md` before submitting pull requests.
 
 ---
 
@@ -196,10 +232,6 @@ before submitting pull requests.
 
 This project is licensed under the MIT License.
 
-See:
+See `LICENSE` for details.
 
 ```
-LICENSE
-```
-
----
