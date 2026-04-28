@@ -1,4 +1,6 @@
 
+Full DevOps Platform: Terraform + Ansible + Kubernetes + ArgoCD + Monitoring
+---
 ## 1. Overview
 
 This is a **complete production-style DevOps platform** combining:
