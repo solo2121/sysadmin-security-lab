@@ -1,0 +1,180 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+ENV['LIBVIRT_DEFAULT_URI'] = 'qemu:///system'
+
+Vagrant.require_version ">= 2.2.0"
+
+# ============================================================
+# GLOBAL SETTINGS
+# ============================================================
+
+DEFAULT_CONFIG = {
+  memory: 2048,
+  cpus: 2,
+  extra_disk_size: 5,
+  video_type: "vga",
+  video_vram: 16384
+}.freeze
+
+# ============================================================
+# LIBVIRT CONFIG
+# ============================================================
+
+def configure_libvirt(vm, overrides = {})
+  settings = DEFAULT_CONFIG.merge(overrides)
+
+  vm.vm.provider :libvirt do |libvirt|
+    libvirt.memory = settings[:memory]
+    libvirt.cpus   = settings[:cpus]
+
+    libvirt.graphics_type = "vnc"
+    libvirt.graphics_ip   = "127.0.0.1"
+
+    libvirt.video_type = settings[:video_type]
+    libvirt.video_vram = settings[:video_vram]
+
+    libvirt.nested = true
+    libvirt.default_prefix = ""
+
+    libvirt.qemu_use_session = false
+    libvirt.uri = "qemu:///system"
+
+    3.times do |i|
+      libvirt.storage :file,
+        size: "#{settings[:extra_disk_size]}G",
+        type: "qcow2",
+        bus: "virtio",
+        device: "vd#{('b'.ord + i).chr}"
+    end
+  end
+end
+
+# ============================================================
+# VAGRANT CONFIG
+# ============================================================
+
+Vagrant.configure("2") do |config|
+
+  config.vm.synced_folder ".", "/vagrant", disabled: false
+
+  # ============================================================
+  # ALL MACHINES
+  # ============================================================
+
+  machines = {
+
+    # ---------------------------
+    # DEVOPS PLATFORM
+    # ---------------------------
+    "devops" => { box: "cloud-image/ubuntu-24.04", ip: "192.168.56.10", memory: 4096 },
+    "k8s-cp" => { box: "cloud-image/ubuntu-24.04", ip: "192.168.56.11", memory: 4096 },
+    "k8s-w1" => { box: "cloud-image/ubuntu-24.04", ip: "192.168.56.12" },
+    "k8s-w2" => { box: "cloud-image/ubuntu-24.04", ip: "192.168.56.13" },
+
+    # ---------------------------
+    # LINUX STUDY LABS
+    # ---------------------------
+    "ubuntu-lab"   => { box: "cloud-image/ubuntu-24.04", ip: "192.168.56.20" },
+    "rocky-lab"    => { box: "cloud-image/rocky-10",     ip: "192.168.56.21" },
+    "alma-lab"     => { box: "cloud-image/almalinux-10", ip: "192.168.56.22" },
+    "opensuse-lab" => { box: "cloud-image/opensuse-leap-16.0", ip: "192.168.56.23" }
+  }
+
+  machines.each do |name, opts|
+    config.vm.define name do |vm|
+      vm.vm.box = opts[:box]
+      vm.vm.hostname = name
+
+      vm.vm.network "private_network", ip: opts[:ip]
+
+      # --------------------------------------------------------
+      # PORT FORWARDING (DEVOPS ONLY)
+      # --------------------------------------------------------
+      if name == "devops"
+        vm.vm.network "forwarded_port", guest: 8080, host: 8080 # Jenkins
+        vm.vm.network "forwarded_port", guest: 3000, host: 3000 # Grafana
+        vm.vm.network "forwarded_port", guest: 9090, host: 9090 # Prometheus
+        vm.vm.network "forwarded_port", guest: 8081, host: 8081 # ArgoCD
+      end
+
+      configure_libvirt(vm, memory: opts[:memory] || 2048)
+
+      # --------------------------------------------------------
+      # BASE SETUP (ALL MACHINES)
+      # --------------------------------------------------------
+      vm.vm.provision "shell", inline: <<-SHELL
+        set -e
+
+        echo ">>> Base setup on #{name}"
+
+        if command -v apt >/dev/null 2>&1; then
+          sudo apt update -y
+          sudo apt install -y vim curl wget net-tools
+        elif command -v dnf >/dev/null 2>&1; then
+          sudo dnf install -y vim curl wget net-tools
+        elif command -v zypper >/dev/null 2>&1; then
+          sudo zypper install -y vim curl wget net-tools
+        fi
+
+        # Disable swap for Kubernetes nodes
+        if [[ "#{name}" == k8s-* ]]; then
+          sudo swapoff -a
+          sudo sed -i '/swap/d' /etc/fstab || true
+        fi
+      SHELL
+
+      # --------------------------------------------------------
+      # DEVOPS NODE TOOLS
+      # --------------------------------------------------------
+      if name == "devops"
+        vm.vm.provision "shell", inline: <<-SHELL
+          set -e
+
+          sudo apt update -y
+
+          # Terraform
+          sudo apt install -y gnupg software-properties-common
+          wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | sudo tee /usr/share/keyrings/hashicorp.gpg
+          echo "deb [signed-by=/usr/share/keyrings/hashicorp.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+          sudo apt update -y
+          sudo apt install -y terraform
+
+          # Ansible
+          sudo apt install -y ansible
+
+          # Helm
+          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+          echo "DevOps node ready"
+        SHELL
+      end
+
+      # --------------------------------------------------------
+      # KUBERNETES BASE INSTALL
+      # --------------------------------------------------------
+      if name.start_with?("k8s")
+        vm.vm.provision "shell", inline: <<-SHELL
+          set -e
+
+          sudo apt update -y
+          sudo apt install -y containerd
+
+          sudo mkdir -p /etc/containerd
+          containerd config default | sudo tee /etc/containerd/config.toml
+          sudo systemctl restart containerd
+
+          curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.29/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/k8s.gpg
+          echo "deb [signed-by=/etc/apt/keyrings/k8s.gpg] https://pkgs.k8s.io/core:/stable:/v1.29/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+
+          sudo apt update -y
+          sudo apt install -y kubelet kubeadm kubectl
+          sudo apt-mark hold kubelet kubeadm kubectl
+
+          echo "Kubernetes node ready"
+        SHELL
+      end
+
+    end
+  end
+end
