@@ -2,15 +2,13 @@
 ```md
 # Sysadmin Security Lab
 
-![License](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)
-![Python](https://img.shields.io/badge/Python-3.10+-3776AB.svg?style=for-the-badge&logo=python&logoColor=white)
-![Bash](https://img.shields.io/badge/Bash-5.x-4EAA25.svg?style=for-the-badge&logo=gnubash&logoColor=white)
-![Vagrant](https://img.shields.io/badge/Vagrant-Libvirt-1563FF.svg?style=for-the-badge&logo=vagrant&logoColor=white)
-![KVM/QEMU](https://img.shields.io/badge/KVM/QEMU-FF6600.svg?style=for-the-badge&logo=qemu&logoColor=white)
-![Security](https://img.shields.io/badge/Security-Pentesting-red.svg?style=for-the-badge&logo=hackaday&logoColor=white)
-![Active Directory](https://img.shields.io/badge/AD-Lab-FF8C00.svg?style=for-the-badge)
-![LLM Security](https://img.shields.io/badge/LLM-AI_Security-8A2BE2.svg?style=for-the-badge)
-
+<p align="center">
+  <img src="https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge">
+  <img src="https://img.shields.io/badge/Python-3.10+-3776AB.svg?style=for-the-badge">
+  <img src="https://img.shields.io/badge/Bash-5.x-4EAA25.svg?style=for-the-badge">
+  <img src="https://img.shields.io/badge/Vagrant-Libvirt-1563FF.svg?style=for-the-badge">
+  <img src="https://img.shields.io/badge/Security-Pentesting-red.svg?style=for-the-badge">
+</p>
 ---
 
 # Sysadmin Security Lab
