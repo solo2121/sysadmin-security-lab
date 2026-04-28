@@ -3,23 +3,20 @@
 ````md
 # Sysadmin Security Lab
 
-# Sysadmin Security Lab
+![License](https://img.shields.io/github/license/solo2121/sysadmin-security-lab?style=flat-square&color=2ea44f)
+![Stars](https://img.shields.io/github/stars/solo2121/sysadmin-security-lab?style=flat-square&color=yellow)
+![Forks](https://img.shields.io/github/forks/solo2121/sysadmin-security-lab?style=flat-square&color=blue)
 
-![License](https://img.shields.io/github/license/solo2121/sysadmin-security-lab?style=for-the-badge)
-![Stars](https://img.shields.io/github/stars/solo2121/sysadmin-security-lab?style=for-the-badge)
-![Forks](https://img.shields.io/github/forks/solo2121/sysadmin-security-lab?style=for-the-badge)
+![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=flat-square&logo=python&logoColor=white)
+![Bash](https://img.shields.io/badge/Bash-5.x-4EAA25?style=flat-square&logo=gnubash&logoColor=white)
+![Vagrant](https://img.shields.io/badge/Vagrant-Libvirt-1563FF?style=flat-square&logo=vagrant&logoColor=white)
+![KVM/QEMU](https://img.shields.io/badge/KVM-QEMU-FF6600?style=flat-square&logo=qemu&logoColor=white)
 
-![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)
-![Bash](https://img.shields.io/badge/Bash-5.x-4EAA25?style=for-the-badge&logo=gnubash&logoColor=white)
-![Vagrant](https://img.shields.io/badge/Vagrant-Libvirt-1563FF?style=for-the-badge&logo=vagrant&logoColor=white)
-![KVM/QEMU](https://img.shields.io/badge/KVM-QEMU-FF6600?style=for-the-badge&logo=qemu&logoColor=white)
-
-![Linux](https://img.shields.io/badge/Linux-Labs-FCC624?style=for-the-badge&logo=linux&logoColor=black)
-![DevOps](https://img.shields.io/badge/DevOps-Automation-0A66C2?style=for-the-badge&logo=githubactions&logoColor=white)
-![Security](https://img.shields.io/badge/Security-Pentesting-red?style=for-the-badge&logo=hackaday&logoColor=white)
-![Active Directory](https://img.shields.io/badge/AD-Lab-FF8C00?style=for-the-badge)
-
-![LLM Security](https://img.shields.io/badge/LLM-Security-8A2BE2?style=for-the-badge)
+![Linux](https://img.shields.io/badge/Linux-Systems-FCC624?style=flat-square&logo=linux&logoColor=black)
+![DevOps](https://img.shields.io/badge/DevOps-Automation-0A66C2?style=flat-square&logo=githubactions&logoColor=white)
+![Security](https://img.shields.io/badge/Security-Pentesting-red?style=flat-square)
+![Active Directory](https://img.shields.io/badge/Active_Directory-Lab-FF8C00?style=flat-square)
+![LLM Security](https://img.shields.io/badge/LLM-Security-8A2BE2?style=flat-square)
 
 A modular Linux, DevOps, and security engineering lab platform designed for hands-on learning, infrastructure simulation, and practical offensive and defensive security training.
 
@@ -27,30 +24,34 @@ A modular Linux, DevOps, and security engineering lab platform designed for hand
 
 ## Overview
 
-The Sysadmin Security Lab is a reproducible local environment that simulates real-world enterprise infrastructure for technical practice and experimentation.
+The Sysadmin Security Lab is a reproducible local infrastructure platform designed to simulate real-world enterprise environments.
+
+It combines system administration, DevOps automation, and security engineering into a unified learning environment.
 
 It integrates:
 
-- Linux system administration environments
-- Infrastructure and DevOps workflows
+- Linux system administration (LFCS / RHCSA level)
+- DevOps infrastructure automation
+- Kubernetes cluster environments
 - Active Directory attack and defense labs
 - Network segmentation and virtualization (VLANs)
 - Offensive security tooling and workflows
 - AI / LLM security research scenarios
 
-The platform is designed for iterative learning across infrastructure, security, and automation domains.
+The goal is to provide a realistic, modular, and scalable environment for hands-on technical learning.
 
 ---
 
 ## Target Audience
 
-This project is intended for:
+This platform is designed for:
 
-- Linux system administrators (LFCS / RHCSA / Linux+)
+- Linux system administrators
 - DevOps engineers
+- Cloud infrastructure engineers
 - Security engineers and penetration testers
-- Red team and blue team practitioners
-- Researchers exploring AI security risks
+- Red team / blue team practitioners
+- AI security researchers
 
 ---
 
@@ -60,7 +61,7 @@ This project is intended for:
 Sysadmin Security Lab Platform
 
 ├── Infrastructure Layer (DevOps Lab)
-│   └── Kubernetes + Terraform + Ansible + Monitoring
+│   └── Terraform + Ansible + Kubernetes + Monitoring
 │
 ├── Security Layer
 │   ├── Active Directory Pentest Lab
@@ -77,15 +78,15 @@ Sysadmin Security Lab Platform
 
 ## Core Capabilities
 
-* Local enterprise-grade infrastructure simulation using Vagrant + Libvirt
-* Multi-node Linux and Windows-like environments
+* Full local enterprise infrastructure simulation using Vagrant + Libvirt
+* Multi-node Linux environments
+* Kubernetes cluster deployment (kubeadm-based)
+* Infrastructure as Code (Terraform + Ansible)
+* Observability stack (Prometheus, Grafana, Loki)
 * Active Directory attack chain simulation
-* Network segmentation using VLANs and virtual networking
-* Infrastructure as Code practices (Terraform + Ansible)
-* Kubernetes cluster deployment and management
-* Observability stack integration (Prometheus, Grafana, Loki)
-* Security tooling for reconnaissance, exploitation, and post-exploitation
-* AI/LLM security experimentation scenarios
+* Network segmentation using VLANs
+* Offensive security tooling workflows
+* AI / LLM security experimentation
 
 ---
 
@@ -95,12 +96,12 @@ Sysadmin Security Lab Platform
 
 Path: `labs/devops-linux-lab/`
 
-This is the primary environment of the platform.
+This is the main infrastructure and DevOps environment.
 
 Includes:
 
-* Kubernetes (kubeadm-based cluster)
-* Terraform infrastructure provisioning
+* Kubernetes cluster (kubeadm-based)
+* Terraform provisioning layer
 * Ansible configuration management
 * Helm application deployment
 * Monitoring stack (Prometheus, Grafana, Loki)
@@ -114,11 +115,11 @@ Path: `labs/ad-pentest/`
 
 Focus areas:
 
-* Active Directory enumeration and attack chains
-* Kerberos-based attacks (Kerberoasting, AS-REP roasting)
+* Active Directory enumeration
+* Kerberos attacks (Kerberoasting, AS-REP roasting)
 * Certificate Services exploitation (ESC attacks)
 * SMB relay and lateral movement
-* Privilege escalation and persistence techniques
+* Privilege escalation and persistence
 
 ---
 
@@ -143,27 +144,27 @@ Includes:
 
 ## Security Tooling
 
-The repository includes categorized security tools for:
+This repository includes categorized tools for:
 
 * Network reconnaissance and scanning
-* Credential attacks
-* Web exploitation techniques
+* Credential attacks and brute force techniques
+* Web application exploitation
 * Post-exploitation workflows
 * Wireless security testing
-* Active Directory exploitation
+* Active Directory exploitation techniques
 
 ---
 
 ## AI / LLM Security Research
 
-This section explores security risks in modern AI systems, including:
+This section focuses on security risks in modern AI systems:
 
 * Prompt injection attacks
 * Context manipulation and data leakage
-* API abuse and authentication weaknesses
-* Misconfiguration in AI deployments
-* Supply chain risks in AI systems
-* Integration-based credential exposure
+* API abuse and weak authentication
+* Misconfigured AI deployments
+* Supply chain vulnerabilities
+* Credential leakage via integrations
 
 ---
 
@@ -197,7 +198,7 @@ vagrant up
 Each lab includes:
 
 * Setup instructions
-* Architecture documentation
+* Architecture overview
 * Execution steps
 * Troubleshooting guides
 
@@ -207,19 +208,19 @@ Each lab includes:
 
 Recommended progression:
 
-1. Linux fundamentals and system administration
+1. Linux system administration fundamentals
 2. Virtualization and networking concepts
 3. Infrastructure automation (Ansible, Terraform)
 4. Kubernetes and container orchestration
 5. Active Directory attack simulation
-6. Privilege escalation and persistence techniques
+6. Privilege escalation and persistence
 7. AI / LLM security testing
 
 ---
 
 ## Repository Structure
 
-```text
+```
 sysadmin-security-lab/
 ├── labs/
 ├── security/
