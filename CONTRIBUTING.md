@@ -1,7 +1,6 @@
-````markdown
 # Contribution Guidelines
 
-Welcome to the Security & System Administration Toolkit contribution guide.  
+Welcome to the Sysadmin Security Lab contribution guide.  
 We appreciate your interest in helping improve this project.
 
 ---
@@ -22,10 +21,10 @@ We appreciate your interest in helping improve this project.
 ### Issue Reporting
 
 - **Bug Reports**  
-  Use the [bug report template](https://github.com/solo2121/sysadmin-security-scripts/issues/new?template=bug_report.md)
+  Use the [bug report template](https://github.com/solo2121/sysadmin-security-lab/issues/new?template=bug_report.md)
 
 - **Feature Requests**  
-  Use the [feature request template](https://github.com/solo2121/sysadmin-security-scripts/issues/new?template=feature_request.md)
+  Use the [feature request template](https://github.com/solo2121/sysadmin-security-lab/issues/new?template=feature_request.md)
 
 - **Documentation Improvements**  
   Open a regular issue with the `[Docs]` prefix in the title.
@@ -52,7 +51,6 @@ We recommend setting up the pre-commit hook:
 ```bash
 ln -sf ../../scripts/pre-commit.sh .git/hooks/pre-commit
 ```
-````
 
 This ensures all scripts are automatically linted before committing.
 
@@ -105,7 +103,7 @@ type(scope): brief description
 Optional body explaining changes in detail
 ```
 
-**Common Types**:
+**Common Types**:  
 `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
 
 ---
@@ -115,8 +113,8 @@ Optional body explaining changes in detail
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/solo2121/sysadmin-security-scripts.git
-cd sysadmin-security-scripts
+git clone https://github.com/solo2121/sysadmin-security-lab.git
+cd sysadmin-security-lab
 ```
 
 2. Install development dependencies:
@@ -133,9 +131,12 @@ Please review:
 
 - [Code of Conduct](CODE_OF_CONDUCT.md)
 - [Security Policy](SECURITY.md)
+- [Security Scope](docs/SECURITY-SCOPE.md)
 
-For questions or discussions, visit our [Discussions](https://github.com/solo2121/sysadmin-security-scripts/discussions).
+For questions or discussions, visit our [GitHub Discussions](https://github.com/solo2121/sysadmin-security-lab/discussions).
 
-```
+---
 
-```
+## License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.

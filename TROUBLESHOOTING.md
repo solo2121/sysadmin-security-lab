@@ -555,4 +555,4 @@ For additional help:
 
 ## License
 
-This guide is licensed under the MIT License. See LICENSE file for details.
+This guide is licensed under the MIT License. See [LICENSE](LICENSE) for details.
