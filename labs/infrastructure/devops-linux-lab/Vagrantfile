@@ -8,44 +8,36 @@ Vagrant.require_version ">= 2.2.0"
 # ============================================================
 # GLOBAL SETTINGS
 # ============================================================
-
 DEFAULT_CONFIG = {
-  memory: 2048,
-  cpus: 2,
-  extra_disk_size: 5,
-  video_type: "vga",
-  video_vram: 16384
+  memory: 1024,
+  cpus: 1
 }.freeze
 
 # ============================================================
-# LIBVIRT CONFIG
+# LIBVIRT CONFIG (FIXED DISK HANDLING FOR KVM)
 # ============================================================
-
 def configure_libvirt(vm, overrides = {})
   settings = DEFAULT_CONFIG.merge(overrides)
 
   vm.vm.provider :libvirt do |libvirt|
     libvirt.memory = settings[:memory]
     libvirt.cpus   = settings[:cpus]
-
+    libvirt.nested = true
+    libvirt.uri    = "qemu:///system"
     libvirt.graphics_type = "vnc"
     libvirt.graphics_ip   = "127.0.0.1"
 
-    libvirt.video_type = settings[:video_type]
-    libvirt.video_vram = settings[:video_vram]
-
-    libvirt.nested = true
-    libvirt.default_prefix = ""
-
-    libvirt.qemu_use_session = false
-    libvirt.uri = "qemu:///system"
-
-    3.times do |i|
+    # FIX: DO NOT use allow_existing (causes missing qcow2 crash)
+    [
+      { size: "5G", device: "vdb" },
+      { size: "5G", device: "vdc" },
+      { size: "2G", device: "vdd" }
+    ].each do |disk|
       libvirt.storage :file,
-        size: "#{settings[:extra_disk_size]}G",
-        type: "qcow2",
-        bus: "virtio",
-        device: "vd#{('b'.ord + i).chr}"
+        size:   disk[:size],
+        type:   "qcow2",
+        bus:    "virtio",
+        device: disk[:device]
     end
   end
 end
@@ -53,128 +45,166 @@ end
 # ============================================================
 # VAGRANT CONFIG
 # ============================================================
-
 Vagrant.configure("2") do |config|
 
   config.vm.synced_folder ".", "/vagrant", disabled: false
 
   # ============================================================
-  # ALL MACHINES
+  # MACHINES
   # ============================================================
-
   machines = {
+    "devops" => { box: "bento/ubuntu-24.04", ip: "192.168.56.10", memory: 6144, cpus: 3 }
+  }
 
-    # ---------------------------
-    # DEVOPS PLATFORM
-    # ---------------------------
-    "devops" => { box: "cloud-image/ubuntu-24.04", ip: "192.168.56.10", memory: 4096 },
-    "k8s-cp" => { box: "cloud-image/ubuntu-24.04", ip: "192.168.56.11", memory: 4096 },
-    "k8s-w1" => { box: "cloud-image/ubuntu-24.04", ip: "192.168.56.12" },
-    "k8s-w2" => { box: "cloud-image/ubuntu-24.04", ip: "192.168.56.13" },
-
-    # ---------------------------
-    # LINUX STUDY LABS
-    # ---------------------------
-    "ubuntu-lab"   => { box: "cloud-image/ubuntu-24.04", ip: "192.168.56.20" },
-    "rocky-lab"    => { box: "cloud-image/rocky-10",     ip: "192.168.56.21" },
+  linux_labs = {
+    "ubuntu-lab"   => { box: "bento/ubuntu-24.04", ip: "192.168.56.20" },
+    "rocky-lab"    => { box: "cloud-image/rocky-10", ip: "192.168.56.21" },
     "alma-lab"     => { box: "cloud-image/almalinux-10", ip: "192.168.56.22" },
     "opensuse-lab" => { box: "cloud-image/opensuse-leap-16.0", ip: "192.168.56.23" }
   }
 
-  machines.each do |name, opts|
+  ans_nodes = {
+    "ans-node1" => "192.168.56.30",
+    "ans-node2" => "192.168.56.31"
+  }
+
+  all_machines = machines.merge(linux_labs)
+  all_hosts = all_machines.merge(ans_nodes.transform_values { |ip| { ip: ip } })
+
+  hosts_entries = all_hosts.map do |name, data|
+    ip = data.is_a?(Hash) ? data[:ip] : data
+    "#{ip} #{name}"
+  end.join("\n")
+
+  # ============================================================
+  # /etc/hosts SAFE UPDATE
+  # ============================================================
+  config.vm.provision "shell", run: "always", inline: <<-SHELL
+    set -e
+    echo "=== Updating /etc/hosts ==="
+
+    grep -q "Vagrant DevSecOps Lab" /etc/hosts || cat >> /etc/hosts <<EOF
+# Vagrant DevSecOps Lab
+#{hosts_entries}
+EOF
+  SHELL
+
+  # ============================================================
+  # MAIN MACHINES
+  # ============================================================
+  (machines.merge(linux_labs)).each do |name, opts|
+
     config.vm.define name do |vm|
+
       vm.vm.box = opts[:box]
       vm.vm.hostname = name
-
       vm.vm.network "private_network", ip: opts[:ip]
 
-      # --------------------------------------------------------
-      # PORT FORWARDING (DEVOPS ONLY)
-      # --------------------------------------------------------
-      if name == "devops"
-        vm.vm.network "forwarded_port", guest: 8080, host: 8080 # Jenkins
-        vm.vm.network "forwarded_port", guest: 3000, host: 3000 # Grafana
-        vm.vm.network "forwarded_port", guest: 9090, host: 9090 # Prometheus
-        vm.vm.network "forwarded_port", guest: 8081, host: 8081 # ArgoCD
-      end
+      configure_libvirt(vm,
+        memory: opts[:memory] || 1024,
+        cpus: opts[:cpus] || 1
+      )
 
-      configure_libvirt(vm, memory: opts[:memory] || 2048)
-
-      # --------------------------------------------------------
-      # BASE SETUP (ALL MACHINES)
-      # --------------------------------------------------------
+      # ============================================================
+      # BASE SETUP (ALL LINUX)
+      # ============================================================
       vm.vm.provision "shell", inline: <<-SHELL
-        set -e
+        set -euo pipefail
+        export DEBIAN_FRONTEND=noninteractive
 
-        echo ">>> Base setup on #{name}"
+        echo "=== Base setup #{name} ==="
 
-        if command -v apt >/dev/null 2>&1; then
-          sudo apt update -y
-          sudo apt install -y vim curl wget net-tools
+        if command -v apt-get >/dev/null 2>&1; then
+          apt-get update -qq
+          apt-get install -y vim curl wget git jq net-tools python3
         elif command -v dnf >/dev/null 2>&1; then
-          sudo dnf install -y vim curl wget net-tools
+          dnf install -y vim curl wget git jq net-tools python3
         elif command -v zypper >/dev/null 2>&1; then
-          sudo zypper install -y vim curl wget net-tools
-        fi
-
-        # Disable swap for Kubernetes nodes
-        if [[ "#{name}" == k8s-* ]]; then
-          sudo swapoff -a
-          sudo sed -i '/swap/d' /etc/fstab || true
+          zypper install -y vim curl wget git jq net-tools python3
         fi
       SHELL
 
-      # --------------------------------------------------------
-      # DEVOPS NODE TOOLS
-      # --------------------------------------------------------
+      # ============================================================
+      # DEVOPS ONLY STACK
+      # ============================================================
       if name == "devops"
         vm.vm.provision "shell", inline: <<-SHELL
-          set -e
+          set -euo pipefail
+          export DEBIAN_FRONTEND=noninteractive
 
-          sudo apt update -y
+          echo "=== DevOps Stack ==="
 
-          # Terraform
-          sudo apt install -y gnupg software-properties-common
-          wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | sudo tee /usr/share/keyrings/hashicorp.gpg
-          echo "deb [signed-by=/usr/share/keyrings/hashicorp.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
-          sudo apt update -y
-          sudo apt install -y terraform
+          apt-get update -qq
 
-          # Ansible
-          sudo apt install -y ansible
+          apt-get install -y \
+            ansible git curl wget jq python3 python3-pip gnupg \
+            software-properties-common net-tools
+
+          # Docker
+          if ! command -v docker >/dev/null 2>&1; then
+            curl -fsSL https://get.docker.com | sh
+          fi
+
+          systemctl enable --now docker >/dev/null 2>&1
+          usermod -aG docker vagrant
+
+          # kubectl
+          if ! command -v kubectl >/dev/null 2>&1; then
+            curl -LO "https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+            install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+            rm -f kubectl
+          fi
 
           # Helm
-          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+          if ! command -v helm >/dev/null 2>&1; then
+            curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+          fi
 
-          echo "DevOps node ready"
+          # k3d
+          if ! command -v k3d >/dev/null 2>&1; then
+            curl -fsSL https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
+          fi
+
+          # Terraform
+          if ! command -v terraform >/dev/null 2>&1; then
+            curl -fsSL https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/share/keyrings/hashicorp.gpg
+            echo "deb [signed-by=/usr/share/keyrings/hashicorp.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" \
+              > /etc/apt/sources.list.d/hashicorp.list
+            apt-get update -qq
+            apt-get install -y terraform
+          fi
+
+          # Security tools
+          pip3 install --break-system-packages checkov semgrep || true
+
+          # Trivy
+          if ! command -v trivy >/dev/null 2>&1; then
+            curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+          fi
+
+          echo "=== DevOps Ready ==="
         SHELL
       end
+    end
+  end
 
-      # --------------------------------------------------------
-      # KUBERNETES BASE INSTALL
-      # --------------------------------------------------------
-      if name.start_with?("k8s")
-        vm.vm.provision "shell", inline: <<-SHELL
-          set -e
+  # ============================================================
+  # ANSIBLE NODES
+  # ============================================================
+  ans_nodes.each do |name, ip|
+    config.vm.define name do |vm|
+      vm.vm.box = "bento/ubuntu-24.04"
+      vm.vm.hostname = name
+      vm.vm.network "private_network", ip: ip
 
-          sudo apt update -y
-          sudo apt install -y containerd
+      configure_libvirt(vm, memory: 768, cpus: 1)
 
-          sudo mkdir -p /etc/containerd
-          containerd config default | sudo tee /etc/containerd/config.toml
-          sudo systemctl restart containerd
-
-          curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.29/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/k8s.gpg
-          echo "deb [signed-by=/etc/apt/keyrings/k8s.gpg] https://pkgs.k8s.io/core:/stable:/v1.29/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
-
-          sudo apt update -y
-          sudo apt install -y kubelet kubeadm kubectl
-          sudo apt-mark hold kubelet kubeadm kubectl
-
-          echo "Kubernetes node ready"
-        SHELL
-      end
-
+      vm.vm.provision "shell", inline: <<-SHELL
+        set -euo pipefail
+        apt-get update -qq
+        apt-get install -y python3 openssh-server
+        systemctl enable --now ssh
+      SHELL
     end
   end
 end
