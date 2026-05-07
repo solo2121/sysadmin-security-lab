@@ -117,6 +117,93 @@ vm_action(){
   esac
 }
 
+pause(){
+  echo
+  printf "${GRAY}Press Enter to continue...${NC}"
+  read -r
+}
+
+vm_menu(){
+  local vm="$1"
+  local sel
+
+  [[ -z "$vm" ]] && return
+
+  while true; do
+    refresh
+    clear_screen
+    header
+
+    echo
+    echo -e "${PURPLE}${BOLD}VM MANAGEMENT${NC}"
+    printf "${GRAY}────────────────────────────────────────────${NC}\n"
+    printf " VM:     ${CYAN}%s${NC}\n" "$vm"
+    printf " State:  %-3s %-12s\n" "$(icon "${machine_states[$vm]}")" "${machine_states[$vm]}"
+    printf " IP:     ${GRAY}%s${NC}\n" "$(get_ip "$vm")"
+
+    echo
+    echo -e "${CYAN}[S] SSH into VM"
+    echo -e "[U] Start / Up VM"
+    echo -e "[H] Halt VM"
+    echo -e "[R] Reload VM"
+    echo -e "[P] Provision VM"
+    echo -e "[D] Destroy VM"
+    echo -e "[I] Refresh Status / IP"
+    echo -e "[B] Back to Main Menu"
+    echo -e "[Q] Quit${NC}"
+    echo
+
+    printf "${BOLD}Action for $vm › ${NC}"
+    read -r sel
+
+    case "${sel^^}" in
+      S)
+        if [[ "${machine_states[$vm]}" == "running" ]]; then
+          vagrant ssh "$vm"
+        else
+          echo -e "${YELLOW}$vm is not running. Start it first with [U].${NC}"
+          pause
+        fi
+        ;;
+      U)
+        vagrant up "$vm"
+        pause
+        ;;
+      H)
+        vagrant halt "$vm"
+        pause
+        ;;
+      R)
+        vagrant reload "$vm"
+        pause
+        ;;
+      P)
+        vagrant provision "$vm"
+        pause
+        ;;
+      D)
+        echo -e "${RED}${BOLD}Destroy $vm? This removes the VM.${NC}"
+        printf "Type ${BOLD}yes${NC} to confirm › "
+        read -r confirm
+
+        if [[ "$confirm" == "yes" ]]; then
+          vagrant destroy -f "$vm"
+          pause
+        fi
+        ;;
+      I)
+        refresh
+        ;;
+      B)
+        return
+        ;;
+      Q)
+        exit
+        ;;
+    esac
+  done
+}
+
 start_group(){
   for m in "$@"; do
     echo -e "${YELLOW}Starting $m...${NC}"
@@ -125,6 +212,9 @@ start_group(){
 }
 
 halt_vm(){
+  local vm
+  local choice
+
   printf "VM number › "
   read -r choice
   vm="${machine_options[$choice]}"
@@ -132,6 +222,9 @@ halt_vm(){
 }
 
 destroy_vm(){
+  local vm
+  local choice
+
   printf "VM number › "
   read -r choice
   vm="${machine_options[$choice]}"
@@ -153,7 +246,7 @@ while true; do
   read -r sel
 
   if [[ "$sel" =~ ^[0-9]+$ ]]; then
-    vm_action "${machine_options[$sel]}"
+    vm_menu "${machine_options[$sel]}"
     refresh
     continue
   fi
