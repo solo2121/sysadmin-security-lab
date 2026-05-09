@@ -1,9 +1,12 @@
-#!/bin/bash
-
-# BIND DNS Server Management Script with Interactive Menu
-# Author: Solo
-# Date: 08-07-2025
-# Description: Install, configure and manage BIND DNS server with menu interface
+#!/usr/bin/env bash
+# ============================================================
+# BIND DNS Server Manager
+# Author: Miguel A. Carlo
+# Date: 2025-08-07
+# Description: Interactive BIND administration tool for package
+#              installation, base configuration, zone creation,
+#              record management, validation, status, and logging.
+# ============================================================
 
 # Check if running as root
 if [ "$(id -u)" -ne 0 ]; then

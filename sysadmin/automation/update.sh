@@ -1,4 +1,12 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# ============================================================
+# Rhino Linux Update Utility
+# Author: Miguel A. Carlo
+# Description: Runs the Rhino package manager update workflow
+#              and cleans stale package artifacts.
+# ============================================================
+
+set -Eeuo pipefail
 
 # Function to update package lists and upgrade installed packages
 update_upgrade() {

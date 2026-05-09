@@ -1,7 +1,10 @@
-#!/bin/bash
-
-# Modern Rootkit Scanner Script
-# ShellCheck-compliant version with proper error handling and bash best practices
+#!/usr/bin/env bash
+# ============================================================
+# Rootkit Scanner
+# Author: Miguel A. Carlo
+# Description: Interactive rootkit scan helper that coordinates
+#              chkrootkit, rkhunter, log review, and scan reports.
+# ============================================================
 
 set -euo pipefail  # Exit on error, undefined vars, pipe failures
 IFS=$'\n\t'       # Secure IFS

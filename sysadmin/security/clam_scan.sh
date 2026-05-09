@@ -2,7 +2,10 @@
 
 # ============================================================
 # ClamAV Security Manager
-# Professional Linux Edition
+# Author: Miguel A. Carlo
+# Description: Interactive ClamAV manager for signature updates,
+#              quick scans, custom scans, quarantine actions,
+#              database details, and scan statistics.
 # ============================================================
 
 set -Eeuo pipefail

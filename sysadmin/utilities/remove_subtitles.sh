@@ -1,4 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# ============================================================
+# Subtitle Removal Utility
+# Author: Miguel A. Carlo
+# Description: Finds and removes subtitle sidecar files such as
+#              .srt and .vtt from a selected directory tree after
+#              presenting a confirmation prompt.
+# ============================================================
 
 # Function to display usage
 usage() {

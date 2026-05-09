@@ -1,7 +1,11 @@
-#!/bin/bash
-
-# Enhanced Memory Optimizer for Ubuntu/Linux
-# Features: Interactive menu, safety checks, visual feedback, and system information
+#!/usr/bin/env bash
+# ============================================================
+# Linux Memory Optimization Tool
+# Author: Miguel A. Carlo
+# Description: Interactive memory utility for viewing memory
+#              pressure and safely clearing Linux page cache,
+#              dentries, and inode caches when appropriate.
+# ============================================================
 
 # Function to display header
 function show_header() {

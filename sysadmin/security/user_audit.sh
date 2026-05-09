@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
-# Linux User Account Security Audit Script
+# ============================================================
+# Linux User Account Security Audit
+# Author: Miguel A. Carlo
+# Description: Reviews login-capable accounts, human users,
+#              UID 0 accounts, sudo privileges, password aging,
+#              locked accounts, and shell assignments.
+# ============================================================
 
 set -euo pipefail
 

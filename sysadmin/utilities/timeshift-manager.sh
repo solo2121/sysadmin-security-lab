@@ -1,10 +1,13 @@
-#!/bin/bash
-
-# TimeShift Manager - Simple System Snapshot Management Tool
-# Description: Interactive shell script for managing system snapshots with TimeShift
-# Version: 3.0 (Fixed Version)
-# Author: Solo
+#!/usr/bin/env bash
+# ============================================================
+# Timeshift Snapshot Manager
+# Author: Miguel A. Carlo
+# Description: Interactive Timeshift administration utility for
+#              creating, listing, deleting, restoring, and logging
+#              Linux system snapshots.
+# Version: 3.0
 # Last Modified: 2025-08-14
+# ============================================================
 set -euo pipefail
 IFS=$'\n\t'
 

@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
-# pacstall-maintenance.sh
-# Update, upgrade, clean cache, and remove orphans
-# Fix: Add proper error handling and improve orphan detection logic
+# ============================================================
+# Pacstall Maintenance Utility
+# Author: Miguel A. Carlo
+# Description: Maintains Pacstall packages by updating Pacstall,
+#              upgrading installed packages, cleaning cached .deb
+#              files, and reporting orphaned package artifacts.
+# ============================================================
 
 set -euo pipefail
 shopt -s nullglob
