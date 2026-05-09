@@ -1,8 +1,13 @@
 #!/usr/bin/env bash
-# -------------------------------------------------------------
-#  UFW Firewall Management Script  –  v1.2
-#  Requires: ufw, bash 4+, root privileges
-# -------------------------------------------------------------
+# ============================================================
+# UFW Firewall Manager
+# Author: Miguel A. Carlo
+# Description: Menu-driven UFW administration tool for firewall
+#              status, rule creation, rule deletion, logging,
+#              and firewall enable/disable workflows.
+# Version: 1.2
+# Requires: ufw, bash 4+, root privileges
+# ============================================================
 set -euo pipefail
 IFS=$'\n\t'
 # -------------------------------------------------------------

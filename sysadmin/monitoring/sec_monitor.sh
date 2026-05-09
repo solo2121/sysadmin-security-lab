@@ -1,7 +1,12 @@
-#!/bin/bash
-
-# Enhanced Security Monitoring Script
-# Version 2.1 - With Flatpak/Zed Editor support
+#!/usr/bin/env bash
+# ============================================================
+# Security Monitoring Script
+# Author: Miguel A. Carlo
+# Description: Reviews listening sockets, outbound connections,
+#              suspicious processes, temporary files, and security
+#              signals with allowlists for desktop workflows.
+# Version: 2.1
+# ============================================================
 
 # Configuration
 LOG_FILE="/var/log/security_monitor.log"

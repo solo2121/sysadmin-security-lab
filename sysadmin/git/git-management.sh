@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
-# Modern Git Management Script with Menu
+# ============================================================
+# Git Management Toolkit
+# Author: Miguel A. Carlo
+# Description: Interactive Git helper for common repository
+#              status, branch, commit, remote, and sync tasks.
+# ============================================================
 
 # Enable strict mode
 set -o errexit      # Exit on error

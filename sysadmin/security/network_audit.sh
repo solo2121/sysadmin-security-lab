@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
-# Linux Network Security Audit Script
+# ============================================================
+# Linux Network Security Audit
+# Author: Miguel A. Carlo
+# Description: Reviews interfaces, routing, listening sockets,
+#              exposed services, firewall status, DNS settings,
+#              and network security posture.
+# ============================================================
 
 set -euo pipefail
 

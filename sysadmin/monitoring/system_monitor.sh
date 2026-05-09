@@ -1,14 +1,11 @@
-#!/bin/bash
-
+#!/usr/bin/env bash
+# ============================================================
 # Linux System Monitoring Script
-# Enhanced version with interactive menu and detailed monitoring
-# Features:
-#   - Open port monitoring (ss, netstat, lsof)
-#   - Process resource usage (CPU, memory)
-#   - Network connection analysis
-#   - System resource tracking (CPU, memory, disk, load)
-#   - Color-coded output for better readability
-#   - Dependency checks for required tools
+# Author: Miguel A. Carlo
+# Description: Interactive monitoring toolkit for open ports,
+#              process resource usage, network connections,
+#              CPU, memory, disk, and system load.
+# ============================================================
 
 # Colors for output
 RED='\033[0;31m'

@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #####################################################################
 # Script Name: Ultimate Linux Audit Tool
-# Author     : Miguel Carlo
+# Author     : Miguel A. Carlo
 # Date       : 2025-12-25
 # Version    : 3.0
 # Description: Ultra-complete Linux system audit tool. Performs full
