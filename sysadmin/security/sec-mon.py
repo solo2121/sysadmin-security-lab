@@ -1,11 +1,46 @@
 #!/usr/bin/env python3
-"""
-security_monitor.py
-Monitor open ports and system resources for basic security auditing.
-
-Requires: Python 3.6+, ss, ps, df (all present in every modern Linux).
-Run as root or with sudo.
-"""
+################################################################################
+#
+# SECURITY MONITORING AND RESOURCE AUDITING TOOL
+#
+# Author: Miguel A. Carlo
+# Date: 2025-05-14
+# License: MIT
+#
+# Description:
+#   Comprehensive security monitoring utility for real-time auditing of system
+#   security posture. Monitors open network ports, listening services, system
+#   resource utilization (CPU, memory, disk), and provides detailed logging
+#   for security event detection and forensic analysis.
+#
+# Usage:
+#   sudo python3 sec-mon.py [options]
+#   sudo python3 sec-mon.py -i 30 --logfile /var/log/security.log -v
+#
+# Requirements:
+#   - Python 3.6+
+#   - Root/sudo privileges (recommended for full visibility)
+#   - Standard Linux utilities: ss, ps, df
+#
+# Features:
+#   • Real-time port and service monitoring
+#   • Port state change detection (NEW/CLOSED)
+#   • CPU, memory, and disk utilization tracking
+#   • Rotating log file with configurable size limits
+#   • Debug logging with verbose output option
+#   • Graceful shutdown handling (SIGINT/SIGTERM)
+#
+# Examples:
+#   # Monitor with default 10-second interval
+#   sudo python3 sec-mon.py
+#
+#   # Monitor with 30-second interval and debug output
+#   sudo python3 sec-mon.py -i 30 -v
+#
+#   # Custom log file location
+#   sudo python3 sec-mon.py -l /tmp/security_monitor.log
+#
+################################################################################
 
 import argparse
 import logging
@@ -17,32 +52,43 @@ import time
 from collections import namedtuple
 from logging.handlers import RotatingFileHandler
 
-# ------------------------------------------------------------------------------
-# Configuration helpers
-# ------------------------------------------------------------------------------
+# Configuration
 LOG_FORMAT = "%(asctime)s [%(levelname)s] %(message)s"
 INTERVAL = 10  # seconds between resource snapshots
 
 PortInfo = namedtuple("PortInfo", "proto local_addr pid process_name")
 
-# ------------------------------------------------------------------------------
-# Logging
-# ------------------------------------------------------------------------------
+# ──────────────────────────────────────────────────────────────────────────────
+# Logging Configuration
+# ──────────────────────────────────────────────────────────────────────────────
+
 def setup_logging(log_file: str, verbose: bool):
+    """
+    Configure logging with rotating file handler and stream output.
+    
+    Args:
+        log_file: Path to log file
+        verbose: Enable debug-level logging
+    """
     level = logging.DEBUG if verbose else logging.INFO
     logging.basicConfig(level=level, format=LOG_FORMAT, handlers=[
         RotatingFileHandler(log_file, maxBytes=1_000_000, backupCount=3),
         logging.StreamHandler(sys.stdout)
     ])
 
-# ------------------------------------------------------------------------------
-# System probes
-# ------------------------------------------------------------------------------
-def list_listening_ports() -> list[PortInfo]:
-    """Return all listening TCP/UDP sockets with owning PID/name."""
+# ──────────────────────────────────────────────────────────────────────────────
+# System Monitoring Functions
+# ──────────────────────────────────────────────────────────────────────────────
+
+def list_listening_ports() -> list:
+    """
+    Retrieve all listening TCP and UDP ports with process information.
+    
+    Returns:
+        List of PortInfo namedtuples with protocol, address, PID, and process name
+    """
     ports = []
     for proto in ("tcp", "udp"):
-        # ss output: State Recv-Q Send-Q Local Address:Port  Peer Address:Port  Process
         cmd = ["ss", "-ltn" if proto == "tcp" else "-lun", "-p"]
         try:
             out = subprocess.check_output(cmd, text=True)
@@ -57,7 +103,6 @@ def list_listening_ports() -> list[PortInfo]:
             if len(parts) < 5:
                 continue
             local_addr = parts[4]
-            # Process field looks like users:(("nginx",pid=123,fd=3))
             process_field = parts[-1]
             pid = None
             name = None
@@ -71,8 +116,13 @@ def list_listening_ports() -> list[PortInfo]:
     return ports
 
 def get_resource_snapshot() -> dict:
-    """Return CPU %, load averages, memory %, disk %."""
-    # CPU usage via ps
+    """
+    Capture current system resource utilization metrics.
+    
+    Returns:
+        Dictionary with CPU%, load averages, memory%, and disk% usage
+    """
+    # CPU usage
     cpu_line = subprocess.check_output(
         ["ps", "-A", "-o", "%cpu", "--no-headers"], text=True
     )
@@ -81,14 +131,14 @@ def get_resource_snapshot() -> dict:
     # Load averages
     load = os.getloadavg()
 
-    # Memory usage via /proc/meminfo
+    # Memory usage
     with open("/proc/meminfo") as f:
         meminfo = f.read()
     mem_total = int(next(line for line in meminfo.splitlines() if "MemTotal" in line).split()[1])
     mem_avail = int(next(line for line in meminfo.splitlines() if "MemAvailable" in line).split()[1])
     mem_used_pct = 100 * (1 - mem_avail / mem_total)
 
-    # Disk usage via df
+    # Disk usage
     disk_line = subprocess.check_output(
         ["df", "/", "-h", "--output=pcent"], text=True
     )
@@ -103,13 +153,17 @@ def get_resource_snapshot() -> dict:
         disk_used_pct=disk_used_pct,
     )
 
-# ------------------------------------------------------------------------------
-# Main loop
-# ------------------------------------------------------------------------------
+# ──────────────────────────────────────────────────────────────────────────────
+# Main Monitoring Loop
+# ──────────────────────────────────────────────────────────────────────────────
+
 def main():
-    parser = argparse.ArgumentParser(description="Security port & resource monitor")
+    parser = argparse.ArgumentParser(
+        description="Security port & resource monitor",
+        epilog="Example: sudo python3 sec-mon.py -i 30 -v"
+    )
     parser.add_argument("-i", "--interval", type=int, default=INTERVAL,
-                        help="Seconds between resource snapshots")
+                        help="Seconds between resource snapshots (default: 10)")
     parser.add_argument("-l", "--logfile", default="/var/log/security_monitor.log",
                         help="Path to rotating log file")
     parser.add_argument("-v", "--verbose", action="store_true",
@@ -123,7 +177,7 @@ def main():
 
     logging.info("Security monitor started (interval=%ss).", args.interval)
 
-    # Graceful shutdown on SIGINT/SIGTERM
+    # Graceful shutdown
     shutdown = False
     def _sig_handler(signum, frame):
         nonlocal shutdown
@@ -133,7 +187,7 @@ def main():
 
     last_ports = set()
     while not shutdown:
-        # Ports
+        # Monitor port changes
         ports = list_listening_ports()
         port_set = {(p.proto, p.local_addr, p.pid) for p in ports}
         new = port_set - last_ports
@@ -147,7 +201,7 @@ def main():
         for proto, addr, pid in closed:
             logging.info("CLOSED port: %s %s (PID %s)", proto, addr, pid or "?")
 
-        # Resources
+        # Resource snapshot
         res = get_resource_snapshot()
         logging.info("RESOURCES CPU=%.1f%% Load=%.2f/%.2f/%.2f Mem=%.1f%% Disk=%d%%",
                      res["cpu_total"], res["load_1"], res["load_5"], res["load_15"],
@@ -159,3 +213,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+################################################################################
+# End of sec-mon.py
+################################################################################
