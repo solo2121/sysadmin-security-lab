@@ -50,25 +50,10 @@ Vagrant.configure("2") do |config|
   }
 
   linux_labs = {
-    "ubuntu-lab" => {
-      box: "bento/ubuntu-24.04",
-      ip: "192.168.56.20"
-    },
-
-    "rocky-lab" => {
-      box: "cloud-image/rocky-10",
-      ip: "192.168.56.21"
-    },
-
-    "alma-lab" => {
-      box: "cloud-image/almalinux-10",
-      ip: "192.168.56.22"
-    },
-
-    "opensuse-lab" => {
-      box: "opensuse/Leap-15.6",
-      ip: "192.168.56.23"
-    }
+    "ubuntu-lab" => { box: "bento/ubuntu-24.04", ip: "192.168.56.20" },
+    "rocky-lab"  => { box: "cloud-image/rocky-10", ip: "192.168.56.21" },
+    "alma-lab"   => { box: "cloud-image/almalinux-10", ip: "192.168.56.22" },
+    "opensuse-lab" => { box: "opensuse/Leap-15.6", ip: "192.168.56.23" }
   }
 
   ans_nodes = {
@@ -76,19 +61,13 @@ Vagrant.configure("2") do |config|
     "ans-node2" => "192.168.56.31"
   }
 
-  all_hosts = machines
-    .merge(linux_labs)
-    .merge(ans_nodes.transform_values { |ip| { ip: ip } })
+  all_hosts = machines.merge(linux_labs).merge(ans_nodes.transform_values { |ip| { ip: ip } })
 
   hosts_entries = all_hosts.map do |name, data|
-    ip = data[:ip]
-    "#{ip} #{name}"
+    "#{data[:ip]} #{name}"
   end.join("\n")
 
-  config.vm.provision "shell",
-    run: "always",
-    inline: <<-SHELL
-
+  config.vm.provision "shell", run: "always", inline: <<-SHELL
 set -e
 
 LAB_HOSTS_START="# Vagrant DevSecOps Lab START"
@@ -105,7 +84,6 @@ $LAB_HOSTS_START
 $LAB_HOSTS_END
 
 EOF
-
 SHELL
 
   (machines.merge(linux_labs)).each do |name, opts|
@@ -128,33 +106,26 @@ SHELL
 set -euo pipefail
 
 if command -v apt-get >/dev/null 2>&1; then
-
   apt-get update -qq
-
-  apt-get install -y \
-    vim curl wget git jq \
-    net-tools python3 python3-pip \
-    tmux htop tree ncdu \
-    fzf ripgrep
+  apt-get install -y vim curl wget git jq net-tools python3 python3-pip tmux htop tree ncdu fzf ripgrep
 
 elif command -v dnf >/dev/null 2>&1; then
-
-  dnf install -y \
-    vim curl wget git jq \
-    net-tools python3 python3-pip \
-    podman buildah skopeo
+  dnf install -y vim curl wget git jq net-tools python3 python3-pip podman buildah skopeo
 
 elif command -v zypper >/dev/null 2>&1; then
-
-  zypper install -y \
-    vim curl wget git jq \
-    net-tools python3 python3-pip
-
+  zypper install -y vim curl wget git jq net-tools python3 python3-pip
 fi
-
 SHELL
 
       if name == "devops"
+
+        vm.vm.network "forwarded_port", guest: 3000, host: 3000, auto_correct: true
+        vm.vm.network "forwarded_port", guest: 9090, host: 9090, auto_correct: true
+        vm.vm.network "forwarded_port", guest: 8085, host: 8085, auto_correct: true
+        vm.vm.network "forwarded_port", guest: 8086, host: 8086, auto_correct: true
+        vm.vm.network "forwarded_port", guest: 8087, host: 8087, auto_correct: true
+        vm.vm.network "forwarded_port", guest: 8080, host: 8080, auto_correct: true
+        vm.vm.network "forwarded_port", guest: 8443, host: 8443, auto_correct: true
 
         vm.vm.provision "shell", inline: <<-SHELL
 #!/usr/bin/env bash
@@ -163,13 +134,9 @@ export DEBIAN_FRONTEND=noninteractive
 
 apt-get update -qq
 
-apt-get install -y \
-  ansible git curl wget jq yq \
-  python3 python3-pip \
-  gnupg software-properties-common \
-  net-tools ca-certificates \
-  tmux htop tree ncdu \
-  fzf ripgrep
+apt-get install -y ansible git curl wget jq yq python3 python3-pip \
+  gnupg software-properties-common net-tools ca-certificates \
+  tmux htop tree ncdu fzf ripgrep
 
 # Docker
 if ! command -v docker >/dev/null 2>&1; then
@@ -181,77 +148,53 @@ usermod -aG docker vagrant
 
 # kubectl
 if ! command -v kubectl >/dev/null 2>&1; then
-  curl -LO \
-  "https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-
+  curl -LO "https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
   install -m 0755 kubectl /usr/local/bin/kubectl
   rm -f kubectl
 fi
 
 # Helm
 if ! command -v helm >/dev/null 2>&1; then
-  curl -fsSL \
-  https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+  curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 fi
 
 # k3d
 if ! command -v k3d >/dev/null 2>&1; then
-  curl -fsSL \
-  https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
+  curl -fsSL https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
 fi
 
 # Terraform
 if ! command -v terraform >/dev/null 2>&1; then
-
-  curl -fsSL \
-  https://apt.releases.hashicorp.com/gpg \
-  | gpg --dearmor \
-  -o /usr/share/keyrings/hashicorp.gpg
-
-  echo \
-  "deb [signed-by=/usr/share/keyrings/hashicorp.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" \
-  > /etc/apt/sources.list.d/hashicorp.list
-
+  curl -fsSL https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/share/keyrings/hashicorp.gpg
+  echo "deb [signed-by=/usr/share/keyrings/hashicorp.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" \
+    > /etc/apt/sources.list.d/hashicorp.list
   apt-get update -qq
   apt-get install -y terraform
 fi
 
-pip3 install --break-system-packages \
-  checkov semgrep || true
+pip3 install --break-system-packages checkov semgrep || true
 
 # Trivy
 if ! command -v trivy >/dev/null 2>&1; then
-  curl -sfL \
-  https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh \
-  | sh -s -- -b /usr/local/bin
+  curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
 fi
 
 # Cosign
 if ! command -v cosign >/dev/null 2>&1; then
-
-  curl -LO \
-  https://github.com/sigstore/cosign/releases/latest/download/cosign-linux-amd64
-
-  install -m 0755 \
-  cosign-linux-amd64 \
-  /usr/local/bin/cosign
-
+  curl -LO https://github.com/sigstore/cosign/releases/latest/download/cosign-linux-amd64
+  install -m 0755 cosign-linux-amd64 /usr/local/bin/cosign
   rm -f cosign-linux-amd64
 fi
 
-# Argo CD
+# ArgoCD
 if ! command -v argocd >/dev/null 2>&1; then
-
-  curl -sSL -o argocd \
-  https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
-
+  curl -sSL -o argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
   install -m 0755 argocd /usr/local/bin/argocd
   rm -f argocd
 fi
 
 # k3d cluster
 if ! k3d cluster list | grep -q devops-cluster; then
-
   k3d cluster create devops-cluster \
     --api-port 6443 \
     --servers 1 \
@@ -260,27 +203,19 @@ if ! k3d cluster list | grep -q devops-cluster; then
     --port "8443:443@loadbalancer" \
     --k3s-arg "--disable=traefik@server:0" \
     --registry-create devops-registry:0.0.0.0:5000
-
 fi
 
 mkdir -p /home/vagrant/.kube
-
-k3d kubeconfig get devops-cluster \
-> /home/vagrant/.kube/config
-
+k3d kubeconfig get devops-cluster > /home/vagrant/.kube/config
 chown -R vagrant:vagrant /home/vagrant/.kube
 
-# ==========================================================
-# 🧪 SYSADMIN IMAGE STACK (NEW - DO NOT BREAK EXISTING)
-# ==========================================================
-
+# Sysadmin stack
 mkdir -p /opt/sysadmin-lab
 cd /opt/sysadmin-lab
 
 cat > docker-compose.yml <<'EOF'
 services:
 
-  # Core Linux test environments
   ubuntu:
     image: ubuntu:24.04
     command: sleep infinity
@@ -297,12 +232,10 @@ services:
     image: busybox:latest
     command: sleep infinity
 
-  # Networking & debugging (CRITICAL)
   netshoot:
     image: nicolaka/netshoot
     command: sleep infinity
 
-  # Databases
   postgres:
     image: postgres:16
     environment:
@@ -322,7 +255,6 @@ services:
     ports:
       - "6379:6379"
 
-  # Web layer
   nginx:
     image: nginx:alpine
     ports:
@@ -339,7 +271,6 @@ services:
     ports:
       - "8087:5678"
 
-  # Observability base
   prometheus:
     image: prom/prometheus
     ports:
@@ -349,45 +280,28 @@ services:
     image: grafana/grafana
     ports:
       - "3000:3000"
-
 EOF
 
 docker compose up -d
 
-# aliases
-grep -qxF 'alias k=kubectl' /home/vagrant/.bashrc || echo 'alias k=kubectl' >> /home/vagrant/.bashrc
-grep -qxF 'alias tf=terraform' /home/vagrant/.bashrc || echo 'alias tf=terraform' >> /home/vagrant/.bashrc
-
-echo "Lab ready + Sysadmin image stack deployed"
+echo "Lab ready"
 SHELL
       end
     end
   end
 
   ans_nodes.each do |name, ip|
-
     config.vm.define name do |vm|
-
       vm.vm.box = "bento/ubuntu-24.04"
       vm.vm.hostname = name
       vm.vm.network "private_network", ip: ip
 
-      configure_libvirt(
-        vm,
-        memory: 768,
-        cpus: 1
-      )
+      configure_libvirt(vm, memory: 768, cpus: 1)
 
       vm.vm.provision "shell", inline: <<-SHELL
-
 apt-get update -qq
-
-apt-get install -y \
-  python3 \
-  openssh-server
-
+apt-get install -y python3 openssh-server
 systemctl enable --now ssh
-
 SHELL
     end
   end
