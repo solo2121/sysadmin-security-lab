@@ -21,7 +21,6 @@ def configure_libvirt(vm, overrides = {})
     libvirt.memory = settings[:memory]
     libvirt.cpus = settings[:cpus]
     libvirt.nested = true
-    libvirt.uri = "qemu:///system"
     libvirt.graphics_type = "vnc"
     libvirt.graphics_ip = "127.0.0.1"
 
@@ -149,9 +148,7 @@ fi
 
 systemctl enable --now docker
 
-until docker info >/dev/null 2>&1; do
-  sleep 3
-done
+until docker info >/dev/null 2>&1; do sleep 3; done
 
 usermod -aG docker vagrant
 
@@ -176,13 +173,15 @@ echo 'complete -F __start_kubectl k' >> /home/vagrant/.bashrc
 
 chown vagrant:vagrant /home/vagrant/.bashrc
 
-# Helm
-command -v helm >/dev/null 2>&1 || \
-curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+# Helm (FIX for ArgoCD CRD issue)
+if ! command -v helm >/dev/null 2>&1; then
+  curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+fi
 
-# k3d
-command -v k3d >/dev/null 2>&1 || \
-curl -fsSL https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
+# k3d (stable cluster sizing FIX)
+if ! command -v k3d >/dev/null 2>&1; then
+  curl -fsSL https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
+fi
 
 # Terraform
 if ! command -v terraform >/dev/null 2>&1; then
@@ -193,20 +192,16 @@ if ! command -v terraform >/dev/null 2>&1; then
   apt-get install -y terraform
 fi
 
-# ArgoCD CLI
-if ! command -v argocd >/dev/null 2>&1; then
-  curl -sSL -o argocd \
-    https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
-  install -m 0755 argocd /usr/local/bin/argocd
-  rm -f argocd
-fi
-
-# k3d
+# ============================================================
+# K3D CLUSTER (STABLE FOR ARGOCD)
+# ============================================================
 if ! k3d cluster list | grep -q devops-cluster; then
   k3d cluster create devops-cluster \
-    --api-port 6443 \
     --servers 1 \
     --agents 2 \
+    --servers-memory 2048 \
+    --agents-memory 2048 \
+    --api-port 6443 \
     --port "#{PORT_BASE + 8080}:80@loadbalancer" \
     --port "#{PORT_BASE + 8443}:443@loadbalancer" \
     --k3s-arg "--disable=traefik@server:0" \
@@ -217,20 +212,21 @@ mkdir -p /home/vagrant/.kube
 k3d kubeconfig get devops-cluster > /home/vagrant/.kube/config
 chown -R vagrant:vagrant /home/vagrant/.kube
 
-# GitOps
+# ============================================================
+# ARGOCD (FIXED - NO CRD LIMIT ERROR)
+# ============================================================
 kubectl create namespace argocd || true
 
-kubectl apply -n argocd \
-  -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+helm repo add argo https://argoproj.github.io/argo-helm || true
+helm repo update
 
-kubectl rollout status deployment/argocd-server -n argocd --timeout=180s || true
+helm upgrade --install argocd argo/argo-cd -n argocd
+
+kubectl rollout status deployment/argocd-server -n argocd --timeout=300s || true
 
 nohup kubectl port-forward svc/argocd-server -n argocd 9080:443 >/dev/null 2>&1 &
 
-kubectl -n argocd get secret argocd-initial-admin-secret \
-  -o jsonpath="{.data.password}" | base64 -d > /opt/argocd-pass.txt || true
-
-echo "GitOps ready"
+echo "GitOps Ready (Stable)"
 SHELL
     end
   end
