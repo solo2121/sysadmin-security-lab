@@ -24,22 +24,12 @@ def configure_libvirt(vm, overrides = {})
     libvirt.uri = "qemu:///system"
     libvirt.graphics_type = "vnc"
     libvirt.graphics_ip = "127.0.0.1"
-
-    settings[:disks].each do |disk|
-      libvirt.storage :file,
-        size: disk[:size],
-        type: "qcow2",
-        bus: "virtio",
-        device: disk[:device],
-        allow_existing: false
-    end
   end
 end
 
 Vagrant.configure("2") do |config|
 
   config.vm.synced_folder ".", "/vagrant", disabled: false
-
   PORT_BASE = ENV.fetch("PORT_BASE", "10000").to_i
 
   machines = {
@@ -47,11 +37,7 @@ Vagrant.configure("2") do |config|
       box: "bento/ubuntu-24.04",
       ip: "192.168.56.10",
       memory: 8192,
-      cpus: 4,
-      disks: [
-        { size: "10G", device: "vdb" },
-        { size: "10G", device: "vdc" }
-      ]
+      cpus: 4
     }
   }
 
@@ -74,19 +60,16 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", run: "always", inline: <<-SHELL
 set -e
 
-LAB_HOSTS_START="# LAB START"
-LAB_HOSTS_END="# LAB END"
+START="# LAB START"
+END="# LAB END"
 
-if grep -q "$LAB_HOSTS_START" /etc/hosts; then
-  sed -i "/$LAB_HOSTS_START/,/$LAB_HOSTS_END/d" /etc/hosts
-fi
+sed -i "/$START/,/$END/d" /etc/hosts || true
 
 cat >> /etc/hosts <<EOF
 
-$LAB_HOSTS_START
+$START
 #{hosts_entries}
-$LAB_HOSTS_END
-
+$END
 EOF
 SHELL
 
@@ -98,45 +81,26 @@ SHELL
       vm.vm.hostname = name
       vm.vm.network "private_network", ip: opts[:ip]
 
-      configure_libvirt(vm,
-        memory: opts[:memory] || 1024,
-        cpus: opts[:cpus] || 1,
-        disks: opts[:disks] || []
-      )
+      configure_libvirt(vm)
 
       vm.vm.provision "shell", inline: <<-SHELL
-#!/usr/bin/env bash
-set -euo pipefail
-
-if command -v apt-get >/dev/null 2>&1; then
-  apt-get update -qq
-  apt-get install -y vim curl wget git jq net-tools python3 python3-pip tmux htop tree ncdu
-fi
-SHELL
-
-      if name == "devops"
-
-        vm.vm.network "forwarded_port", guest: 3000, host: PORT_BASE + 3000
-        vm.vm.network "forwarded_port", guest: 9090, host: PORT_BASE + 9090
-        vm.vm.network "forwarded_port", guest: 8085, host: PORT_BASE + 8085
-        vm.vm.network "forwarded_port", guest: 8086, host: PORT_BASE + 8086
-        vm.vm.network "forwarded_port", guest: 8087, host: PORT_BASE + 8087
-
-        vm.vm.provision "shell", inline: <<-SHELL
-#!/usr/bin/env bash
 set -euo pipefail
 
 apt-get update -qq
-apt-get install -y bash-completion ansible git curl wget jq gnupg \
-  software-properties-common ca-certificates python3-pip
+apt-get install -y curl wget git jq vim net-tools python3 python3-pip tmux htop tree ncdu
+
+# =========================
+# DEVOPS NODE ONLY
+# =========================
+if [ "#{name}" = "devops" ]; then
+
+apt-get install -y bash-completion ansible gnupg ca-certificates software-properties-common
 
 # Docker
 if ! command -v docker >/dev/null 2>&1; then
   curl -fsSL https://get.docker.com | sh
 fi
-
 systemctl enable --now docker
-until docker info >/dev/null 2>&1; do sleep 2; done
 usermod -aG docker vagrant
 
 # kubectl
@@ -146,25 +110,22 @@ if ! command -v kubectl >/dev/null 2>&1; then
   rm -f kubectl
 fi
 
+# bash completion correct
 kubectl completion bash > /etc/bash_completion.d/kubectl || true
+echo 'alias k=kubectl' >> /home/vagrant/.bashrc
+echo 'complete -F __start_kubectl k' >> /home/vagrant/.bashrc
 
-# =========================
-# k3s INSTALL (STABLE)
-# =========================
+# k3s (STABLE SINGLE NODE)
 if ! command -v k3s >/dev/null 2>&1; then
   curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server --write-kubeconfig-mode 644" sh -
 fi
 
 export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
 
-# wait cluster
 until kubectl get nodes >/dev/null 2>&1; do sleep 5; done
-
 kubectl wait --for=condition=Ready nodes --all --timeout=180s || true
 
-# =========================
-# HELM
-# =========================
+# Helm
 if ! command -v helm >/dev/null 2>&1; then
   curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 fi
@@ -175,34 +136,25 @@ helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx || true
 helm repo add argo https://argoproj.github.io/argo-helm || true
 helm repo update
 
-# =========================
-# METRICS SERVER
-# =========================
+# Metrics server (safe apply)
 kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml || true
 
-# =========================
-# INGRESS NGINX
-# =========================
+# Ingress
 helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
-  --namespace ingress-nginx --create-namespace \
-  --set controller.publishService.enabled=true || true
+  --namespace ingress-nginx --create-namespace || true
 
-# =========================
-# PROMETHEUS + GRAFANA
-# =========================
+# Observability (production style)
 helm upgrade --install monitoring prometheus-community/kube-prometheus-stack \
   --namespace monitoring --create-namespace || true
 
-# =========================
-# ARGO CD (GITOPS)
-# =========================
+# GitOps (FIXED via Helm, no CRD corruption)
 helm upgrade --install argocd argo/argo-cd \
   --namespace argocd --create-namespace \
   --set server.service.type=NodePort || true
 
-echo "DEVOPS HYBRID GITOPS LAB READY"
+echo "DEVOPS PLATFORM READY"
+fi
 SHELL
-      end
     end
   end
 
