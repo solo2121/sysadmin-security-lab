@@ -4,20 +4,13 @@
 ENV['LIBVIRT_DEFAULT_URI'] = 'qemu:///system'
 Vagrant.require_version ">= 2.2.0"
 
-# ============================================================
-# DEFAULT CONFIG
-# ============================================================
 DEFAULT_CONFIG = {
   memory: 1024,
   cpus: 1,
   disks: []
 }.freeze
 
-# ============================================================
-# SAFE BOX RESOLVER (FIX FOR cloud-image ISSUE)
-# ============================================================
 def resolve_box(box)
-  # Allow override via environment without removing original boxes
   ENV.fetch("VAGRANT_BOX_#{box.gsub('/', '_').upcase}", box)
 end
 
@@ -47,9 +40,6 @@ Vagrant.configure("2") do |config|
 
   config.vm.synced_folder ".", "/vagrant", disabled: false
 
-  # ============================================================
-  # PORT STRATEGY FIX (NO CONFLICTS ACROSS LABS)
-  # ============================================================
   PORT_BASE = ENV.fetch("PORT_BASE", "10000").to_i
 
   machines = {
@@ -82,9 +72,7 @@ Vagrant.configure("2") do |config|
     ans_nodes.transform_values { |ip| { ip: ip } }
   )
 
-  hosts_entries = all_hosts.map do |name, data|
-    "#{data[:ip]} #{name}"
-  end.join("\n")
+  hosts_entries = all_hosts.map { |n, d| "#{d[:ip]} #{n}" }.join("\n")
 
   config.vm.provision "shell", run: "always", inline: <<-SHELL
 set -e
@@ -113,8 +101,7 @@ SHELL
       vm.vm.hostname = name
       vm.vm.network "private_network", ip: opts[:ip]
 
-      configure_libvirt(
-        vm,
+      configure_libvirt(vm,
         memory: opts[:memory] || 1024,
         cpus: opts[:cpus] || 1,
         disks: opts[:disks] || []
@@ -127,28 +114,24 @@ set -euo pipefail
 if command -v apt-get >/dev/null 2>&1; then
   apt-get update -qq
   apt-get install -y vim curl wget git jq net-tools python3 python3-pip tmux htop tree ncdu fzf ripgrep
-
 elif command -v dnf >/dev/null 2>&1; then
   dnf install -y vim curl wget git jq net-tools python3 python3-pip podman buildah skopeo
-
 elif command -v zypper >/dev/null 2>&1; then
   zypper install -y vim curl wget git jq net-tools python3 python3-pip
 fi
 SHELL
 
-      if name == "devops"
+      next unless name == "devops"
 
-        vm.vm.network "forwarded_port", guest: 3000, host: PORT_BASE + 3000, auto_correct: true
-        vm.vm.network "forwarded_port", guest: 9090, host: PORT_BASE + 9090, auto_correct: true
+      vm.vm.network "forwarded_port", guest: 3000, host: PORT_BASE + 3000, auto_correct: true
+      vm.vm.network "forwarded_port", guest: 9090, host: PORT_BASE + 9090, auto_correct: true
+      vm.vm.network "forwarded_port", guest: 8085, host: PORT_BASE + 8085, auto_correct: true
+      vm.vm.network "forwarded_port", guest: 8086, host: PORT_BASE + 8086, auto_correct: true
+      vm.vm.network "forwarded_port", guest: 8087, host: PORT_BASE + 8087, auto_correct: true
+      vm.vm.network "forwarded_port", guest: 8080, host: PORT_BASE + 8080, auto_correct: true
+      vm.vm.network "forwarded_port", guest: 8443, host: PORT_BASE + 8443, auto_correct: true
 
-        vm.vm.network "forwarded_port", guest: 8085, host: PORT_BASE + 8085, auto_correct: true
-        vm.vm.network "forwarded_port", guest: 8086, host: PORT_BASE + 8086, auto_correct: true
-        vm.vm.network "forwarded_port", guest: 8087, host: PORT_BASE + 8087, auto_correct: true
-
-        vm.vm.network "forwarded_port", guest: 8080, host: PORT_BASE + 8080, auto_correct: true
-        vm.vm.network "forwarded_port", guest: 8443, host: PORT_BASE + 8443, auto_correct: true
-
-        vm.vm.provision "shell", inline: <<-SHELL
+      vm.vm.provision "shell", inline: <<-SHELL
 #!/usr/bin/env bash
 set -euo pipefail
 export DEBIAN_FRONTEND=noninteractive
@@ -159,7 +142,7 @@ apt-get install -y bash-completion ansible git curl wget jq yq python3 python3-p
   gnupg software-properties-common net-tools ca-certificates \
   tmux htop tree ncdu fzf ripgrep
 
-# Docker install
+# Docker
 if ! command -v docker >/dev/null 2>&1; then
   curl -fsSL https://get.docker.com | sh
 fi
@@ -167,13 +150,12 @@ fi
 systemctl enable --now docker
 
 until docker info >/dev/null 2>&1; do
-  echo "Waiting for Docker..."
   sleep 3
 done
 
 usermod -aG docker vagrant
 
-# kubectl (RETRY SAFE)
+# kubectl
 if ! command -v kubectl >/dev/null 2>&1; then
   curl -fsSL --retry 3 -o kubectl \
     "https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
@@ -181,33 +163,26 @@ if ! command -v kubectl >/dev/null 2>&1; then
   rm -f kubectl
 fi
 
-# ============================================================
-# kubectl AUTO TAB COMPLETION + ALIAS
-# ============================================================
-if command -v kubectl >/dev/null 2>&1; then
-  kubectl completion bash > /etc/bash_completion.d/kubectl || true
-fi
+kubectl completion bash > /etc/bash_completion.d/kubectl || true
 
-grep -qxF 'alias k=kubectl' /home/vagrant/.bashrc \
-  || echo 'alias k=kubectl' >> /home/vagrant/.bashrc
+grep -qxF '[ -f /etc/bash_completion ] && source /etc/bash_completion' /home/vagrant/.bashrc || \
+echo '[ -f /etc/bash_completion ] && source /etc/bash_completion' >> /home/vagrant/.bashrc
 
-grep -qxF 'complete -F __start_kubectl k' /home/vagrant/.bashrc \
-  || echo 'complete -F __start_kubectl k' >> /home/vagrant/.bashrc
+grep -qxF 'alias k=kubectl' /home/vagrant/.bashrc || \
+echo 'alias k=kubectl' >> /home/vagrant/.bashrc
 
-grep -qxF '[ -f /etc/bash_completion ] && source /etc/bash_completion' /home/vagrant/.bashrc \
-  || echo '[ -f /etc/bash_completion ] && source /etc/bash_completion' >> /home/vagrant/.bashrc
+grep -qxF 'complete -F __start_kubectl k' /home/vagrant/.bashrc || \
+echo 'complete -F __start_kubectl k' >> /home/vagrant/.bashrc
 
 chown vagrant:vagrant /home/vagrant/.bashrc
 
 # Helm
-if ! command -v helm >/dev/null 2>&1; then
-  curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-fi
+command -v helm >/dev/null 2>&1 || \
+curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
 # k3d
-if ! command -v k3d >/dev/null 2>&1; then
-  curl -fsSL https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
-fi
+command -v k3d >/dev/null 2>&1 || \
+curl -fsSL https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
 
 # Terraform
 if ! command -v terraform >/dev/null 2>&1; then
@@ -218,28 +193,15 @@ if ! command -v terraform >/dev/null 2>&1; then
   apt-get install -y terraform
 fi
 
-pip3 install --break-system-packages checkov semgrep || true
-
-# Trivy
-if ! command -v trivy >/dev/null 2>&1; then
-  curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
-fi
-
-# Cosign
-if ! command -v cosign >/dev/null 2>&1; then
-  curl -LO https://github.com/sigstore/cosign/releases/latest/download/cosign-linux-amd64
-  install -m 0755 cosign-linux-amd64 /usr/local/bin/cosign
-  rm -f cosign-linux-amd64
-fi
-
-# ArgoCD
+# ArgoCD CLI
 if ! command -v argocd >/dev/null 2>&1; then
-  curl -sSL -o argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+  curl -sSL -o argocd \
+    https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
   install -m 0755 argocd /usr/local/bin/argocd
   rm -f argocd
 fi
 
-# k3d cluster
+# k3d
 if ! k3d cluster list | grep -q devops-cluster; then
   k3d cluster create devops-cluster \
     --api-port 6443 \
@@ -255,9 +217,21 @@ mkdir -p /home/vagrant/.kube
 k3d kubeconfig get devops-cluster > /home/vagrant/.kube/config
 chown -R vagrant:vagrant /home/vagrant/.kube
 
-# ... rest of your docker-compose section remains unchanged ...
+# GitOps
+kubectl create namespace argocd || true
+
+kubectl apply -n argocd \
+  -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+kubectl rollout status deployment/argocd-server -n argocd --timeout=180s || true
+
+nohup kubectl port-forward svc/argocd-server -n argocd 9080:443 >/dev/null 2>&1 &
+
+kubectl -n argocd get secret argocd-initial-admin-secret \
+  -o jsonpath="{.data.password}" | base64 -d > /opt/argocd-pass.txt || true
+
+echo "GitOps ready"
 SHELL
-      end
     end
   end
 
@@ -271,8 +245,7 @@ SHELL
 
       vm.vm.provision "shell", inline: <<-SHELL
 #!/usr/bin/env bash
-set -euo pipefail
-
+set -e
 apt-get update -qq
 apt-get install -y python3 openssh-server
 systemctl enable --now ssh
