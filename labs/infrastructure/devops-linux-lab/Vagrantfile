@@ -21,6 +21,7 @@ def configure_libvirt(vm, overrides = {})
     libvirt.memory = settings[:memory]
     libvirt.cpus = settings[:cpus]
     libvirt.nested = true
+    libvirt.uri = "qemu:///system"
     libvirt.graphics_type = "vnc"
     libvirt.graphics_ip = "127.0.0.1"
 
@@ -45,12 +46,11 @@ Vagrant.configure("2") do |config|
     "devops" => {
       box: "bento/ubuntu-24.04",
       ip: "192.168.56.10",
-      memory: 6144,
-      cpus: 3,
+      memory: 8192,
+      cpus: 4,
       disks: [
-        { size: "5G", device: "vdb" },
-        { size: "5G", device: "vdc" },
-        { size: "2G", device: "vdd" }
+        { size: "10G", device: "vdb" },
+        { size: "10G", device: "vdc" }
       ]
     }
   }
@@ -67,17 +67,15 @@ Vagrant.configure("2") do |config|
     "ans-node2" => "192.168.56.31"
   }
 
-  all_hosts = machines.merge(linux_labs).merge(
-    ans_nodes.transform_values { |ip| { ip: ip } }
-  )
+  all_hosts = machines.merge(linux_labs).merge(ans_nodes.transform_values { |ip| { ip: ip } })
 
   hosts_entries = all_hosts.map { |n, d| "#{d[:ip]} #{n}" }.join("\n")
 
   config.vm.provision "shell", run: "always", inline: <<-SHELL
 set -e
 
-LAB_HOSTS_START="# Vagrant DevSecOps Lab START"
-LAB_HOSTS_END="# Vagrant DevSecOps Lab END"
+LAB_HOSTS_START="# LAB START"
+LAB_HOSTS_END="# LAB END"
 
 if grep -q "$LAB_HOSTS_START" /etc/hosts; then
   sed -i "/$LAB_HOSTS_START/,/$LAB_HOSTS_END/d" /etc/hosts
@@ -112,34 +110,25 @@ set -euo pipefail
 
 if command -v apt-get >/dev/null 2>&1; then
   apt-get update -qq
-  apt-get install -y vim curl wget git jq net-tools python3 python3-pip tmux htop tree ncdu fzf ripgrep
-elif command -v dnf >/dev/null 2>&1; then
-  dnf install -y vim curl wget git jq net-tools python3 python3-pip podman buildah skopeo
-elif command -v zypper >/dev/null 2>&1; then
-  zypper install -y vim curl wget git jq net-tools python3 python3-pip
+  apt-get install -y vim curl wget git jq net-tools python3 python3-pip tmux htop tree ncdu
 fi
 SHELL
 
-      next unless name == "devops"
+      if name == "devops"
 
-      vm.vm.network "forwarded_port", guest: 3000, host: PORT_BASE + 3000, auto_correct: true
-      vm.vm.network "forwarded_port", guest: 9090, host: PORT_BASE + 9090, auto_correct: true
-      vm.vm.network "forwarded_port", guest: 8085, host: PORT_BASE + 8085, auto_correct: true
-      vm.vm.network "forwarded_port", guest: 8086, host: PORT_BASE + 8086, auto_correct: true
-      vm.vm.network "forwarded_port", guest: 8087, host: PORT_BASE + 8087, auto_correct: true
-      vm.vm.network "forwarded_port", guest: 8080, host: PORT_BASE + 8080, auto_correct: true
-      vm.vm.network "forwarded_port", guest: 8443, host: PORT_BASE + 8443, auto_correct: true
+        vm.vm.network "forwarded_port", guest: 3000, host: PORT_BASE + 3000
+        vm.vm.network "forwarded_port", guest: 9090, host: PORT_BASE + 9090
+        vm.vm.network "forwarded_port", guest: 8085, host: PORT_BASE + 8085
+        vm.vm.network "forwarded_port", guest: 8086, host: PORT_BASE + 8086
+        vm.vm.network "forwarded_port", guest: 8087, host: PORT_BASE + 8087
 
-      vm.vm.provision "shell", inline: <<-SHELL
+        vm.vm.provision "shell", inline: <<-SHELL
 #!/usr/bin/env bash
 set -euo pipefail
-export DEBIAN_FRONTEND=noninteractive
 
 apt-get update -qq
-
-apt-get install -y bash-completion ansible git curl wget jq yq python3 python3-pip \
-  gnupg software-properties-common net-tools ca-certificates \
-  tmux htop tree ncdu fzf ripgrep
+apt-get install -y bash-completion ansible git curl wget jq gnupg \
+  software-properties-common ca-certificates python3-pip
 
 # Docker
 if ! command -v docker >/dev/null 2>&1; then
@@ -147,87 +136,73 @@ if ! command -v docker >/dev/null 2>&1; then
 fi
 
 systemctl enable --now docker
-
-until docker info >/dev/null 2>&1; do sleep 3; done
-
+until docker info >/dev/null 2>&1; do sleep 2; done
 usermod -aG docker vagrant
 
 # kubectl
 if ! command -v kubectl >/dev/null 2>&1; then
-  curl -fsSL --retry 3 -o kubectl \
-    "https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+  curl -LO "https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
   install -m 0755 kubectl /usr/local/bin/kubectl
   rm -f kubectl
 fi
 
 kubectl completion bash > /etc/bash_completion.d/kubectl || true
 
-grep -qxF '[ -f /etc/bash_completion ] && source /etc/bash_completion' /home/vagrant/.bashrc || \
-echo '[ -f /etc/bash_completion ] && source /etc/bash_completion' >> /home/vagrant/.bashrc
+# =========================
+# k3s INSTALL (STABLE)
+# =========================
+if ! command -v k3s >/dev/null 2>&1; then
+  curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server --write-kubeconfig-mode 644" sh -
+fi
 
-grep -qxF 'alias k=kubectl' /home/vagrant/.bashrc || \
-echo 'alias k=kubectl' >> /home/vagrant/.bashrc
+export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
 
-grep -qxF 'complete -F __start_kubectl k' /home/vagrant/.bashrc || \
-echo 'complete -F __start_kubectl k' >> /home/vagrant/.bashrc
+# wait cluster
+until kubectl get nodes >/dev/null 2>&1; do sleep 5; done
 
-chown vagrant:vagrant /home/vagrant/.bashrc
+kubectl wait --for=condition=Ready nodes --all --timeout=180s || true
 
-# Helm (FIX for ArgoCD CRD issue)
+# =========================
+# HELM
+# =========================
 if ! command -v helm >/dev/null 2>&1; then
   curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 fi
 
-# k3d (stable cluster sizing FIX)
-if ! command -v k3d >/dev/null 2>&1; then
-  curl -fsSL https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
-fi
-
-# Terraform
-if ! command -v terraform >/dev/null 2>&1; then
-  curl -fsSL https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/share/keyrings/hashicorp.gpg
-  echo "deb [signed-by=/usr/share/keyrings/hashicorp.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" \
-    > /etc/apt/sources.list.d/hashicorp.list
-  apt-get update -qq
-  apt-get install -y terraform
-fi
-
-# ============================================================
-# K3D CLUSTER (STABLE FOR ARGOCD)
-# ============================================================
-if ! k3d cluster list | grep -q devops-cluster; then
-  k3d cluster create devops-cluster \
-    --servers 1 \
-    --agents 2 \
-    --servers-memory 2048 \
-    --agents-memory 2048 \
-    --api-port 6443 \
-    --port "#{PORT_BASE + 8080}:80@loadbalancer" \
-    --port "#{PORT_BASE + 8443}:443@loadbalancer" \
-    --k3s-arg "--disable=traefik@server:0" \
-    --registry-create devops-registry:0.0.0.0:5000
-fi
-
-mkdir -p /home/vagrant/.kube
-k3d kubeconfig get devops-cluster > /home/vagrant/.kube/config
-chown -R vagrant:vagrant /home/vagrant/.kube
-
-# ============================================================
-# ARGOCD (FIXED - NO CRD LIMIT ERROR)
-# ============================================================
-kubectl create namespace argocd || true
-
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts || true
+helm repo add grafana https://grafana.github.io/helm-charts || true
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx || true
 helm repo add argo https://argoproj.github.io/argo-helm || true
 helm repo update
 
-helm upgrade --install argocd argo/argo-cd -n argocd
+# =========================
+# METRICS SERVER
+# =========================
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml || true
 
-kubectl rollout status deployment/argocd-server -n argocd --timeout=300s || true
+# =========================
+# INGRESS NGINX
+# =========================
+helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
+  --namespace ingress-nginx --create-namespace \
+  --set controller.publishService.enabled=true || true
 
-nohup kubectl port-forward svc/argocd-server -n argocd 9080:443 >/dev/null 2>&1 &
+# =========================
+# PROMETHEUS + GRAFANA
+# =========================
+helm upgrade --install monitoring prometheus-community/kube-prometheus-stack \
+  --namespace monitoring --create-namespace || true
 
-echo "GitOps Ready (Stable)"
+# =========================
+# ARGO CD (GITOPS)
+# =========================
+helm upgrade --install argocd argo/argo-cd \
+  --namespace argocd --create-namespace \
+  --set server.service.type=NodePort || true
+
+echo "DEVOPS HYBRID GITOPS LAB READY"
 SHELL
+      end
     end
   end
 
@@ -237,11 +212,9 @@ SHELL
       vm.vm.hostname = name
       vm.vm.network "private_network", ip: ip
 
-      configure_libvirt(vm, memory: 768, cpus: 1)
+      configure_libvirt(vm, memory: 1024, cpus: 1)
 
       vm.vm.provision "shell", inline: <<-SHELL
-#!/usr/bin/env bash
-set -e
 apt-get update -qq
 apt-get install -y python3 openssh-server
 systemctl enable --now ssh
