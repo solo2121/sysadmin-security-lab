@@ -4,173 +4,210 @@
 ENV['LIBVIRT_DEFAULT_URI'] = 'qemu:///system'
 Vagrant.require_version ">= 2.2.0"
 
-DEFAULT_CONFIG = {
-  memory: 1024,
-  cpus: 1,
-  disks: []
-}.freeze
+DEFAULT = { memory: 1024, cpus: 1 }.freeze
 
-def resolve_box(box)
-  ENV.fetch("VAGRANT_BOX_#{box.gsub('/', '_').upcase}", box)
+def libvirt(vm, opts = {})
+  c = DEFAULT.merge(opts)
+  vm.vm.provider :libvirt do |l|
+    l.memory = c[:memory]
+    l.cpus = c[:cpus]
+    l.nested = true
+    l.graphics_type = "vnc"
+    l.graphics_ip = "127.0.0.1"
+  end
 end
 
-def configure_libvirt(vm, overrides = {})
-  settings = DEFAULT_CONFIG.merge(overrides)
-
-  vm.vm.provider :libvirt do |libvirt|
-    libvirt.memory = settings[:memory]
-    libvirt.cpus = settings[:cpus]
-    libvirt.nested = true
-    libvirt.uri = "qemu:///system"
-    libvirt.graphics_type = "vnc"
-    libvirt.graphics_ip = "127.0.0.1"
+def attach_lab_disks(vm)
+  vm.vm.provider :libvirt do |l|
+    l.storage :file, size: "5G", type: "qcow2"
+    l.storage :file, size: "5G", type: "qcow2"
+    l.storage :file, size: "2G", type: "qcow2"
   end
 end
 
 Vagrant.configure("2") do |config|
-
+  config.vm.box_check_update = false
   config.vm.synced_folder ".", "/vagrant", disabled: false
-  PORT_BASE = ENV.fetch("PORT_BASE", "10000").to_i
 
-  machines = {
-    "devops" => {
-      box: "bento/ubuntu-24.04",
-      ip: "192.168.56.10",
-      memory: 8192,
-      cpus: 4
-    }
+  cluster = {
+    "devops-1"  => { box: "bento/ubuntu-24.04", ip: "192.168.56.10", memory: 6144, cpus: 4 },
+    "worker-1"  => { box: "bento/ubuntu-24.04", ip: "192.168.56.11", memory: 3072, cpus: 2 },
+    "worker-2"  => { box: "bento/ubuntu-24.04", ip: "192.168.56.12", memory: 3072, cpus: 2 }
   }
 
   linux_labs = {
-    "ubuntu-lab"   => { box: "bento/ubuntu-24.04", ip: "192.168.56.20" },
-    "rocky-lab"    => { box: resolve_box("cloud-image/rocky-10"), ip: "192.168.56.21" },
-    "alma-lab"     => { box: resolve_box("cloud-image/almalinux-10"), ip: "192.168.56.22" },
-    "opensuse-lab" => { box: "opensuse/Leap-15.6", ip: "192.168.56.23" }
+    "ubuntu-lab" => { box: "bento/ubuntu-24.04", ip: "192.168.56.20" },
+    "rocky-lab"  => { box: "rockylinux/10",      ip: "192.168.56.21" },
+    "alma-lab"   => { box: "almalinux/10",       ip: "192.168.56.22" },
+    "suse-lab"   => { box: "opensuse/Leap-15.6", ip: "192.168.56.23" }
   }
 
-  ans_nodes = {
-    "ans-node1" => "192.168.56.30",
-    "ans-node2" => "192.168.56.31"
+  ansible_nodes = {
+    "node1" => "192.168.56.30",
+    "node2" => "192.168.56.31"
   }
 
-  all_hosts = machines.merge(linux_labs).merge(ans_nodes.transform_values { |ip| { ip: ip } })
-
+  all_hosts = cluster.merge(linux_labs).merge(ansible_nodes.transform_values { |ip| { ip: ip } })
   hosts_entries = all_hosts.map { |n, d| "#{d[:ip]} #{n}" }.join("\n")
 
   config.vm.provision "shell", run: "always", inline: <<-SHELL
-set -e
-
-START="# LAB START"
-END="# LAB END"
-
-sed -i "/$START/,/$END/d" /etc/hosts || true
-
-cat >> /etc/hosts <<EOF
-
+    set -e
+    START="# LAB START"
+    END="# LAB END"
+    sed -i "/$START/,/$END/d" /etc/hosts || true
+    cat >> /etc/hosts <<EOF
 $START
 #{hosts_entries}
 $END
 EOF
-SHELL
+  SHELL
 
-  (machines.merge(linux_labs)).each do |name, opts|
-
+  (cluster.merge(linux_labs)).each do |name, cfg|
     config.vm.define name do |vm|
-
-      vm.vm.box = opts[:box]
+      vm.vm.box = cfg[:box]
       vm.vm.hostname = name
-      vm.vm.network "private_network", ip: opts[:ip]
+      vm.vm.network "private_network", ip: cfg[:ip]
 
-      configure_libvirt(vm)
+      libvirt(vm, memory: cfg[:memory] || 1024, cpus: cfg[:cpus] || 1)
+      attach_lab_disks(vm) if linux_labs.key?(name)
 
       vm.vm.provision "shell", inline: <<-SHELL
-set -euo pipefail
+        set -euo pipefail
+        export DEBIAN_FRONTEND=noninteractive
 
-apt-get update -qq
-apt-get install -y curl wget git jq vim net-tools python3 python3-pip tmux htop tree ncdu
+        if command -v apt-get >/dev/null; then
+          apt-get update -qq
+          apt-get install -y curl wget git jq vim tree tmux htop net-tools ca-certificates bash-completion python3 python3-pip
+        elif command -v dnf >/dev/null; then
+          dnf install -y curl wget git jq vim tree tmux htop net-tools ca-certificates bash-completion python3 python3-pip
+        elif command -v zypper >/dev/null; then
+          zypper install -y curl wget git jq vim tree tmux htop net-tools ca-certificates bash-completion python3 python3-pip
+        fi
 
-# =========================
-# DEVOPS NODE ONLY
-# =========================
-if [ "#{name}" = "devops" ]; then
+        systemctl enable --now ssh 2>/dev/null || true
+      SHELL
 
-apt-get install -y bash-completion ansible gnupg ca-certificates software-properties-common
+      if name == "devops-1"
+        vm.vm.network "forwarded_port", guest: 30080, host: 30080
+        vm.vm.network "forwarded_port", guest: 32000, host: 32000
+        vm.vm.network "forwarded_port", guest: 32001, host: 32001
 
-# Docker
-if ! command -v docker >/dev/null 2>&1; then
-  curl -fsSL https://get.docker.com | sh
+        vm.vm.provision "shell", inline: <<-'SHELL'
+          set -euo pipefail
+          MASTER_IP=192.168.56.10
+
+          # Docker
+          if ! command -v docker >/dev/null; then
+            curl -fsSL https://get.docker.com | sh
+          fi
+          systemctl enable --now docker
+          usermod -aG docker vagrant || true
+
+          # kubectl
+          if ! command -v kubectl >/dev/null; then
+            curl -LO "https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+            install -m 0755 kubectl /usr/local/bin/kubectl
+            rm -f kubectl
+          fi
+
+          # K3s
+          if ! command -v k3s >/dev/null; then
+            curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server --write-kubeconfig-mode 644 --disable traefik --node-ip=$MASTER_IP" sh -
+          fi
+
+          # KUBECONFIG FIX
+          KUBE_PATH="/etc/rancher/k3s/k3s.yaml"
+
+          if [ -f "$KUBE_PATH" ]; then
+            export KUBECONFIG=$KUBE_PATH
+
+            cat > /etc/profile.d/99-kubeconfig.sh <<EOF
+export KUBECONFIG=$KUBE_PATH
+alias k=kubectl
+EOF
+            chmod +x /etc/profile.d/99-kubeconfig.sh
+
+            mkdir -p /home/vagrant/.kube /root/.kube
+            ln -sf "$KUBE_PATH" /home/vagrant/.kube/config || true
+            ln -sf "$KUBE_PATH" /root/.kube/config || true
+
+            chown -R vagrant:vagrant /home/vagrant/.kube || true
+          fi
+
+          # ============================================================
+          # KUBECTL TAB COMPLETION FIX (FINAL SAFE VERSION)
+          # ============================================================
+
+          if command -v kubectl >/dev/null; then
+            kubectl completion bash > /etc/bash_completion.d/kubectl || true
+
+            # ensure bash completion system is loaded
+            if ! grep -q bash_completion /etc/bash.bashrc 2>/dev/null; then
+              echo '[[ -r /usr/share/bash-completion/bash_completion ]] && source /usr/share/bash-completion/bash_completion' >> /etc/bash.bashrc
+            fi
+
+            cat > /etc/profile.d/99-kubectl-completion.sh <<'EOF'
+# SAFE kubectl completion loader
+
+if [ -f /etc/bash_completion.d/kubectl ]; then
+  source /etc/bash_completion.d/kubectl
 fi
-systemctl enable --now docker
-usermod -aG docker vagrant
 
-# kubectl
-if ! command -v kubectl >/dev/null 2>&1; then
-  curl -LO "https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-  install -m 0755 kubectl /usr/local/bin/kubectl
-  rm -f kubectl
+alias k=kubectl
+
+# ONLY register completion if function exists
+if declare -F __start_kubectl >/dev/null 2>&1; then
+  complete -F __start_kubectl kubectl
+  complete -F __start_kubectl k
 fi
+EOF
 
-# bash completion correct
-kubectl completion bash > /etc/bash_completion.d/kubectl || true
-echo 'alias k=kubectl' >> /home/vagrant/.bashrc
-echo 'complete -F __start_kubectl k' >> /home/vagrant/.bashrc
+            chmod +x /etc/profile.d/99-kubectl-completion.sh
 
-# k3s (STABLE SINGLE NODE)
-if ! command -v k3s >/dev/null 2>&1; then
-  curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server --write-kubeconfig-mode 644" sh -
-fi
+            echo "source /etc/profile.d/99-kubectl-completion.sh" >> /home/vagrant/.bashrc
+            echo "source /etc/profile.d/99-kubectl-completion.sh" >> /root/.bashrc
+          fi
 
-export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+          # Wait for cluster
+          export KUBECONFIG=$KUBE_PATH
+          until kubectl get ns kube-system >/dev/null 2>&1; do
+            echo "Waiting for K3s..."
+            sleep 5
+          done
 
-until kubectl get nodes >/dev/null 2>&1; do sleep 5; done
-kubectl wait --for=condition=Ready nodes --all --timeout=180s || true
+          echo "=== DEVSECOPS LAB READY ==="
+          echo "kubectl + completion fully fixed"
+        SHELL
 
-# Helm
-if ! command -v helm >/dev/null 2>&1; then
-  curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-fi
+      elsif name.start_with?("worker")
+        vm.vm.provision "shell", inline: <<-'SHELL'
+          set -euo pipefail
+          until [ -f /vagrant/k3s-token ]; do sleep 5; done
+          until curl -s -k https://192.168.56.10:6443 >/dev/null; do sleep 5; done
 
-helm repo add prometheus-community https://prometheus-community.github.io/helm-charts || true
-helm repo add grafana https://grafana.github.io/helm-charts || true
-helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx || true
-helm repo add argo https://argoproj.github.io/argo-helm || true
-helm repo update
+          curl -sfL https://get.k3s.io | \
+            K3S_URL="https://192.168.56.10:6443" \
+            K3S_TOKEN=$(cat /vagrant/k3s-token) sh -
 
-# Metrics server (safe apply)
-kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml || true
-
-# Ingress
-helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
-  --namespace ingress-nginx --create-namespace || true
-
-# Observability (production style)
-helm upgrade --install monitoring prometheus-community/kube-prometheus-stack \
-  --namespace monitoring --create-namespace || true
-
-# GitOps (FIXED via Helm, no CRD corruption)
-helm upgrade --install argocd argo/argo-cd \
-  --namespace argocd --create-namespace \
-  --set server.service.type=NodePort || true
-
-echo "DEVOPS PLATFORM READY"
-fi
-SHELL
+          echo "WORKER READY"
+        SHELL
+      end
     end
   end
 
-  ans_nodes.each do |name, ip|
+  ansible_nodes.each do |name, ip|
     config.vm.define name do |vm|
       vm.vm.box = "bento/ubuntu-24.04"
       vm.vm.hostname = name
       vm.vm.network "private_network", ip: ip
-
-      configure_libvirt(vm, memory: 1024, cpus: 1)
+      libvirt(vm, memory: 768, cpus: 1)
 
       vm.vm.provision "shell", inline: <<-SHELL
-apt-get update -qq
-apt-get install -y python3 openssh-server
-systemctl enable --now ssh
-SHELL
+        set -euo pipefail
+        apt-get update -qq
+        apt-get install -y curl wget git jq vim tree tmux htop net-tools python3 python3-pip openssh-server bash-completion
+        systemctl enable --now ssh
+      SHELL
     end
   end
 end
