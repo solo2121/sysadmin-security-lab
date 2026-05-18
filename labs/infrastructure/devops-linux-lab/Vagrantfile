@@ -30,9 +30,9 @@ Vagrant.configure("2") do |config|
   config.vm.synced_folder ".", "/vagrant", disabled: false
 
   cluster = {
-    "devops-1"  => { box: "bento/ubuntu-24.04", ip: "192.168.56.10", memory: 6144, cpus: 4 },
-    "worker-1"  => { box: "bento/ubuntu-24.04", ip: "192.168.56.11", memory: 3072, cpus: 2 },
-    "worker-2"  => { box: "bento/ubuntu-24.04", ip: "192.168.56.12", memory: 3072, cpus: 2 }
+    "devops-1" => { box: "bento/ubuntu-24.04", ip: "192.168.56.10", memory: 6144, cpus: 4 },
+    "worker-1" => { box: "bento/ubuntu-24.04", ip: "192.168.56.11", memory: 3072, cpus: 2 },
+    "worker-2" => { box: "bento/ubuntu-24.04", ip: "192.168.56.12", memory: 3072, cpus: 2 }
   }
 
   linux_labs = {
@@ -103,6 +103,22 @@ EOF
           systemctl enable --now docker
           usermod -aG docker vagrant || true
 
+          # Offline images
+          docker pull alpine:latest || true
+          docker pull busybox:latest || true
+          docker pull nginx:alpine || true
+          docker pull redis:alpine || true
+          docker pull postgres:16-alpine || true
+          docker pull python:3.11-slim || true
+          docker pull node:20-alpine || true
+          docker pull prom/prometheus || true
+          docker pull grafana/grafana || true
+          docker pull prom/node-exporter || true
+          docker pull aquasec/trivy || true
+          docker pull bitnami/kubectl || true
+          docker pull hashicorp/vault || true
+          docker pull argoproj/argocd || true
+
           # kubectl
           if ! command -v kubectl >/dev/null; then
             curl -LO "https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
@@ -110,73 +126,69 @@ EOF
             rm -f kubectl
           fi
 
+          # kubectl TAB COMPLETION (Your original)
+          if command -v kubectl >/dev/null; then
+            kubectl completion bash > /etc/bash_completion.d/kubectl || true
+            echo 'source /etc/bash_completion.d/kubectl' >> /home/vagrant/.bashrc
+            echo 'source /etc/bash_completion.d/kubectl' >> /root/.bashrc
+          fi
+
           # K3s
           if ! command -v k3s >/dev/null; then
             curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server --write-kubeconfig-mode 644 --disable traefik --node-ip=$MASTER_IP" sh -
           fi
 
-          # KUBECONFIG FIX
+          # ============================================================
+          # BULLETPROOF KUBECONFIG FIX (Fixes localhost:8080 error)
+          # ============================================================
           KUBE_PATH="/etc/rancher/k3s/k3s.yaml"
 
-          if [ -f "$KUBE_PATH" ]; then
-            export KUBECONFIG=$KUBE_PATH
-
-            cat > /etc/profile.d/99-kubeconfig.sh <<EOF
+          cat > /etc/profile.d/99-kubeconfig.sh <<EOF
 export KUBECONFIG=$KUBE_PATH
 alias k=kubectl
 EOF
-            chmod +x /etc/profile.d/99-kubeconfig.sh
+          chmod +x /etc/profile.d/99-kubeconfig.sh
 
-            mkdir -p /home/vagrant/.kube /root/.kube
-            ln -sf "$KUBE_PATH" /home/vagrant/.kube/config || true
-            ln -sf "$KUBE_PATH" /root/.kube/config || true
+          # Symlinks for reliability
+          mkdir -p /home/vagrant/.kube /root/.kube
+          ln -sf $KUBE_PATH /home/vagrant/.kube/config
+          ln -sf $KUBE_PATH /root/.kube/config
+          chown -R vagrant:vagrant /home/vagrant/.kube
 
-            chown -R vagrant:vagrant /home/vagrant/.kube || true
-          fi
+          # Load in non-login shells (important for vagrant ssh)
+          cat >> /home/vagrant/.bashrc <<'EOF'
 
-          # ============================================================
-          # KUBECTL TAB COMPLETION FIX (FINAL SAFE VERSION)
-          # ============================================================
-
-          if command -v kubectl >/dev/null; then
-            kubectl completion bash > /etc/bash_completion.d/kubectl || true
-
-            # ensure bash completion system is loaded
-            if ! grep -q bash_completion /etc/bash.bashrc 2>/dev/null; then
-              echo '[[ -r /usr/share/bash-completion/bash_completion ]] && source /usr/share/bash-completion/bash_completion' >> /etc/bash.bashrc
-            fi
-
-            cat > /etc/profile.d/99-kubectl-completion.sh <<'EOF'
-# SAFE kubectl completion loader
-
-if [ -f /etc/bash_completion.d/kubectl ]; then
-  source /etc/bash_completion.d/kubectl
-fi
-
-alias k=kubectl
-
-# ONLY register completion if function exists
-if declare -F __start_kubectl >/dev/null 2>&1; then
-  complete -F __start_kubectl kubectl
-  complete -F __start_kubectl k
-fi
+# Kubernetes Environment - Bulletproof
+source /etc/profile.d/99-kubeconfig.sh
 EOF
+          chown vagrant:vagrant /home/vagrant/.bashrc
 
-            chmod +x /etc/profile.d/99-kubectl-completion.sh
+          # Copy token for workers
+          cp /var/lib/rancher/k3s/server/token /vagrant/k3s-token 2>/dev/null || true
+          chmod 644 /vagrant/k3s-token 2>/dev/null || true
 
-            echo "source /etc/profile.d/99-kubectl-completion.sh" >> /home/vagrant/.bashrc
-            echo "source /etc/profile.d/99-kubectl-completion.sh" >> /root/.bashrc
-          fi
-
-          # Wait for cluster
+          # Wait for K3s
           export KUBECONFIG=$KUBE_PATH
           until kubectl get ns kube-system >/dev/null 2>&1; do
             echo "Waiting for K3s..."
             sleep 5
           done
 
-          echo "=== DEVSECOPS LAB READY ==="
-          echo "kubectl + completion fully fixed"
+          # SAFE ARGOCD FIX (Your original logic)
+          kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f - || true
+          sleep 10
+
+          kubectl get deployment -n argocd argocd-applicationset-controller >/dev/null 2>&1 && \
+          kubectl -n argocd rollout restart deployment argocd-applicationset-controller || true
+
+          kubectl get configmap -n argocd argocd-cmd-params-cm >/dev/null 2>&1 && \
+          kubectl -n argocd patch configmap argocd-cmd-params-cm \
+          --type merge \
+          -p '{"data":{"applicationsetcontroller.enable.policy":"false"}}' || true
+
+          echo "====================================="
+          echo " LAB READY - SAFE ARGO + KUBECTL OK "
+          echo "====================================="
         SHELL
 
       elsif name.start_with?("worker")
@@ -192,22 +204,6 @@ EOF
           echo "WORKER READY"
         SHELL
       end
-    end
-  end
-
-  ansible_nodes.each do |name, ip|
-    config.vm.define name do |vm|
-      vm.vm.box = "bento/ubuntu-24.04"
-      vm.vm.hostname = name
-      vm.vm.network "private_network", ip: ip
-      libvirt(vm, memory: 768, cpus: 1)
-
-      vm.vm.provision "shell", inline: <<-SHELL
-        set -euo pipefail
-        apt-get update -qq
-        apt-get install -y curl wget git jq vim tree tmux htop net-tools python3 python3-pip openssh-server bash-completion
-        systemctl enable --now ssh
-      SHELL
     end
   end
 end
