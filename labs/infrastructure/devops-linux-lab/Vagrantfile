@@ -103,7 +103,7 @@ EOF
           systemctl enable --now docker
           usermod -aG docker vagrant || true
 
-          # Offline images
+          # ==================== OFFLINE IMAGES (Modern 2026 Set) ====================
           docker pull alpine:latest || true
           docker pull busybox:latest || true
           docker pull nginx:alpine || true
@@ -119,6 +119,18 @@ EOF
           docker pull hashicorp/vault || true
           docker pull argoproj/argocd || true
 
+          # Extended DevSecOps Images
+          docker pull registry:2 || true
+          docker pull bitnami/minio || true
+          docker pull rabbitmq:3-management || true
+          docker pull mongo:7 || true
+          docker pull curlimages/curl || true
+          docker pull jenkins/jenkins:lts-jdk17 || true
+          docker pull sonarqube:community || true
+          docker pull traefik:v3.0 || true
+          docker pull bitnami/kafka || true
+
+          # ==================== TOOLS ====================
           # kubectl
           if ! command -v kubectl >/dev/null; then
             curl -LO "https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
@@ -126,7 +138,17 @@ EOF
             rm -f kubectl
           fi
 
-          # kubectl TAB COMPLETION (Your original)
+          # Helm
+          if ! command -v helm >/dev/null; then
+            curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+          fi
+
+          # k9s - Kubernetes Terminal UI (Great addition!)
+          if ! command -v k9s >/dev/null; then
+            curl -sS https://webinstall.dev/k9s | bash
+          fi
+
+          # kubectl completion
           if command -v kubectl >/dev/null; then
             kubectl completion bash > /etc/bash_completion.d/kubectl || true
             echo 'source /etc/bash_completion.d/kubectl' >> /home/vagrant/.bashrc
@@ -139,23 +161,20 @@ EOF
           fi
 
           # ============================================================
-          # BULLETPROOF KUBECONFIG FIX (Fixes localhost:8080 error)
+          # BULLETPROOF KUBECONFIG
           # ============================================================
           KUBE_PATH="/etc/rancher/k3s/k3s.yaml"
-
           cat > /etc/profile.d/99-kubeconfig.sh <<EOF
 export KUBECONFIG=$KUBE_PATH
 alias k=kubectl
 EOF
           chmod +x /etc/profile.d/99-kubeconfig.sh
 
-          # Symlinks for reliability
           mkdir -p /home/vagrant/.kube /root/.kube
           ln -sf $KUBE_PATH /home/vagrant/.kube/config
           ln -sf $KUBE_PATH /root/.kube/config
           chown -R vagrant:vagrant /home/vagrant/.kube
 
-          # Load in non-login shells (important for vagrant ssh)
           cat >> /home/vagrant/.bashrc <<'EOF'
 
 # Kubernetes Environment - Bulletproof
@@ -163,7 +182,7 @@ source /etc/profile.d/99-kubeconfig.sh
 EOF
           chown vagrant:vagrant /home/vagrant/.bashrc
 
-          # Copy token for workers
+          # Token for workers
           cp /var/lib/rancher/k3s/server/token /vagrant/k3s-token 2>/dev/null || true
           chmod 644 /vagrant/k3s-token 2>/dev/null || true
 
@@ -174,7 +193,7 @@ EOF
             sleep 5
           done
 
-          # SAFE ARGOCD FIX (Your original logic)
+          # SAFE ARGOCD FIX
           kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f - || true
           sleep 10
 
@@ -187,7 +206,8 @@ EOF
           -p '{"data":{"applicationsetcontroller.enable.policy":"false"}}' || true
 
           echo "====================================="
-          echo " LAB READY - SAFE ARGO + KUBECTL OK "
+          echo " LAB READY - FULL DEVSECOPS ENVIRONMENT "
+          echo " (k9s, Helm, Rich Image Cache, etc.)   "
           echo "====================================="
         SHELL
 
