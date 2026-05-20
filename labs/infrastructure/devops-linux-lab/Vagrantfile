@@ -187,16 +187,16 @@ done
 
 echo "OFFLINE IMAGES READY"
 
-# ================= HARBOR SETUP =================
+# ================= HARBOR SETUP (SIMPLIFIED NGINX REGISTRY) =================
 mkdir -p /opt/harbor
 cd /opt/harbor
 
-# Download Harbor (using offline installer to avoid online dependencies)
+# Create harbor docker-compose with proper nginx reverse proxy
 if [ ! -f /opt/harbor/docker-compose.yml ]; then
-  # Create minimal harbor docker-compose (self-contained)
   cat > /opt/harbor/docker-compose.yml <<'DOCKER_COMPOSE'
 version: '3.8'
 services:
+  # PostgreSQL Database
   harbor-db:
     image: goharbor/harbor-db:v2.10.0
     container_name: harbor-db
@@ -206,7 +206,13 @@ services:
       - harbor-db-data:/var/lib/postgresql/data
     networks:
       - harbor
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
+  # Harbor Core
   harbor-core:
     image: goharbor/harbor-core:v2.10.0
     container_name: harbor-core
@@ -218,30 +224,33 @@ services:
       POSTGRES_PASSWORD: harbor12345
       POSTGRES_DBNAME: registry
       HARBOR_ADMIN_PASSWORD: Harbor12345
-      REGISTRY_CONTROLLER_URL: http://harbor-registryctl:8080
+      REGISTRY_CONTROLLER_URL: http://harbor-registry-ctrl:8080
       LOG_LEVEL: info
-    ports:
-      - "80:8080"
-      - "443:8443"
+      REGISTRY_URL: http://harbor-registry:5000
+      TOKEN_SERVICE_URL: http://harbor-core:8080
+      INTERNAL_TLS_ENABLED: "false"
     depends_on:
-      - harbor-db
-      - harbor-registryctl
+      harbor-db:
+        condition: service_healthy
     volumes:
       - harbor-data:/data
     networks:
       - harbor
 
-  harbor-registryctl:
+  # Registry Controller
+  harbor-registry-ctrl:
     image: goharbor/harbor-registryctl:v2.10.0
-    container_name: harbor-registryctl
+    container_name: harbor-registry-ctrl
     environment:
       REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY: /storage
       REGISTRY_HTTP_SECRET: secret
+      LOG_LEVEL: info
     volumes:
       - harbor-storage:/storage
     networks:
       - harbor
 
+  # Registry (Docker Registry v2)
   harbor-registry:
     image: goharbor/registry-photon:v2.10.0
     container_name: harbor-registry
@@ -250,6 +259,7 @@ services:
     networks:
       - harbor
 
+  # Harbor Log
   harbor-log:
     image: goharbor/harbor-log:v2.10.0
     container_name: harbor-log
@@ -258,11 +268,28 @@ services:
     networks:
       - harbor
 
+  # Harbor Portal UI
   harbor-portal:
     image: goharbor/harbor-portal:v2.10.0
     container_name: harbor-portal
     environment:
       HARBOR_TITLE: "Enterprise Harbor Registry"
+    networks:
+      - harbor
+
+  # Nginx Proxy
+  harbor-proxy:
+    image: nginx:alpine
+    container_name: harbor-proxy
+    ports:
+      - "80:8080"
+      - "443:8443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - harbor-core
+      - harbor-portal
+      - harbor-registry
     networks:
       - harbor
 
@@ -277,21 +304,122 @@ networks:
     driver: bridge
 DOCKER_COMPOSE
 
-  # Start Harbor using docker compose (plugin) or docker-compose (standalone)
+  # Create nginx configuration
+  cat > /opt/harbor/nginx.conf <<'NGINX_CONF'
+user nginx;
+worker_processes auto;
+error_log /var/log/nginx/error.log warn;
+pid /var/run/nginx.pid;
+
+events {
+    worker_connections 1024;
+}
+
+http {
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+
+    log_format main '$remote_addr - $remote_user [$time_local] "$request" '
+                    '$status $body_bytes_sent "$http_referer" '
+                    '"$http_user_agent" "$http_x_forwarded_for"';
+
+    access_log /var/log/nginx/access.log main;
+
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+    keepalive_timeout 65;
+    types_hash_max_size 2048;
+    client_max_body_size 0;
+
+    # Harbor API and UI
+    upstream harbor_core {
+        server harbor-core:8080;
+    }
+
+    upstream harbor_portal {
+        server harbor-portal:8080;
+    }
+
+    upstream harbor_registry {
+        server harbor-registry:5000;
+    }
+
+    server {
+        listen 8080;
+        server_name _;
+
+        # Portal
+        location / {
+            proxy_pass http://harbor_portal/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        # API
+        location /api/ {
+            proxy_pass http://harbor_core/api/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        # Registry (Docker push/pull)
+        location /v2/ {
+            proxy_pass http://harbor_registry/v2/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        # Service (authentication tokens)
+        location /service/ {
+            proxy_pass http://harbor_core/service/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+    }
+}
+NGINX_CONF
+
+  # Start Harbor using docker compose
   if docker compose version >/dev/null 2>&1; then
     docker compose up -d
   else
     docker-compose up -d
   fi
   
-  # Wait for harbor to be ready
-  sleep 30
+  # Wait for harbor services to be ready
+  echo "Waiting for Harbor services to start..."
+  sleep 15
   
-  # Test Harbor API
-  curl -s http://localhost/api/v2.0/systeminfo || true
+  # Check Harbor API
+  HARBOR_READY=0
+  for i in {1..30}; do
+    if curl -sf http://localhost:8080/api/v2.0/systeminfo >/dev/null 2>&1; then
+      echo "Harbor API is responding"
+      HARBOR_READY=1
+      break
+    fi
+    echo "Attempt $i: Waiting for Harbor API..."
+    sleep 2
+  done
+
+  if [ $HARBOR_READY -eq 1 ]; then
+    echo "✓ HARBOR READY"
+  else
+    echo "⚠ Harbor API not responding yet, but containers are running"
+    docker compose ps
+  fi
 fi
 
-echo "HARBOR READY - Access at http://192.168.56.10 or http://192.168.56.10:80"
+echo "HARBOR READY - Access at http://192.168.56.10:80 or http://192.168.56.10"
 echo "Default credentials: admin / Harbor12345"
 
 # ================= TOKEN =================
