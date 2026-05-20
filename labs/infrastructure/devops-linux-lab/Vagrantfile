@@ -1,6 +1,8 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+require 'ipaddr'
+
 ENV['LIBVIRT_DEFAULT_URI'] = 'qemu:///system'
 Vagrant.require_version ">= 2.2.0"
 
@@ -37,9 +39,9 @@ Vagrant.configure("2") do |config|
 
   linux_labs = {
     "ubuntu-lab" => { box: "bento/ubuntu-24.04", ip: "192.168.56.20" },
-    "rocky-lab"  => { box: "rockylinux/10",      ip: "192.168.56.21" },
-    "alma-lab"   => { box: "almalinux/10",       ip: "192.168.56.22" },
-    "suse-lab"   => { box: "opensuse/Leap-15.6", ip: "192.168.56.23" }
+    "rocky-lab" => { box: "rockylinux/10", ip: "192.168.56.21" },
+    "alma-lab" => { box: "almalinux/10", ip: "192.168.56.22" },
+    "suse-lab" => { box: "opensuse/Leap-15.6", ip: "192.168.56.23" }
   }
 
   ansible_nodes = {
@@ -71,158 +73,235 @@ EOF
       libvirt(vm, memory: cfg[:memory] || 1024, cpus: cfg[:cpus] || 1)
       attach_lab_disks(vm) if linux_labs.key?(name)
 
-      vm.vm.provision "shell", inline: <<-SHELL
-        set -euo pipefail
-        export DEBIAN_FRONTEND=noninteractive
+      # ================= BASE =================
+      vm.vm.provision "shell", inline: <<-'SHELL'
+set -euo pipefail
+export DEBIAN_FRONTEND=noninteractive
 
-        if command -v apt-get >/dev/null; then
-          apt-get update -qq
-          apt-get install -y curl wget git jq vim tree tmux htop net-tools ca-certificates bash-completion python3 python3-pip
-        elif command -v dnf >/dev/null; then
-          dnf install -y curl wget git jq vim tree tmux htop net-tools ca-certificates bash-completion python3 python3-pip
-        elif command -v zypper >/dev/null; then
-          zypper install -y curl wget git jq vim tree tmux htop net-tools ca-certificates bash-completion python3 python3-pip
-        fi
+apt-get update -qq || true
+apt-get install -y curl wget git jq vim tree tmux htop net-tools \
+bash-completion python3 python3-pip netcat-openbsd || true
 
-        systemctl enable --now ssh 2>/dev/null || true
-      SHELL
+systemctl enable --now ssh 2>/dev/null || systemctl enable --now sshd 2>/dev/null || true
+SHELL
 
+      # ================= DEVOPS MASTER =================
       if name == "devops-1"
-        vm.vm.network "forwarded_port", guest: 30080, host: 30080
-        vm.vm.network "forwarded_port", guest: 32000, host: 32000
-        vm.vm.network "forwarded_port", guest: 32001, host: 32001
+
+        vm.vm.network "forwarded_port", guest: 6443, host: 6443
+        vm.vm.network "forwarded_port", guest: 80, host: 8080
+        vm.vm.network "forwarded_port", guest: 443, host: 8443
+        vm.vm.network "forwarded_port", guest: 5000, host: 5000
 
         vm.vm.provision "shell", inline: <<-'SHELL'
-          set -euo pipefail
-          MASTER_IP=192.168.56.10
+set -euo pipefail
 
-          # Docker
-          if ! command -v docker >/dev/null; then
-            curl -fsSL https://get.docker.com | sh
-          fi
-          systemctl enable --now docker
-          usermod -aG docker vagrant || true
+MASTER_IP=192.168.56.10
 
-          # ==================== OFFLINE IMAGES (Modern 2026 Set) ====================
-          docker pull alpine:latest || true
-          docker pull busybox:latest || true
-          docker pull nginx:alpine || true
-          docker pull redis:alpine || true
-          docker pull postgres:16-alpine || true
-          docker pull python:3.11-slim || true
-          docker pull node:20-alpine || true
-          docker pull prom/prometheus || true
-          docker pull grafana/grafana || true
-          docker pull prom/node-exporter || true
-          docker pull aquasec/trivy || true
-          docker pull bitnami/kubectl || true
-          docker pull hashicorp/vault || true
-          docker pull argoproj/argocd || true
+# ================= DOCKER (FIXED ALWAYS) =================
+if ! command -v docker >/dev/null 2>&1; then
+  curl -fsSL https://get.docker.com | sh
+fi
 
-          # Extended DevSecOps Images
-          docker pull registry:2 || true
-          docker pull bitnami/minio || true
-          docker pull rabbitmq:3-management || true
-          docker pull mongo:7 || true
-          docker pull curlimages/curl || true
-          docker pull jenkins/jenkins:lts-jdk17 || true
-          docker pull sonarqube:community || true
-          docker pull traefik:v3.0 || true
-          docker pull bitnami/kafka || true
+systemctl enable --now docker
+usermod -aG docker vagrant || true
 
-          # ==================== TOOLS ====================
-          # kubectl
-          if ! command -v kubectl >/dev/null; then
-            curl -LO "https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-            install -m 0755 kubectl /usr/local/bin/kubectl
-            rm -f kubectl
-          fi
-
-          # Helm
-          if ! command -v helm >/dev/null; then
-            curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-          fi
-
-          # k9s - Kubernetes Terminal UI (Great addition!)
-          if ! command -v k9s >/dev/null; then
-            curl -sS https://webinstall.dev/k9s | bash
-          fi
-
-          # kubectl completion
-          if command -v kubectl >/dev/null; then
-            kubectl completion bash > /etc/bash_completion.d/kubectl || true
-            echo 'source /etc/bash_completion.d/kubectl' >> /home/vagrant/.bashrc
-            echo 'source /etc/bash_completion.d/kubectl' >> /root/.bashrc
-          fi
-
-          # K3s
-          if ! command -v k3s >/dev/null; then
-            curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server --write-kubeconfig-mode 644 --disable traefik --node-ip=$MASTER_IP" sh -
-          fi
-
-          # ============================================================
-          # BULLETPROOF KUBECONFIG
-          # ============================================================
-          KUBE_PATH="/etc/rancher/k3s/k3s.yaml"
-          cat > /etc/profile.d/99-kubeconfig.sh <<EOF
-export KUBECONFIG=$KUBE_PATH
-alias k=kubectl
+cat > /etc/docker/daemon.json <<EOF
+{
+  "insecure-registries": ["192.168.56.10"],
+  "storage-driver": "overlay2",
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "10m",
+    "max-file": "3"
+  }
+}
 EOF
-          chmod +x /etc/profile.d/99-kubeconfig.sh
+systemctl restart docker
 
-          mkdir -p /home/vagrant/.kube /root/.kube
-          ln -sf $KUBE_PATH /home/vagrant/.kube/config
-          ln -sf $KUBE_PATH /root/.kube/config
-          chown -R vagrant:vagrant /home/vagrant/.kube
+# ================= K3S INSTALL =================
+curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server \
+  --write-kubeconfig-mode 644 \
+  --node-ip ${MASTER_IP} \
+  --advertise-address ${MASTER_IP}" sh -
 
-          cat >> /home/vagrant/.bashrc <<'EOF'
+systemctl enable --now k3s
 
-# Kubernetes Environment - Bulletproof
-source /etc/profile.d/99-kubeconfig.sh
-EOF
-          chown vagrant:vagrant /home/vagrant/.bashrc
+export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+export PATH=$PATH:/usr/local/bin:/var/lib/rancher/k3s/bin
 
-          # Token for workers
-          cp /var/lib/rancher/k3s/server/token /vagrant/k3s-token 2>/dev/null || true
-          chmod 644 /vagrant/k3s-token 2>/dev/null || true
+# ================= kubectl FIX =================
+if [ -f /usr/local/bin/kubectl ]; then
+  kubectl completion bash > /etc/bash_completion.d/kubectl || true
+  echo 'source <(kubectl completion bash)' >> /root/.bashrc
+  echo 'source <(kubectl completion bash)' >> /home/vagrant/.bashrc
+fi
 
-          # Wait for K3s
-          export KUBECONFIG=$KUBE_PATH
-          until kubectl get ns kube-system >/dev/null 2>&1; do
-            echo "Waiting for K3s..."
-            sleep 5
-          done
+# ================= HELM =================
+if ! command -v helm >/dev/null 2>&1; then
+  curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+fi
 
-          # SAFE ARGOCD FIX
-          kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f - || true
-          sleep 10
+# ================= OFFLINE IMAGES =================
+AIRGAP_IMAGES=(
+  rancher/mirrored-pause:3.6
+  rancher/mirrored-coredns-coredns:1.10.1
+  rancher/local-path-provisioner:v0.0.24
+  registry.k8s.io/ingress-nginx/controller:v1.11.0
+  registry.k8s.io/metrics-server/metrics-server:v0.6.3
+  aquasec/trivy:latest
+  falcosecurity/falco:0.38.2
+  quay.io/argoproj/argocd:v2.11.3
+  prom/prometheus:v2.54.1
+  grafana/grafana:11.1.0
+  postgres:16
+  redis:7
+  nginx:alpine
+  busybox:latest
+  alpine:latest
+  goharbor/harbor-core:v2.10.0
+  goharbor/harbor-db:v2.10.0
+  goharbor/harbor-jobservice:v2.10.0
+  goharbor/harbor-log:v2.10.0
+  goharbor/harbor-portal:v2.10.0
+  goharbor/harbor-registryctl:v2.10.0
+  goharbor/registry-photon:v2.10.0
+)
 
-          kubectl get deployment -n argocd argocd-applicationset-controller >/dev/null 2>&1 && \
-          kubectl -n argocd rollout restart deployment argocd-applicationset-controller || true
+for img in "${AIRGAP_IMAGES[@]}"; do
+  docker pull "$img" || true
+done
 
-          kubectl get configmap -n argocd argocd-cmd-params-cm >/dev/null 2>&1 && \
-          kubectl -n argocd patch configmap argocd-cmd-params-cm \
-          --type merge \
-          -p '{"data":{"applicationsetcontroller.enable.policy":"false"}}' || true
+echo "OFFLINE IMAGES READY"
 
-          echo "====================================="
-          echo " LAB READY - FULL DEVSECOPS ENVIRONMENT "
-          echo " (k9s, Helm, Rich Image Cache, etc.)   "
-          echo "====================================="
-        SHELL
+# ================= HARBOR SETUP =================
+mkdir -p /opt/harbor
+cd /opt/harbor
 
+# Download Harbor (using offline installer to avoid online dependencies)
+if [ ! -f /opt/harbor/docker-compose.yml ]; then
+  # Create minimal harbor docker-compose (self-contained)
+  cat > /opt/harbor/docker-compose.yml <<'DOCKER_COMPOSE'
+version: '3.8'
+services:
+  harbor-db:
+    image: goharbor/harbor-db:v2.10.0
+    container_name: harbor-db
+    environment:
+      POSTGRES_PASSWORD: harbor12345
+    volumes:
+      - harbor-db-data:/var/lib/postgresql/data
+    networks:
+      - harbor
+
+  harbor-core:
+    image: goharbor/harbor-core:v2.10.0
+    container_name: harbor-core
+    environment:
+      DATABASE_TYPE: postgresql
+      POSTGRES_HOST: harbor-db
+      POSTGRES_PORT: 5432
+      POSTGRES_USERNAME: postgres
+      POSTGRES_PASSWORD: harbor12345
+      POSTGRES_DBNAME: registry
+      HARBOR_ADMIN_PASSWORD: Harbor12345
+      REGISTRY_CONTROLLER_URL: http://harbor-registryctl:8080
+      LOG_LEVEL: info
+    ports:
+      - "80:8080"
+      - "443:8443"
+    depends_on:
+      - harbor-db
+      - harbor-registryctl
+    volumes:
+      - harbor-data:/data
+    networks:
+      - harbor
+
+  harbor-registryctl:
+    image: goharbor/harbor-registryctl:v2.10.0
+    container_name: harbor-registryctl
+    environment:
+      REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY: /storage
+      REGISTRY_HTTP_SECRET: secret
+    volumes:
+      - harbor-storage:/storage
+    networks:
+      - harbor
+
+  harbor-registry:
+    image: goharbor/registry-photon:v2.10.0
+    container_name: harbor-registry
+    volumes:
+      - harbor-storage:/storage
+    networks:
+      - harbor
+
+  harbor-log:
+    image: goharbor/harbor-log:v2.10.0
+    container_name: harbor-log
+    volumes:
+      - harbor-logs:/var/log/docker
+    networks:
+      - harbor
+
+  harbor-portal:
+    image: goharbor/harbor-portal:v2.10.0
+    container_name: harbor-portal
+    environment:
+      HARBOR_TITLE: "Enterprise Harbor Registry"
+    networks:
+      - harbor
+
+volumes:
+  harbor-db-data:
+  harbor-data:
+  harbor-storage:
+  harbor-logs:
+
+networks:
+  harbor:
+    driver: bridge
+DOCKER_COMPOSE
+
+  # Start Harbor
+  docker-compose up -d
+  
+  # Wait for harbor to be ready
+  sleep 30
+  
+  # Test Harbor API
+  curl -s http://localhost/api/v2.0/systeminfo || true
+fi
+
+echo "HARBOR READY - Access at http://192.168.56.10 or http://192.168.56.10:80"
+echo "Default credentials: admin / Harbor12345"
+
+# ================= TOKEN =================
+cp /var/lib/rancher/k3s/server/token /vagrant/k3s-token || true
+chmod 644 /vagrant/k3s-token || true
+
+echo "MASTER READY"
+SHELL
+
+      # ================= WORKERS =================
       elsif name.start_with?("worker")
         vm.vm.provision "shell", inline: <<-'SHELL'
-          set -euo pipefail
-          until [ -f /vagrant/k3s-token ]; do sleep 5; done
-          until curl -s -k https://192.168.56.10:6443 >/dev/null; do sleep 5; done
+set -euo pipefail
 
-          curl -sfL https://get.k3s.io | \
-            K3S_URL="https://192.168.56.10:6443" \
-            K3S_TOKEN=$(cat /vagrant/k3s-token) sh -
+MASTER=192.168.56.10
 
-          echo "WORKER READY"
-        SHELL
+until nc -z $MASTER 6443; do sleep 3; done
+until [ -f /vagrant/k3s-token ]; do sleep 3; done
+
+TOKEN=$(cat /vagrant/k3s-token)
+
+curl -sfL https://get.k3s.io | \
+K3S_URL="https://${MASTER}:6443" \
+K3S_TOKEN="${TOKEN}" sh -
+
+echo "WORKER READY"
+SHELL
       end
     end
   end
