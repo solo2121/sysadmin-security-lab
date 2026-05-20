@@ -106,6 +106,19 @@ fi
 systemctl enable --now docker
 usermod -aG docker vagrant || true
 
+# ================= DOCKER COMPOSE INSTALLATION =================
+# Install docker-compose plugin (modern approach)
+if ! docker compose version >/dev/null 2>&1; then
+  apt-get update -qq || true
+  apt-get install -y docker-compose-plugin || true
+fi
+
+# Fallback: Install standalone docker-compose if plugin not available
+if ! docker compose version >/dev/null 2>&1 && ! command -v docker-compose >/dev/null 2>&1; then
+  curl -fsSL "https://github.com/docker/compose/releases/download/v2.24.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+  chmod +x /usr/local/bin/docker-compose
+fi
+
 cat > /etc/docker/daemon.json <<EOF
 {
   "insecure-registries": ["192.168.56.10"],
@@ -264,8 +277,12 @@ networks:
     driver: bridge
 DOCKER_COMPOSE
 
-  # Start Harbor
-  docker-compose up -d
+  # Start Harbor using docker compose (plugin) or docker-compose (standalone)
+  if docker compose version >/dev/null 2>&1; then
+    docker compose up -d
+  else
+    docker-compose up -d
+  fi
   
   # Wait for harbor to be ready
   sleep 30
