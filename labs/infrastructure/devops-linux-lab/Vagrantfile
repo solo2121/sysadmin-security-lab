@@ -1,30 +1,33 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
-
 require 'ipaddr'
-<<<<<<< HEAD
-
-ENV['LIBVIRT_DEFAULT_URI'] = 'qemu:///system'
-=======
 require 'rexml/document'
-
 ENV['LIBVIRT_DEFAULT_URI'] ||= 'qemu:///system'
->>>>>>> 5b74834 (fix(harbor): resolve project creation JSON parsing and image seeding failures)
 Vagrant.require_version ">= 2.2.0"
 
 # ================= CONFIGURATION =================
 LAB_PROFILE = ENV['LAB_PROFILE'] || 'minimal'
-START_VMS   = ENV['START_VMS'] ? ENV['START_VMS'].split(',') : []
-FAST_BOOT   = ENV['FAST_BOOT'] || 'false'
+START_VMS = ENV['START_VMS'] ? ENV['START_VMS'].split(',') : []
+FAST_BOOT = ENV['FAST_BOOT'] || 'false'
 K8S_API_HOST_PORT = ENV['K8S_API_HOST_PORT'] || '16443'
 DEBUG = ENV['DEBUG'] || 'false'
 
+# Cache mode: 'zero' (no local images) or 'airgap' (keep Harbor cache)
+CACHE_MODE = ENV['CACHE_MODE'] || 'zero'
+
 # PINNED VERSIONS
-HARBOR_CHART_VERSION  = "1.14.0"
+HARBOR_CHART_VERSION = "1.14.0"
 INGRESS_NGINX_VERSION = "v1.11.3"
-K3S_VERSION           = "v1.31.4+k3s1"
-DOCKER_VERSION        = "27.3.1"
-HARBOR_PROJECT        = "airgap"
+K3S_VERSION = "v1.31.4+k3s1"
+DOCKER_VERSION = "27.3.1"
+HARBOR_PROJECT = "airgap"
+
+# Enterprise Tools Versions
+ARGOCD_VERSION = "7.7.5"
+PROMETHEUS_VERSION = "68.3.0"
+FALCO_VERSION = "2.3.0"
+KYVERNO_VERSION = "3.3.7"
+CERT_MANAGER_VERSION = "1.16.2"
 
 # Auto-detect libvirt network
 def detect_libvirt_network
@@ -43,7 +46,6 @@ def detect_libvirt_network
   rescue => e
     puts "Warning: Could not detect vagrant-libvirt network: #{e}"
   end
-
   begin
     output = `sudo virsh net-dumpxml default 2>/dev/null`
     if $?.success? && !output.empty?
@@ -59,32 +61,31 @@ def detect_libvirt_network
   rescue => e
     puts "Warning: Could not detect default network: #{e}"
   end
-
   "192.168.121.0/24"
 end
 
 LIBVIRT_NETWORK = detect_libvirt_network
 puts "Using libvirt network: #{LIBVIRT_NETWORK}"
-
 network_parts = LIBVIRT_NETWORK.split('/')
 NETWORK_BASE = network_parts[0].split('.')[0..2].join('.')
-
 def vm_ip(octet)
   "#{NETWORK_BASE}.#{octet}"
 end
 
 MASTER_IP = vm_ip(114)
-
 File.write("/tmp/lab.env", "MASTER_IP=#{MASTER_IP}\nNETWORK_BASE=#{NETWORK_BASE}\n")
 
-# YOUR ORIGINAL IMAGES - ALL PRESERVED
+# ============================================================
+# COMPLETE ENTERPRISE AIRGAP IMAGES - ALL ORIGINAL + MISSING ADDED
+# ============================================================
 AIRGAP_IMAGES = [
+  # ========== ORIGINAL IMAGES (ALL PRESERVED) ==========
   "docker.io/rancher/mirrored-pause:3.6",
   "docker.io/rancher/mirrored-coredns-coredns:1.11.1",
   "docker.io/rancher/local-path-provisioner:v0.0.30",
   "registry.k8s.io/ingress-nginx/controller:v1.11.3",
   "registry.k8s.io/metrics-server/metrics-server:v0.7.1",
-  "docker.io/aquasec/trivy:latest",
+  "docker.io/aquasec/trivy:0.57.1",
   "docker.io/falcosecurity/falco:0.39.2",
   "quay.io/argoproj/argocd:v2.13.0",
   "docker.io/prom/prometheus:v3.0.0",
@@ -92,19 +93,53 @@ AIRGAP_IMAGES = [
   "docker.io/library/postgres:16",
   "docker.io/library/redis:7",
   "docker.io/library/nginx:alpine",
-  "docker.io/library/busybox:latest",
-  "docker.io/library/alpine:latest"
+  "docker.io/library/busybox:1.36",
+  "docker.io/library/alpine:3.20",
+
+  # ========== CERT-MANAGER IMAGES (FULL SET) ==========
+  "quay.io/jetstack/cert-manager-cainjector:v1.16.2",
+  "quay.io/jetstack/cert-manager-controller:v1.16.2",
+  "quay.io/jetstack/cert-manager-webhook:v1.16.2",
+  "quay.io/jetstack/cert-manager-acmesolver:v1.16.2",
+
+  # ========== KYVERNO IMAGES (FULL SET) ==========
+  "ghcr.io/kyverno/kyverno:v1.13.2",
+  "ghcr.io/kyverno/kyvernopre:v1.13.2",
+  "ghcr.io/kyverno/background-controller:v1.13.2",
+  "ghcr.io/kyverno/cleanup-controller:v1.13.2",
+  "ghcr.io/kyverno/reports-controller:v1.13.2",
+
+  # ========== PROMETHEUS ECOSYSTEM IMAGES ==========
+  "quay.io/prometheus-operator/prometheus-operator:v0.76.2",
+  "quay.io/prometheus/node-exporter:v1.8.2",
+  "registry.k8s.io/kube-state-metrics/kube-state-metrics:v2.13.0",
+  "quay.io/prometheus/alertmanager:v0.27.0",
+  "quay.io/prometheus/pushgateway:v1.8.0",
+
+  # ========== FALCO DEPENDENCIES ==========
+  "docker.io/falcosecurity/falco-driver-loader:latest",
+
+  # ========== LOGGING STACK (LOKI + PROMTAIL) ==========
+  "docker.io/grafana/loki:3.2.1",
+  "docker.io/grafana/promtail:3.2.1",
+
+  # ========== ARGO CD ECOSYSTEM (FULL SET) ==========
+  "quay.io/argoproj/argocd-applicationset:v0.4.1",
+  "quay.io/argoproj/argocd-notifications:stable",
+  "quay.io/argoproj/argo-rollouts:v1.7.2",
+  "ghcr.io/dexidp/dex:v2.41.1",
+  "docker.io/library/redis:7.2.5-alpine",
+  "docker.io/library/haproxy:2.8-alpine",
 ].freeze
 
 def should_start?(vm_name, profile, start_list)
   return true if start_list.include?(vm_name)
-
   case profile
   when 'minimal'
     vm_name == 'devops-1' || vm_name == 'worker-1'
   when 'dev'
     vm_name == 'devops-1' || vm_name == 'worker-1' ||
-    vm_name == 'node1'    || vm_name == 'node2'
+    vm_name == 'node1' || vm_name == 'node2'
   when 'full'
     true
   else
@@ -113,17 +148,16 @@ def should_start?(vm_name, profile, start_list)
 end
 
 DEFAULT = { memory: 1024, cpus: 1 }.freeze
-
 def libvirt(vm, opts = {})
   c = DEFAULT.merge(opts)
   vm.vm.provider :libvirt do |l|
-    l.memory        = c[:memory]
-    l.cpus          = c[:cpus]
-    l.nested        = true
+    l.memory = c[:memory]
+    l.cpus = c[:cpus]
+    l.nested = true
     l.graphics_type = "vnc"
-    l.graphics_ip   = "127.0.0.1"
-    l.video_type    = "virtio"
-    l.cpu_mode      = "host-passthrough"
+    l.graphics_ip = "127.0.0.1"
+    l.video_type = "virtio"
+    l.cpu_mode = "host-passthrough"
   end
 end
 
@@ -138,57 +172,27 @@ end
 Vagrant.configure("2") do |config|
   config.vm.box_check_update = false
   config.vm.synced_folder ".", "/vagrant", disabled: false
-
-  # Increase SSH timeout to prevent disconnection during long operations
   config.ssh.connect_timeout = 600
   config.vm.boot_timeout = 1200
 
-<<<<<<< HEAD
-  linux_labs = {
-    "ubuntu-lab" => { box: "bento/ubuntu-24.04", ip: "192.168.56.20" },
-    "rocky-lab" => { box: "rockylinux/10", ip: "192.168.56.21" },
-    "alma-lab" => { box: "almalinux/10", ip: "192.168.56.22" },
-    "suse-lab" => { box: "opensuse/Leap-15.6", ip: "192.168.56.23" }
-  }
-
-  ansible_nodes = {
-    "node1" => "192.168.56.30",
-    "node2" => "192.168.56.31"
-  }
-
-  all_hosts = cluster.merge(linux_labs).merge(ansible_nodes.transform_values { |ip| { ip: ip } })
-  hosts_entries = all_hosts.map { |n, d| "#{d[:ip]} #{n}" }.join("\n")
-
-  config.vm.provision "shell", run: "always", inline: <<-SHELL
-    set -e
-    START="# LAB START"
-    END="# LAB END"
-    sed -i "/$START/,/$END/d" /etc/hosts || true
-    cat >> /etc/hosts <<EOF
-$START
-#{hosts_entries}
-$END
-=======
-  # Copy lab environment file
   config.vm.provision "shell", inline: <<-SHELL
     cat > /vagrant/lab.env << 'EOF'
 MASTER_IP=#{MASTER_IP}
 NETWORK_BASE=#{NETWORK_BASE}
->>>>>>> 5b74834 (fix(harbor): resolve project creation JSON parsing and image seeding failures)
 EOF
   SHELL
 
   cluster = {
-    "devops-1" => { box: "bento/ubuntu-24.04", ip: MASTER_IP,          memory: 8192, cpus: 4, role: "master" },
-    "worker-1" => { box: "bento/ubuntu-24.04", ip: vm_ip(11),   memory: 2048, cpus: 2, role: "worker" },
-    "worker-2" => { box: "bento/ubuntu-24.04", ip: vm_ip(12),   memory: 2048, cpus: 2, role: "worker" }
+    "devops-1" => { box: "bento/ubuntu-24.04", ip: MASTER_IP, memory: 8192, cpus: 4, role: "master" },
+    "worker-1" => { box: "bento/ubuntu-24.04", ip: vm_ip(11), memory: 2048, cpus: 2, role: "worker" },
+    "worker-2" => { box: "bento/ubuntu-24.04", ip: vm_ip(12), memory: 2048, cpus: 2, role: "worker" }
   }
 
   linux_labs = {
-    "ubuntu-lab" => { box: "bento/ubuntu-24.04",  ip: vm_ip(20), memory: 1024, cpus: 1, role: "lab" },
-    "rocky-lab"  => { box: "rockylinux/10",        ip: vm_ip(21), memory: 1024, cpus: 1, role: "lab" },
-    "alma-lab"   => { box: "almalinux/10",         ip: vm_ip(22), memory: 1024, cpus: 1, role: "lab" },
-    "suse-lab"   => { box: "opensuse/Leap-15.6",   ip: vm_ip(23), memory: 1024, cpus: 1, role: "lab" }
+    "ubuntu-lab" => { box: "bento/ubuntu-24.04", ip: vm_ip(20), memory: 1024, cpus: 1, role: "lab" },
+    "rocky-lab" => { box: "rockylinux/10", ip: vm_ip(21), memory: 1024, cpus: 1, role: "lab" },
+    "alma-lab" => { box: "almalinux/10", ip: vm_ip(22), memory: 1024, cpus: 1, role: "lab" },
+    "suse-lab" => { box: "opensuse/Leap-15.6", ip: vm_ip(23), memory: 1024, cpus: 1, role: "lab" }
   }
 
   ansible_nodes = {
@@ -196,320 +200,18 @@ EOF
     "node2" => { box: "bento/ubuntu-24.04", ip: vm_ip(31), memory: 1024, cpus: 1, role: "ansible" }
   }
 
-  all_vms      = cluster.merge(linux_labs).merge(ansible_nodes)
+  all_vms = cluster.merge(linux_labs).merge(ansible_nodes)
   vms_to_start = all_vms.select { |name, _| should_start?(name, LAB_PROFILE, START_VMS) }
-
   hosts_entries = all_vms.map { |n, c| "#{c[:ip]} #{n}" }.join("\n")
 
   vms_to_start.each do |name, cfg|
     config.vm.define name do |vm|
-      vm.vm.box      = cfg[:box]
+      vm.vm.box = cfg[:box]
       vm.vm.hostname = name
       vm.vm.network "private_network", ip: cfg[:ip]
-
       libvirt(vm, memory: cfg[:memory] || 1024, cpus: cfg[:cpus] || 1)
       attach_lab_disks(vm) if linux_labs.key?(name)
 
-<<<<<<< HEAD
-      # ================= BASE =================
-      vm.vm.provision "shell", inline: <<-'SHELL'
-set -euo pipefail
-export DEBIAN_FRONTEND=noninteractive
-
-apt-get update -qq || true
-apt-get install -y curl wget git jq vim tree tmux htop net-tools \
-bash-completion python3 python3-pip netcat-openbsd || true
-
-systemctl enable --now ssh 2>/dev/null || systemctl enable --now sshd 2>/dev/null || true
-SHELL
-
-      # ================= DEVOPS MASTER =================
-      if name == "devops-1"
-
-        vm.vm.network "forwarded_port", guest: 6443, host: 6443
-        vm.vm.network "forwarded_port", guest: 80, host: 8080
-        vm.vm.network "forwarded_port", guest: 443, host: 8443
-        vm.vm.network "forwarded_port", guest: 5000, host: 5000
-
-        vm.vm.provision "shell", inline: <<-'SHELL'
-set -euo pipefail
-
-MASTER_IP=192.168.56.10
-
-# ================= DOCKER (FIXED ALWAYS) =================
-if ! command -v docker >/dev/null 2>&1; then
-  curl -fsSL https://get.docker.com | sh
-fi
-
-systemctl enable --now docker
-usermod -aG docker vagrant || true
-
-# ================= DOCKER COMPOSE INSTALLATION =================
-# Install docker-compose plugin (modern approach)
-if ! docker compose version >/dev/null 2>&1; then
-  apt-get update -qq || true
-  apt-get install -y docker-compose-plugin || true
-fi
-
-# Fallback: Install standalone docker-compose if plugin not available
-if ! docker compose version >/dev/null 2>&1 && ! command -v docker-compose >/dev/null 2>&1; then
-  curl -fsSL "https://github.com/docker/compose/releases/download/v2.24.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-  chmod +x /usr/local/bin/docker-compose
-fi
-
-cat > /etc/docker/daemon.json <<EOF
-{
-  "insecure-registries": ["192.168.56.10"],
-  "storage-driver": "overlay2",
-  "log-driver": "json-file",
-  "log-opts": {
-    "max-size": "10m",
-    "max-file": "3"
-  }
-}
-EOF
-systemctl restart docker
-
-# ================= K3S INSTALL =================
-curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server \
-  --write-kubeconfig-mode 644 \
-  --node-ip ${MASTER_IP} \
-  --advertise-address ${MASTER_IP}" sh -
-
-systemctl enable --now k3s
-
-export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
-export PATH=$PATH:/usr/local/bin:/var/lib/rancher/k3s/bin
-
-# ================= kubectl FIX =================
-if [ -f /usr/local/bin/kubectl ]; then
-  kubectl completion bash > /etc/bash_completion.d/kubectl || true
-  echo 'source <(kubectl completion bash)' >> /root/.bashrc
-  echo 'source <(kubectl completion bash)' >> /home/vagrant/.bashrc
-fi
-
-# ================= HELM =================
-if ! command -v helm >/dev/null 2>&1; then
-  curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-fi
-
-# ================= OFFLINE IMAGES =================
-AIRGAP_IMAGES=(
-  rancher/mirrored-pause:3.6
-  rancher/mirrored-coredns-coredns:1.10.1
-  rancher/local-path-provisioner:v0.0.24
-  registry.k8s.io/ingress-nginx/controller:v1.11.0
-  registry.k8s.io/metrics-server/metrics-server:v0.6.3
-  aquasec/trivy:latest
-  falcosecurity/falco:0.38.2
-  quay.io/argoproj/argocd:v2.11.3
-  prom/prometheus:v2.54.1
-  grafana/grafana:11.1.0
-  postgres:16
-  redis:7
-  nginx:alpine
-  busybox:latest
-  alpine:latest
-  goharbor/harbor-core:v2.10.0
-  goharbor/harbor-db:v2.10.0
-  goharbor/harbor-jobservice:v2.10.0
-  goharbor/harbor-log:v2.10.0
-  goharbor/harbor-portal:v2.10.0
-  goharbor/harbor-registryctl:v2.10.0
-  goharbor/registry-photon:v2.10.0
-)
-
-for img in "${AIRGAP_IMAGES[@]}"; do
-  docker pull "$img" || true
-done
-
-echo "OFFLINE IMAGES READY"
-
-# ================= HARBOR SETUP (SIMPLIFIED WITH DOCKER COMPOSE) =================
-mkdir -p /opt/harbor
-cd /opt/harbor
-
-# Create harbor docker-compose (no version field to avoid warnings)
-if [ ! -f /opt/harbor/docker-compose.yml ]; then
-  cat > /opt/harbor/docker-compose.yml <<'DOCKER_COMPOSE'
-services:
-  # PostgreSQL Database
-  harbor-db:
-    image: goharbor/harbor-db:v2.10.0
-    container_name: harbor-db
-    environment:
-      POSTGRES_PASSWORD: harbor12345
-    volumes:
-      - harbor-db-data:/var/lib/postgresql/data
-    networks:
-      - harbor
-    healthcheck:
-      test: ["CMD", "pg_isready", "-U", "postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  # Harbor Core (API)
-  harbor-core:
-    image: goharbor/harbor-core:v2.10.0
-    container_name: harbor-core
-    environment:
-      DATABASE_TYPE: postgresql
-      POSTGRES_HOST: harbor-db
-      POSTGRES_PORT: 5432
-      POSTGRES_USERNAME: postgres
-      POSTGRES_PASSWORD: harbor12345
-      POSTGRES_DBNAME: registry
-      HARBOR_ADMIN_PASSWORD: Harbor12345
-      REGISTRY_CONTROLLER_URL: http://harbor-registry-ctrl:8080
-      LOG_LEVEL: info
-      REGISTRY_URL: http://harbor-registry:5000
-      TOKEN_SERVICE_URL: http://harbor-core:8080
-      INTERNAL_TLS_ENABLED: "false"
-    ports:
-      - "8080:8080"
-    depends_on:
-      harbor-db:
-        condition: service_healthy
-    volumes:
-      - harbor-data:/data
-    networks:
-      - harbor
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/api/v2.0/systeminfo"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-
-  # Registry Controller
-  harbor-registry-ctrl:
-    image: goharbor/harbor-registryctl:v2.10.0
-    container_name: harbor-registry-ctrl
-    environment:
-      REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY: /storage
-      REGISTRY_HTTP_SECRET: secret
-      LOG_LEVEL: info
-    volumes:
-      - harbor-storage:/storage
-    networks:
-      - harbor
-
-  # Registry (Docker Registry v2)
-  harbor-registry:
-    image: goharbor/registry-photon:v2.10.0
-    container_name: harbor-registry
-    ports:
-      - "5000:5000"
-    volumes:
-      - harbor-storage:/storage
-    networks:
-      - harbor
-
-  # Harbor Log
-  harbor-log:
-    image: goharbor/harbor-log:v2.10.0
-    container_name: harbor-log
-    ports:
-      - "1514:10514/udp"
-    volumes:
-      - harbor-logs:/var/log/docker
-    networks:
-      - harbor
-
-  # Harbor Portal UI
-  harbor-portal:
-    image: goharbor/harbor-portal:v2.10.0
-    container_name: harbor-portal
-    environment:
-      HARBOR_TITLE: "Enterprise Harbor Registry"
-    ports:
-      - "8081:8080"
-    networks:
-      - harbor
-
-volumes:
-  harbor-db-data:
-  harbor-data:
-  harbor-storage:
-  harbor-logs:
-
-networks:
-  harbor:
-    driver: bridge
-DOCKER_COMPOSE
-
-  # Start Harbor using docker compose
-  if docker compose version >/dev/null 2>&1; then
-    docker compose up -d
-  else
-    docker-compose up -d
-  fi
-  
-  # Wait for harbor services to be ready
-  echo "Waiting for Harbor services to start..."
-  sleep 20
-  
-  # Check Harbor API with retries
-  HARBOR_READY=0
-  for i in {1..40}; do
-    if curl -sf http://localhost:8080/api/v2.0/systeminfo >/dev/null 2>&1; then
-      echo "✓ Harbor API is responding (attempt $i)"
-      HARBOR_READY=1
-      break
-    fi
-    echo "Attempt $i/40: Waiting for Harbor API..."
-    sleep 3
-  done
-
-  if [ $HARBOR_READY -eq 1 ]; then
-    echo "✓ HARBOR SUCCESSFULLY STARTED"
-  else
-    echo "⚠ Harbor API not responding yet"
-    echo "Container status:"
-    docker compose ps
-    echo ""
-    echo "Harbor core logs (last 20 lines):"
-    docker compose logs harbor-core | tail -20
-  fi
-fi
-
-echo ""
-echo "================================================"
-echo "HARBOR READY"
-echo "================================================"
-echo "Web UI:        http://192.168.56.10:8081"
-echo "API:           http://192.168.56.10:8080/api"
-echo "Registry:      http://192.168.56.10:5000"
-echo ""
-echo "Credentials:   admin / Harbor12345"
-echo "================================================"
-
-# ================= TOKEN =================
-cp /var/lib/rancher/k3s/server/token /vagrant/k3s-token || true
-chmod 644 /vagrant/k3s-token || true
-
-echo "MASTER READY"
-SHELL
-
-      # ================= WORKERS =================
-      elsif name.start_with?("worker")
-        vm.vm.provision "shell", inline: <<-'SHELL'
-set -euo pipefail
-
-MASTER=192.168.56.10
-
-until nc -z $MASTER 6443; do sleep 3; done
-until [ -f /vagrant/k3s-token ]; do sleep 3; done
-
-TOKEN=$(cat /vagrant/k3s-token)
-
-curl -sfL https://get.k3s.io | \
-K3S_URL="https://${MASTER}:6443" \
-K3S_TOKEN="${TOKEN}" sh -
-
-echo "WORKER READY"
-SHELL
-=======
       vm.vm.provision "shell", run: "always", inline: <<-SHELL
         set -e
         START="# LAB START"
@@ -526,7 +228,6 @@ EOF
         set -euo pipefail
         [ -f /var/lib/.base_provisioned ] && { echo "Base already done, skipping"; exit 0; }
         export DEBIAN_FRONTEND=noninteractive
-
         if command -v apt-get >/dev/null 2>&1; then
           apt-get update -qq
           apt-get install -y curl wget git jq vim tree tmux htop net-tools \
@@ -545,12 +246,17 @@ EOF
       SHELL
 
       case cfg[:role]
-
       when "master"
-        vm.vm.network "forwarded_port", guest: 80,    host: 8080,  host_ip: "127.0.0.1"
-        vm.vm.network "forwarded_port", guest: 443,   host: 8443,  host_ip: "127.0.0.1"
-        vm.vm.network "forwarded_port", guest: 6443,  host: K8S_API_HOST_PORT.to_i, host_ip: "127.0.0.1"
+        # ============================================================
+        # PORT FORWARDING - Enterprise UI Access
+        # ============================================================
+        vm.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
+        vm.vm.network "forwarded_port", guest: 443, host: 8443, host_ip: "127.0.0.1"
+        vm.vm.network "forwarded_port", guest: 6443, host: K8S_API_HOST_PORT.to_i, host_ip: "127.0.0.1"
         vm.vm.network "forwarded_port", guest: 30001, host: 30001, host_ip: "127.0.0.1"
+        # Argo CD UI
+        vm.vm.network "forwarded_port", guest: 30003, host: 30003, host_ip: "127.0.0.1"
+        vm.vm.network "forwarded_port", guest: 30004, host: 30004, host_ip: "127.0.0.1"
 
         vm.vm.provision "shell", inline: <<-SHELL
           if [ "${DEBUG:-false}" = "true" ]; then set -x; fi
@@ -567,8 +273,9 @@ EOF
           FAST_BOOT="#{FAST_BOOT}"
           LAB_PROFILE="#{LAB_PROFILE}"
           K8S_API_HOST_PORT="#{K8S_API_HOST_PORT}"
+          CACHE_MODE="#{CACHE_MODE}"
           AIRGAP_IMAGES=(
-#{AIRGAP_IMAGES.map { |image| "            \"#{image}\"" }.join("\n")}
+#{AIRGAP_IMAGES.map { |image| "\"#{image}\"" }.join("\n")}
           )
 
           export PATH=$PATH:/usr/local/bin:/var/lib/rancher/k3s/bin
@@ -757,6 +464,42 @@ EOF
           systemctl start k3s || true
           transition_state "k3s_installed"
 
+          # ============================================================
+          # K3s CONTAINERD REGISTRY CONFIGURATION (CRITICAL FOR HARBOR PULLS)
+          # ============================================================
+          echo "Configuring K3s containerd for Harbor registry (all public registries mirrored)..."
+          mkdir -p /etc/rancher/k3s
+          cat > /etc/rancher/k3s/registries.yaml <<EOF
+mirrors:
+  "docker.io":
+    endpoint:
+      - "https://${MASTER_IP}:30001"
+  "quay.io":
+    endpoint:
+      - "https://${MASTER_IP}:30001"
+  "ghcr.io":
+    endpoint:
+      - "https://${MASTER_IP}:30001"
+  "registry.k8s.io":
+    endpoint:
+      - "https://${MASTER_IP}:30001"
+  "${MASTER_IP}:30001":
+    endpoint:
+      - "https://${MASTER_IP}:30001"
+
+configs:
+  "${MASTER_IP}:30001":
+    tls:
+      insecure_skip_verify: true
+    auth:
+      username: admin
+      password: Harbor12345
+EOF
+
+          systemctl restart k3s
+          sleep 10
+          echo "K3s registry configuration applied"
+
           echo "Allowing flannel to stabilize..."
           sleep 40
           wait_for check_k3s_service "k3s service" 120
@@ -850,17 +593,13 @@ expose:
     ports:
       https:
         nodePort: 30001
-
 externalURL: https://${MASTER_IP}:30001
-
 harborAdminPassword: Harbor12345
-
 persistence:
   enabled: true
   persistentVolumeClaim:
     registry:
       size: 5Gi
-
 trivy:
   enabled: true
 EOF
@@ -872,64 +611,47 @@ EOF
               exit 1
             }
 
-            # Wait for Harbor to be healthy
             echo "Waiting for Harbor API to be healthy..."
             for i in $(seq 1 120); do
               if curl -sk --max-time 10 "https://${MASTER_IP}:30001/api/v2.0/health" 2>/dev/null | grep -q '"status":"healthy"'; then
                 echo "Harbor API is healthy"
                 break
               fi
-              echo "  Waiting for Harbor API... ($i/120)"
+              echo " Waiting for Harbor API... ($i/120)"
               sleep 10
             done
 
-            # ============================================================
-            # AIRGAP IMAGE SEEDING - FIXED JSON CONSTRUCTION
-            # ============================================================
             echo "=========================================="
             echo "Seeding ${HARBOR_PROJECT} project with airgap images"
             echo "=========================================="
 
-            # Wait for registry endpoint
-            echo "Waiting for registry endpoint..."
             for i in $(seq 1 30); do
               if curl -sk --max-time 5 "https://${MASTER_IP}:30001/v2/" >/dev/null 2>&1; then
                 echo "Registry endpoint is reachable"
                 break
               fi
-              echo "  Registry not yet reachable... ($i/30)"
+              echo " Registry not yet reachable... ($i/30)"
               sleep 5
             done
 
-            # Create airgap project - FIXED JSON USING printf
             echo "Creating Harbor project: ${HARBOR_PROJECT}..."
             PROJECT_READY="false"
             for i in $(seq 1 30); do
-              # Build clean JSON using printf (avoys escaping issues)
               PROJECT_JSON=$(printf '{"project_name":"%s","metadata":{"public":"true"}}' "${HARBOR_PROJECT}")
-              
               HTTP_CODE=$(curl -sk -o /tmp/harbor_create_resp.json -w '%{http_code}' \
                 -X POST "https://${MASTER_IP}:30001/api/v2.0/projects" \
                 -u "admin:Harbor12345" \
                 -H "Content-Type: application/json" \
                 -d "$PROJECT_JSON")
-              
-              echo "  Attempt $i/30 HTTP $HTTP_CODE"
-              
+              echo " Attempt $i/30 HTTP $HTTP_CODE"
               if [ "$HTTP_CODE" = "201" ] || [ "$HTTP_CODE" = "409" ]; then
                 echo "Project ${HARBOR_PROJECT} ready"
                 PROJECT_READY="true"
                 break
               fi
-              
-              if [ "$HTTP_CODE" = "422" ] && [ -s /tmp/harbor_create_resp.json ]; then
-                echo "  Harbor response: $(cat /tmp/harbor_create_resp.json)"
-              fi
-              
               sleep 5
             done
 
-            # Verify project exists
             echo "Verifying project exists in API..."
             for i in $(seq 1 30); do
               VERIFY_PROJECT_CODE=$(curl -sk -o /dev/null -w '%{http_code}' -u "admin:Harbor12345" "https://${MASTER_IP}:30001/api/v2.0/projects/${HARBOR_PROJECT}")
@@ -938,7 +660,7 @@ EOF
                 PROJECT_READY="true"
                 break
               fi
-              echo "  Waiting for project to appear... ($i/30)"
+              echo " Waiting for project to appear... ($i/30)"
               sleep 5
             done
 
@@ -948,22 +670,16 @@ EOF
               exit 1
             fi
 
-            # Login to Harbor
             echo "Logging in to Harbor registry..."
             echo "Harbor12345" | docker login "${MASTER_IP}:30001" -u admin --password-stdin || {
               echo "WARNING: Docker login failed"
             }
 
-            # Seed each image
             for img in "${AIRGAP_IMAGES[@]}"; do
               echo "=== Processing: $img ==="
-
-              # Normalize image name
               norm="${img#docker.io/}"
               norm="${norm#registry.k8s.io/}"
               norm="${norm#quay.io/}"
-              
-              # Extract repo and tag
               if [[ "$norm" == *":"* ]]; then
                 repo="${norm%:*}"
                 tag="${norm##*:}"
@@ -971,48 +687,124 @@ EOF
                 repo="$norm"
                 tag="latest"
               fi
-
               repo="${repo#library/}"
               target="${MASTER_IP}:30001/${HARBOR_PROJECT}/${repo}:${tag}"
-
-              echo "  Target: $target"
-
-              # Check if already exists
+              echo " Target: $target"
               repo_api="${repo//\//%252F}"
               ARTIFACT_CODE=$(curl -sk -o /dev/null -w '%{http_code}' -u "admin:Harbor12345" \
                 "https://${MASTER_IP}:30001/api/v2.0/projects/${HARBOR_PROJECT}/repositories/${repo_api}/artifacts/${tag}")
               if [ "$ARTIFACT_CODE" = "200" ]; then
-                echo "  SKIP: Already exists in Harbor"
+                echo " SKIP: Already exists in Harbor"
                 continue
               fi
-
-              # Pull, tag, push
-              echo "  Pulling..."
+              echo " Pulling..."
               if ! docker pull "$img"; then
-                echo "  WARNING: Pull failed for $img, skipping"
+                echo " WARNING: Pull failed for $img, skipping"
                 continue
               fi
-
-              echo "  Tagging..."
+              echo " Tagging..."
               docker tag "$img" "$target" || {
-                echo "  WARNING: Tag failed"
+                echo " WARNING: Tag failed"
                 continue
               }
-
-              echo "  Pushing..."
+              echo " Pushing..."
               if docker push "$target"; then
-                echo "  SUCCESS: $target"
+                echo " SUCCESS: $target"
               else
-                echo "  FAILED: $target"
+                echo " FAILED: $target"
               fi
             done
 
             echo "=========================================="
             echo "Image seeding complete!"
+
+            # ============================================================
+            # EXTRA MIRROR PUSH - Ensure all images are in Harbor
+            # ============================================================
+            echo "Ensuring all airgap images are properly mirrored in Harbor..."
+            for img in "${AIRGAP_IMAGES[@]}"; do
+              norm="${img#docker.io/}"
+              norm="${norm#registry.k8s.io/}"
+              norm="${norm#quay.io/}"
+              norm="${norm#ghcr.io/}"
+              if [[ "$norm" == *":"* ]]; then
+                repo="${norm%:*}"
+                tag="${norm##*:}"
+              else
+                repo="$norm"
+                tag="latest"
+              fi
+              repo="${repo#library/}"
+              target="${MASTER_IP}:30001/${HARBOR_PROJECT}/${repo}:${tag}"
+              docker tag "$img" "$target" 2>/dev/null || true
+              if docker push "$target" 2>/dev/null; then
+                echo "  Mirrored: $target"
+              else
+                echo "  Warning: Could not push $target"
+              fi
+            done
+
             echo "Harbor UI: https://${MASTER_IP}:30001"
             echo "Login: admin / Harbor12345"
             echo "=========================================="
-            
+
+            # ============================================================
+            # STRICT ZERO CACHE CLEANUP - NO LOCAL IMAGES AT ALL
+            # ============================================================
+            echo "=========================================="
+            echo "Docker cache mode: ${CACHE_MODE} -> STRICT ZERO (No local images)"
+            echo "=========================================="
+
+            # Aggressive cleanup - remove everything
+            docker image prune -a -f 2>/dev/null || true
+            docker builder prune -a -f 2>/dev/null || true
+            docker system prune -a -f 2>/dev/null || true
+
+            if [ "${CACHE_MODE}" = "zero" ]; then
+                echo "Removing ALL images from Docker (including Harbor ones)"
+
+                # Remove everything
+                docker images -q | xargs -r docker rmi -f 2>/dev/null || true
+                docker images -q | xargs -r docker rmi -f 2>/dev/null || true
+
+                echo "Docker is now completely clean. No images stored locally."
+                echo "All pulls will go through Harbor."
+            else
+                echo "Warning: CACHE_MODE is not 'zero'. Using safe cleanup."
+            fi
+
+            echo "=========================================="
+            echo "Final docker images:"
+            docker images
+            echo "=========================================="
+
+            echo "Creating Kubernetes secret for Harbor registry pull access..."
+            kubectl delete secret harbor-secret --ignore-not-found=true
+            kubectl create secret docker-registry harbor-secret \
+              --docker-server="${MASTER_IP}:30001" \
+              --docker-username="admin" \
+              --docker-password="Harbor12345" \
+              --docker-email="admin@example.com" \
+              --namespace=default
+            kubectl patch serviceaccount default -n default -p '{"imagePullSecrets": [{"name": "harbor-secret"}]}'
+            echo "Harbor registry secret 'harbor-secret' created and configured for default service account"
+
+            # ============================================================
+            # FINAL VALIDATION - Confirm K3s pulls directly from Harbor
+            # ============================================================
+            echo "Running final test: Can K3s pull directly from Harbor?"
+            kubectl run test-busybox --image=192.168.121.114:30001/airgap/busybox:1.36 --command -- sleep 10
+
+            if kubectl wait --for=condition=Ready pod/test-busybox --timeout=60s 2>/dev/null; then
+                echo "SUCCESS: K3s successfully pulled image from Harbor!"
+                kubectl delete pod test-busybox --grace-period=1 2>/dev/null || true
+            else
+                echo "FAILED: K3s could not pull from Harbor. Check Harbor and registries.yaml"
+                kubectl describe pod test-busybox 2>/dev/null || true
+            fi
+
+            echo "=========================================="
+
             transition_state "harbor_installed"
           fi
 
@@ -1025,25 +817,295 @@ EOF
             cp /home/vagrant/.ssh/id_rsa.pub /vagrant/ansible_key.pub
           fi
 
-          transition_state "complete"
+          transition_state "base_complete"
           echo "=================================================="
-          echo "LAB READY (Profile: ${LAB_PROFILE})"
+          echo "BASE LAB READY (Profile: ${LAB_PROFILE})"
           echo "FAST_BOOT: ${FAST_BOOT}"
+          echo "CACHE_MODE: ${CACHE_MODE}"
           echo "Harbor: https://${MASTER_IP}:30001 (admin / Harbor12345)"
           echo "Harbor Project: ${HARBOR_PROJECT}"
           echo "=================================================="
+
+          jobs -p | xargs -r kill 2>/dev/null || true
+          sync
+          echo "Provisioning complete - exiting cleanly"
+          exit 0
+        SHELL
+
+        # ================= PROVISIONER 2: ENTERPRISE TOOLS =================
+        vm.vm.provision "shell", inline: <<-SHELL
+          if [ "${DEBUG:-false}" = "true" ]; then set -x; fi
+          set -euo pipefail
+
+          MASTER_IP="#{cfg[:ip]}"
+          ARGOCD_VERSION="#{ARGOCD_VERSION}"
+          PROMETHEUS_VERSION="#{PROMETHEUS_VERSION}"
+          FALCO_VERSION="#{FALCO_VERSION}"
+          KYVERNO_VERSION="#{KYVERNO_VERSION}"
+          CERT_MANAGER_VERSION="#{CERT_MANAGER_VERSION}"
+          FAST_BOOT="#{FAST_BOOT}"
+
+          export PATH=$PATH:/usr/local/bin
+          export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+
+          ENTERPRISE_MARKER="/var/lib/enterprise_tools_installed"
+          [ -f "$ENTERPRISE_MARKER" ] && { echo "Enterprise tools already installed, skipping"; exit 0; }
+
+          echo "=========================================="
+          echo "INSTALLING ENTERPRISE DEVSECOPS TOOLS"
+          echo "=========================================="
+
+          if [ "${FAST_BOOT}" != "true" ]; then
+
+            # ============================================================
+            # 1. CERT-MANAGER (Certificate Management)
+            # ============================================================
+            echo "Installing cert-manager ${CERT_MANAGER_VERSION}..."
+            kubectl apply -f "https://github.com/cert-manager/cert-manager/releases/download/v${CERT_MANAGER_VERSION}/cert-manager.yaml"
+            echo "Waiting for cert-manager pods..."
+            for i in $(seq 1 60); do
+              if kubectl get pods -n cert-manager --no-headers 2>/dev/null | grep -q Running; then
+                echo "cert-manager is ready"
+                break
+              fi
+              echo " Waiting for cert-manager... ($i/60)"
+              sleep 5
+            done
+
+            # ============================================================
+            # 2. KYVERNO (Policy Enforcement)
+            # ============================================================
+            echo "Installing Kyverno ${KYVERNO_VERSION}..."
+            helm repo add kyverno https://kyverno.github.io/kyverno/ --force-update
+            helm repo update
+            helm upgrade --install kyverno kyverno/kyverno \
+              --namespace kyverno \
+              --create-namespace \
+              --version ${KYVERNO_VERSION} \
+              --wait \
+              --timeout 10m || echo "WARNING: Kyverno install had issues"
+
+            echo "Waiting for Kyverno pods..."
+            for i in $(seq 1 60); do
+              if kubectl get pods -n kyverno --no-headers 2>/dev/null | grep -q Running; then
+                echo "Kyverno is ready"
+                break
+              fi
+              echo " Waiting for Kyverno... ($i/60)"
+              sleep 5
+            done
+
+            # ============================================================
+            # 3. FALCO (Runtime Security)
+            # ============================================================
+            echo "Installing Falco ${FALCO_VERSION}..."
+            helm repo add falcosecurity https://falcosecurity.github.io/charts --force-update
+            helm repo update
+            helm upgrade --install falco falcosecurity/falco \
+              --namespace falco \
+              --create-namespace \
+              --version ${FALCO_VERSION} \
+              --set falco.jsonOutput=true \
+              --set falco.fileOutput.enabled=true \
+              --set falco.fileOutput.json=true \
+              --wait \
+              --timeout 10m || echo "WARNING: Falco install had issues"
+
+            # ============================================================
+            # 4. PROMETHEUS + GRAFANA (Observability) - WITH AUTO-ASSIGN PORT
+            # ============================================================
+            echo "Installing Prometheus Stack ${PROMETHEUS_VERSION}..."
+
+            # Clean up any existing Grafana service that might be using a fixed port
+            kubectl delete svc prometheus-stack-grafana -n monitoring --ignore-not-found=true
+
+            helm repo add prometheus-community https://prometheus-community.github.io/helm-charts --force-update
+            helm repo update
+
+            cat > /tmp/prometheus-values.yaml <<EOF
+prometheus:
+  prometheusSpec:
+    serviceMonitorSelectorNilUsesHelmValues: false
+    serviceMonitorSelector: {}
+    serviceMonitorNamespaceSelector: {}
+grafana:
+  adminPassword: admin
+  service:
+    type: NodePort
+    # nodePort omitted - Kubernetes will auto-assign (no port conflicts)
+  persistence:
+    enabled: true
+    size: 1Gi
+alertmanager:
+  enabled: true
+EOF
+
+            helm upgrade --install prometheus-stack prometheus-community/kube-prometheus-stack \
+              --namespace monitoring \
+              --create-namespace \
+              --version ${PROMETHEUS_VERSION} \
+              --values /tmp/prometheus-values.yaml \
+              --wait \
+              --timeout 15m || echo "WARNING: Prometheus stack install had issues"
+
+            echo "Waiting for Prometheus and Grafana pods..."
+            for i in $(seq 1 90); do
+              if kubectl get pods -n monitoring --no-headers 2>/dev/null | grep -q Running; then
+                RUNNING_COUNT=$(kubectl get pods -n monitoring --no-headers | grep -c Running || echo "0")
+                TOTAL_COUNT=$(kubectl get pods -n monitoring --no-headers | wc -l || echo "0")
+                echo " Monitoring pods: $RUNNING_COUNT/$TOTAL_COUNT running... ($i/90)"
+                if [ "$RUNNING_COUNT" -eq "$TOTAL_COUNT" ] && [ "$TOTAL_COUNT" -gt 5 ]; then
+                  echo "All monitoring pods are ready"
+                  break
+                fi
+              fi
+              sleep 10
+            done
+
+            # Get the auto-assigned Grafana port
+            GRAFANA_PORT=$(kubectl get svc -n monitoring prometheus-stack-grafana -o jsonpath='{.spec.ports[0].nodePort}' 2>/dev/null || echo "30002")
+            echo "Grafana will be available at: https://${MASTER_IP}:${GRAFANA_PORT} (admin/admin)"
+
+            # ============================================================
+            # 5. ARGO CD (GitOps) - CLEAN INSTALL WITH FULL CLUSTER CLEANUP
+            # ============================================================
+            echo "Installing Argo CD ${ARGOCD_VERSION}..."
+
+            # ============================================================
+            # CLEAN OLD ARGO CD RESOURCES (VERY IMPORTANT)
+            # ============================================================
+            echo "Cleaning old Argo CD resources..."
+
+            helm uninstall argocd -n argocd 2>/dev/null || true
+
+            kubectl delete namespace argocd --ignore-not-found=true
+
+            # Delete CRDs
+            kubectl delete crd applications.argoproj.io --ignore-not-found=true
+            kubectl delete crd appprojects.argoproj.io --ignore-not-found=true
+            kubectl delete crd applicationsets.argoproj.io --ignore-not-found=true
+            kubectl delete crd argocdextensions.argoproj.io --ignore-not-found=true
+
+            # Delete cluster roles
+            kubectl delete clusterrole argocd-application-controller --ignore-not-found=true
+            kubectl delete clusterrole argocd-server --ignore-not-found=true
+            kubectl delete clusterrole argocd-dex-server --ignore-not-found=true
+            kubectl delete clusterrole argocd-notifications-controller --ignore-not-found=true
+            kubectl delete clusterrole argocd-redis-ha-haproxy --ignore-not-found=true
+            kubectl delete clusterrole argocd-redis-ha-server --ignore-not-found=true
+
+            # Delete cluster role bindings
+            kubectl delete clusterrolebinding argocd-application-controller --ignore-not-found=true
+            kubectl delete clusterrolebinding argocd-server --ignore-not-found=true
+            kubectl delete clusterrolebinding argocd-dex-server --ignore-not-found=true
+            kubectl delete clusterrolebinding argocd-notifications-controller --ignore-not-found=true
+
+            # Delete webhook configs
+            kubectl delete validatingwebhookconfiguration argocd-application-controller --ignore-not-found=true
+            kubectl delete mutatingwebhookconfiguration argocd-application-controller --ignore-not-found=true
+
+            # Give Kubernetes time to fully clean up
+            sleep 30
+
+            # Install Argo CD using Helm (clean install)
+            echo "Installing Argo CD using Helm..."
+            helm repo add argo https://argoproj.github.io/argo-helm --force-update
+            helm repo update
+
+            helm upgrade --install argocd argo/argo-cd \
+              --namespace argocd \
+              --create-namespace \
+              --version ${ARGOCD_VERSION} \
+              --set server.service.type=NodePort \
+              --set server.service.servicePortHttp=80 \
+              --set server.service.servicePortHttps=443 \
+              --set server.service.nodePortHttp=30003 \
+              --set server.service.nodePortHttps=30004 \
+              --wait \
+              --timeout 10m || echo "WARNING: Argo CD install had issues"
+
+            echo "Waiting for Argo CD pods..."
+            for i in $(seq 1 120); do
+              if kubectl get pods -n argocd --no-headers 2>/dev/null | grep -q Running; then
+                RUNNING_COUNT=$(kubectl get pods -n argocd --no-headers | grep -c Running || echo "0")
+                TOTAL_COUNT=$(kubectl get pods -n argocd --no-headers | wc -l || echo "0")
+                echo " Argo CD pods: $RUNNING_COUNT/$TOTAL_COUNT running... ($i/120)"
+                if [ "$RUNNING_COUNT" -eq "$TOTAL_COUNT" ] && [ "$TOTAL_COUNT" -gt 5 ]; then
+                  echo "All Argo CD pods are ready"
+                  break
+                fi
+              fi
+              sleep 10
+            done
+
+            echo ""
+            echo "=========================================="
+            echo "Argo CD initial admin password:"
+            kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" 2>/dev/null | base64 -d || echo "Password extraction failed, check manually"
+            echo ""
+            echo "=========================================="
+
+            # ============================================================
+            # CREATE INGRESS FOR GRAFANA
+            # ============================================================
+            cat > /tmp/grafana-ingress.yaml <<EOF
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: grafana
+  namespace: monitoring
+spec:
+  rules:
+  - host: grafana.local
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: prometheus-stack-grafana
+            port:
+              number: 80
+EOF
+
+            kubectl apply -f /tmp/grafana-ingress.yaml 2>/dev/null || true
+
+            echo "=========================================="
+            echo "ENTERPRISE TOOLS INSTALLATION COMPLETE"
+            echo "=========================================="
+            echo ""
+            echo "cert-manager: TLS certificate management"
+            echo "Kyverno: Policy enforcement"
+            echo "Falco: Runtime security"
+            echo "Prometheus: Metrics collection (port 9090 via port-forward)"
+            echo "Grafana: https://${MASTER_IP}:${GRAFANA_PORT} (admin/admin)"
+            echo "Argo CD: https://${MASTER_IP}:30003 (admin / password above)"
+            echo ""
+            echo "To access services:"
+            echo " Grafana: https://${MASTER_IP}:${GRAFANA_PORT}"
+            echo " Argo CD: https://${MASTER_IP}:30003"
+            echo ""
+            echo "Port-forward alternatives:"
+            echo " kubectl port-forward -n monitoring svc/prometheus-stack-grafana 3000:80"
+            echo " kubectl port-forward -n argocd svc/argocd-server 8080:443"
+            echo "=========================================="
+          fi
+
+          touch "$ENTERPRISE_MARKER"
         SHELL
 
       when "worker"
         vm.vm.provision "shell", inline: <<-SHELL
           if [ "${DEBUG:-false}" = "true" ]; then set -x; fi
           set -euo pipefail
+
           MASTER="#{MASTER_IP}"
           WORKER_IP="#{cfg[:ip]}"
           WORKER_NAME="#{name}"
           TOKEN_FILE=/vagrant/.k3s_token
           CLUSTER_STATE=/vagrant/.cluster_state.json
           KUBECONFIG_PATH=/vagrant/kubeconfig.yaml
+
           export PATH=$PATH:/usr/local/bin:/var/lib/rancher/k3s/bin
 
           get_iface() {
@@ -1094,6 +1156,7 @@ EOF
             exit 1
           fi
           TOKEN=$(cat "$TOKEN_FILE")
+
           if systemctl is-active --quiet k3s-agent 2>/dev/null; then
             echo "Worker already joined"
             exit 0
@@ -1101,6 +1164,7 @@ EOF
 
           IFACE=$(get_iface "${WORKER_IP}")
           echo "Detected interface for worker: ${IFACE}"
+
           curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="agent \
             --node-name ${WORKER_NAME} \
             --server https://$MASTER:6443 \
@@ -1117,6 +1181,7 @@ EOF
           set -euo pipefail
           mkdir -p /home/vagrant/.ssh
           chmod 700 /home/vagrant/.ssh
+
           for i in $(seq 1 30); do
             if [ -f /vagrant/ansible_key.pub ]; then
               grep -qF "$(cat /vagrant/ansible_key.pub)" /home/vagrant/.ssh/authorized_keys 2>/dev/null || \
@@ -1128,8 +1193,6 @@ EOF
             echo " Waiting for ansible_key.pub... ($i/30)"; sleep 2
           done
         SHELL
-
->>>>>>> 5b74834 (fix(harbor): resolve project creation JSON parsing and image seeding failures)
       end
     end
   end
