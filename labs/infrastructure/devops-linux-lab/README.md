@@ -3,7 +3,7 @@
 A complete **local DevOps + SysAdmin + Kubernetes lab** designed for:
 
 * LFCS / RHCSA / Linux+ practice
-* Kubernetes (kubeadm) hands-on learning
+* Kubernetes (k3s) hands-on learning
 * DevOps tooling (Terraform, Ansible, Helm)
 * GitOps workflows (ArgoCD)
 * Monitoring (Prometheus, Grafana, Loki)
@@ -17,6 +17,7 @@ This lab simulates a **real production-like environment** entirely locally using
 * Vagrant + Libvirt (KVM)
 * Multi-node architecture
 * Infrastructure as Code principles
+* k3s lightweight Kubernetes distribution
 
 ---
 
@@ -29,10 +30,10 @@ DevOps Node (Control)
 ├── Ansible
 ├── Helm
 │
-└── Kubernetes Cluster
-    ├── k8s-cp (Control Plane)
-    ├── k8s-w1 (Worker)
-    └── k8s-w2 (Worker)
+└── k3s Kubernetes Cluster
+    ├── k3s-cp (Control Plane + Server)
+    ├── k3s-w1 (Worker Agent)
+    └── k3s-w2 (Worker Agent)
 
 Linux Study Nodes
 ├── Ubuntu
@@ -47,14 +48,14 @@ Linux Study Nodes
 
 ```text
 devops-linux-lab/
-├── Vagrantfile
-├── scripts/
-├── docs/
-├── terraform/
-├── ansible/
-├── k8s/
-├── helm/
-└── monitoring/
+├── Vagrantfile                 # Vagrant configuration for multi-node lab setup
+├── scripts/                    # Lab management and utility scripts
+├── docs/                       # Documentation and guides
+├── terraform/                  # Infrastructure as Code (IaC)
+├── ansible/                    # Configuration Management
+├── k8s/                        # Kubernetes manifests
+├── helm/                       # Helm charts
+└── monitoring/                 # Prometheus, Grafana, Loki stack
 ```
 
 ---
@@ -112,19 +113,21 @@ Topics:
 
 ---
 
-## Kubernetes Setup (Manual Learning)
+## Kubernetes Setup (k3s)
 
 ```bash
-vagrant ssh k8s-cp
-sudo kubeadm init --apiserver-advertise-address=192.168.56.11
+vagrant ssh k3s-cp
+# k3s server is automatically started
+kubectl get nodes
 ```
 
-Join workers using the generated token.
+Workers automatically join the cluster via agent token.
 
-Install CNI:
+Verify cluster:
 
 ```bash
-kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+kubectl cluster-info
+kubectl get nodes
 ```
 
 ---
@@ -132,11 +135,12 @@ kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
 ## DevOps Workflow
 
 1. Terraform provisions infrastructure
-2. Ansible configures nodes
-3. Kubernetes cluster initialized
-4. Helm deploys applications
-5. ArgoCD manages GitOps
-6. Monitoring stack observes system
+2. Vagrant bootstraps VMs with k3s
+3. Ansible configures nodes
+4. Kubernetes cluster initialized
+5. Helm deploys applications
+6. ArgoCD manages GitOps
+7. Monitoring stack observes system
 
 ---
 
@@ -151,7 +155,7 @@ kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
 
 ## Learning Goals
 
-* Build Kubernetes from scratch (no shortcuts)
+* Understand Kubernetes with k3s lightweight distribution
 * Understand Infrastructure as Code
 * Practice real sysadmin tasks
 * Implement GitOps workflows
