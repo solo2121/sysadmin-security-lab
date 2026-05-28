@@ -1841,8 +1841,3 @@ docker compose logs -f
 - [Grafana Dashboards](https://grafana.com/grafana/dashboards/)
 
 ---
-
-**Last Updated:** 2026-05-28  
-**Version:** 1.0.0  
-**Author:** DevOps Team  
-**License:** MIT
