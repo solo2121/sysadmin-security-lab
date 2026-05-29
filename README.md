@@ -46,7 +46,7 @@ This is not a single lab — it's a **complete learning ecosystem**.
 
 ---
 
-## ⚠️ Authorized Use
+## Authorized Use
 
 **This repository contains offensive security content.** Before using:
 
@@ -267,16 +267,16 @@ sysadmin-security-lab/
 
 ---
 
-## 📖 Documentation
+## Documentation
 
-| Document                                           | Purpose                 |
-| -------------------------------------------------- | ----------------------- |
-| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)     | Design and structure    |
-| [`docs/SECURITY-SCOPE.md`](docs/SECURITY-SCOPE.md) | Authorized use          |
-| [`CONTRIBUTING.md`](CONTRIBUTING.md)               | Contribution guidelines |
-| [`INSTALLATION.md`](INSTALLATION.md)               | Setup instructions      |
-| [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md)         | Fixes                   |
-| [`SECURITY.md`](SECURITY.md)                       | Vulnerability reporting |
+| Document | Purpose |
+|----------|----------|
+| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Design and structure |
+| [`docs/SECURITY-SCOPE.md`](docs/SECURITY-SCOPE.md) | Authorized use |
+| [`CONTRIBUTING.md`](CONTRIBUTING.md) | Contribution guidelines |
+| [`INSTALLATION.md`](INSTALLATION.md) | Setup instructions |
+| [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md) | Fixes |
+| [`SECURITY.md`](SECURITY.md) | Vulnerability reporting |
 
 ---
 

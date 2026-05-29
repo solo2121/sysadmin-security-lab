@@ -1,6 +1,6 @@
 # Labs Directory
 
-This directory contains hands-on learning labs covering infrastructure, security, and system administration topics. Each lab is designed to provide practical, real-world experience in specific areas.
+This directory contains hands-on learning labs covering infrastructure, security, and system administration topics. Each lab is designed to provide practical, real-world experience in specific areas of infrastructure, security, and system administration.
 
 ## Available Labs
 
@@ -9,9 +9,11 @@ This directory contains hands-on learning labs covering infrastructure, security
 **Location:** `labs/infrastructure/`
 
 #### DevOps Linux Lab (Core Platform)
+
 **Path:** `labs/infrastructure/devops-linux-lab/`
 
 A comprehensive local DevOps and Kubernetes learning environment featuring:
+
 - LFCS / RHCSA / Linux+ certification practice
 - Kubernetes cluster setup with kubeadm
 - Infrastructure as Code with Terraform and Ansible
@@ -27,9 +29,11 @@ See `labs/infrastructure/devops-linux-lab/README.md` for detailed setup instruct
 **Location:** `labs/security/`
 
 #### Active Directory Pentest Lab
+
 **Path:** `labs/security/ad-pentest/`
 
 Simulates enterprise Active Directory environments for offensive security training:
+
 - Active Directory enumeration techniques
 - Kerberos attack chains (Kerberoasting, AS-REP roasting)
 - Certificate Services exploitation (ESC attacks)
@@ -38,9 +42,11 @@ Simulates enterprise Active Directory environments for offensive security traini
 - Credential theft and pass-the-hash attacks
 
 #### VLAN Enterprise Lab
+
 **Path:** `labs/security/ad-pentest-vlan/`
 
 Network-focused security lab for enterprise environment simulation:
+
 - Network segmentation and VLAN isolation
 - Multi-subnet enterprise architecture
 - Network topology analysis and reconnaissance
@@ -53,6 +59,7 @@ Network-focused security lab for enterprise environment simulation:
 ### Prerequisites
 
 Before running any lab, ensure you have the following installed:
+
 - Vagrant
 - Libvirt / KVM hypervisor
 - QEMU
@@ -65,22 +72,26 @@ See INSTALLATION.md for detailed setup instructions.
 ### Running a Lab
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/solo2121/sysadmin-security-lab.git
    cd sysadmin-security-lab
    ```
 
 2. Navigate to your chosen lab:
+
    ```bash
    cd labs/infrastructure/devops-linux-lab
    ```
 
 3. Start the lab:
+
    ```bash
    vagrant up
    ```
 
 4. Access the lab environment:
+
    ```bash
    vagrant ssh <node-name>
    ```
@@ -88,11 +99,13 @@ See INSTALLATION.md for detailed setup instructions.
 ### Stopping and Cleaning Up
 
 To pause the lab:
+
 ```bash
 vagrant suspend
 ```
 
 To stop and destroy:
+
 ```bash
 vagrant destroy -f
 ```
@@ -124,6 +137,7 @@ Recommended progression for getting the most from these labs:
 ## Lab Management
 
 Optional lab manager script (if available):
+
 ```bash
 ./scripts/lab-manager.sh
 ```
@@ -156,6 +170,7 @@ See CONTRIBUTING.md for detailed guidelines.
 ## Support
 
 For issues, questions, or suggestions:
+
 - Check existing GitHub issues
 - Review lab-specific documentation
 - Consult TROUBLESHOOTING.md

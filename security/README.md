@@ -9,6 +9,7 @@ Organization by security domain:
 ### Reconnaissance Tools
 
 Network scanning and information gathering utilities:
+
 - Network enumeration and port scanning scripts
 - DNS and subdomain discovery tools
 - Service fingerprinting utilities
@@ -17,6 +18,7 @@ Network scanning and information gathering utilities:
 ### Credential Attacks
 
 Tools and techniques for credential-based attacks:
+
 - Brute force attack frameworks
 - Dictionary and wordlist utilities
 - Hash cracking and verification tools
@@ -25,6 +27,7 @@ Tools and techniques for credential-based attacks:
 ### Active Directory Exploitation
 
 AD-specific attack tools and frameworks:
+
 - Kerberos exploitation utilities
 - LDAP query and enumeration scripts
 - Certificate Services (AD CS) exploitation tools
@@ -34,6 +37,7 @@ AD-specific attack tools and frameworks:
 ### Web Application Exploitation
 
 Web-based vulnerability assessment tools:
+
 - SQL injection testing frameworks
 - Cross-Site Scripting (XSS) testing tools
 - Authentication bypass techniques
@@ -43,6 +47,7 @@ Web-based vulnerability assessment tools:
 ### Post-Exploitation
 
 Tools for maintaining access and lateral movement:
+
 - Persistence establishment scripts
 - Lateral movement utilities
 - Data exfiltration tools
@@ -52,6 +57,7 @@ Tools for maintaining access and lateral movement:
 ### Wireless Security Testing
 
 Wireless network assessment tools:
+
 - Wi-Fi scanning and analysis utilities
 - WPA/WPA2 attack frameworks
 - Rogue access point tools
@@ -99,6 +105,7 @@ security/
 ### Documentation
 
 Each tool or script should include:
+
 - Clear description of purpose and functionality
 - Usage examples and command-line syntax
 - Output format and interpretation guide
@@ -118,6 +125,7 @@ Each tool or script should include:
 ### Active Directory Exploitation Techniques
 
 Tools and scripts for AD attack chains:
+
 - User and computer enumeration
 - Kerberoasting and AS-REP roasting
 - Certificate Services exploitation
@@ -128,6 +136,7 @@ Tools and scripts for AD attack chains:
 ### Network Reconnaissance
 
 Tools for external and internal reconnaissance:
+
 - Port scanning and service enumeration
 - Network mapping and topology discovery
 - WHOIS and DNS information gathering
@@ -137,6 +146,7 @@ Tools for external and internal reconnaissance:
 ### Credential Attacks
 
 Frameworks for credential-based attacks:
+
 - Dictionary attacks
 - Brute force attacks
 - Hybrid attacks (dictionary + rules)
@@ -146,6 +156,7 @@ Frameworks for credential-based attacks:
 ### Post-Exploitation
 
 Tools for maintaining access and pivoting:
+
 - Privilege escalation techniques
 - Persistence establishment
 - Lateral movement utilities
@@ -188,6 +199,7 @@ For security-related concerns, see SECURITY.md
 ## Support and Questions
 
 For questions about specific tools or techniques:
+
 - Check tool documentation and README files
 - Review tutorials/ directory for guides
 - Consult TROUBLESHOOTING.md
