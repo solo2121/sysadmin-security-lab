@@ -13,6 +13,12 @@
 
 ---
 
+**Last Updated:** 2026-05-29  
+**Maintained By:** solo2121  
+**Status:** Active & Maintained
+
+---
+
 ## Overview
 
 The **Sysadmin Security Lab** is a reproducible, modular infrastructure platform designed to simulate real-world enterprise environments for hands-on learning.
