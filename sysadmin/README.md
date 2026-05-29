@@ -1,12 +1,13 @@
 # System Administration Directory
 
-This directory contains scripts, tools, and configurations for system administration tasks. These resources are designed for managing Linux systems, automating administrative tasks, and maintaining infrastructure.
+This directory contains scripts, tools, and configurations for system administration tasks. These resources are designed for managing Linux systems, automating administrative tasks, and maintaining infrastructure in production and lab environments.
 
 ## Contents Overview
 
 ### System Management Scripts
 
 Utilities for day-to-day system administration:
+
 - User and group management scripts
 - File system management and monitoring
 - Package management and installation automation
@@ -16,6 +17,7 @@ Utilities for day-to-day system administration:
 ### Infrastructure Automation
 
 Infrastructure as Code and configuration management:
+
 - Terraform modules for infrastructure provisioning
 - Ansible playbooks for system configuration
 - Bash scripts for common administrative tasks
@@ -24,6 +26,7 @@ Infrastructure as Code and configuration management:
 ### System Hardening
 
 Security hardening and baseline configurations:
+
 - SSH hardening scripts
 - Firewall configuration templates
 - SELinux and AppArmor policies
@@ -33,6 +36,7 @@ Security hardening and baseline configurations:
 ### Monitoring and Logging
 
 Monitoring, logging, and observability tools:
+
 - Log collection and aggregation scripts
 - System performance monitoring utilities
 - Health check and alerting scripts
@@ -42,6 +46,7 @@ Monitoring, logging, and observability tools:
 ### Backup and Recovery
 
 Backup and disaster recovery utilities:
+
 - Backup automation scripts
 - Incremental backup utilities
 - Restore procedure documentation
@@ -51,6 +56,7 @@ Backup and disaster recovery utilities:
 ### Documentation and Reference
 
 Administrator reference materials:
+
 - System configuration guides
 - Troubleshooting procedures
 - Command reference sheets
@@ -94,6 +100,7 @@ sysadmin/
 ### User and Group Management
 
 Scripts for managing system users:
+
 ```bash
 ./scripts/user-management/add-user.sh
 ./scripts/user-management/manage-sudo.sh
@@ -103,6 +110,7 @@ Scripts for managing system users:
 ### System Maintenance
 
 Routine system administration tasks:
+
 ```bash
 ./scripts/system-maintenance/update-system.sh
 ./scripts/system-maintenance/cleanup-logs.sh
@@ -112,6 +120,7 @@ Routine system administration tasks:
 ### Backup and Recovery
 
 Data protection and recovery operations:
+
 ```bash
 ./scripts/backup-restore/backup-full-system.sh
 ./scripts/backup-restore/backup-configs.sh
@@ -121,6 +130,7 @@ Data protection and recovery operations:
 ### Monitoring Setup
 
 Monitoring and alerting configuration:
+
 ```bash
 ./scripts/monitoring/install-monitoring-stack.sh
 ./scripts/monitoring/configure-dashboards.sh
@@ -132,6 +142,7 @@ Monitoring and alerting configuration:
 ### SSH Hardening
 
 Securing SSH for remote access:
+
 - Disable root login
 - Use key-based authentication
 - Change default port
@@ -143,6 +154,7 @@ See `hardening/ssh-hardening/README.md` for detailed instructions.
 ### Firewall Configuration
 
 Network security and firewall rules:
+
 - UFW/iptables configuration
 - Port and protocol filtering
 - Stateful firewall rules
@@ -153,6 +165,7 @@ See `hardening/firewall-rules/README.md` for configuration templates.
 ### Security Baseline
 
 System security baseline implementation:
+
 - File permissions hardening
 - Kernel hardening parameters
 - Audit logging configuration
@@ -165,6 +178,7 @@ See `hardening/security-baseline/README.md` for baseline templates.
 ### Terraform Modules
 
 Infrastructure provisioning:
+
 - Network setup
 - VM provisioning
 - Storage configuration
@@ -173,6 +187,7 @@ Infrastructure provisioning:
 ### Ansible Playbooks
 
 Configuration management:
+
 - System initialization
 - Software installation
 - Service configuration
@@ -181,6 +196,7 @@ Configuration management:
 ### Python Utilities
 
 Custom automation tools:
+
 - System information gathering
 - Configuration generation
 - Automated testing
@@ -191,6 +207,7 @@ Custom automation tools:
 ### Prometheus Configuration
 
 Metrics collection setup:
+
 - Node exporter configuration
 - Service monitoring
 - Custom metrics
@@ -199,6 +216,7 @@ Metrics collection setup:
 ### Grafana Dashboards
 
 Visualization and alerting:
+
 - System dashboards
 - Service dashboards
 - Alert rules
@@ -207,6 +225,7 @@ Visualization and alerting:
 ### Alert Rules
 
 Automated alerting and notifications:
+
 - CPU and memory alerts
 - Disk space warnings
 - Service health alerts
@@ -217,6 +236,7 @@ Automated alerting and notifications:
 ### Backup Strategies
 
 Different backup approaches:
+
 - Full system backups
 - Incremental backups
 - Configuration file backups
@@ -225,6 +245,7 @@ Different backup approaches:
 ### Recovery Procedures
 
 Restoring from backups:
+
 - Single file recovery
 - Full system restore
 - Point-in-time recovery
@@ -260,6 +281,7 @@ See CONTRIBUTING.md for detailed guidelines.
 ## Troubleshooting
 
 For common issues:
+
 - Check script prerequisites and dependencies
 - Review script output and error messages
 - Verify proper permissions and ownership
@@ -269,6 +291,7 @@ For common issues:
 ## Support
 
 For questions or issues:
+
 - Review documentation in docs/ directory
 - Check script README files
 - Consult tutorials/ for step-by-step guides

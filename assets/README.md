@@ -7,6 +7,7 @@ This directory contains supplementary assets including diagrams, configuration t
 ### Diagrams and Architecture
 
 Visual representations of lab architectures and network topologies:
+
 - Infrastructure architecture diagrams
 - Network topology diagrams
 - Active Directory forest structures
@@ -16,6 +17,7 @@ Visual representations of lab architectures and network topologies:
 ### Configuration Templates
 
 Reusable configuration files and templates:
+
 - Vagrant configuration examples
 - Ansible playbook templates
 - Terraform module templates
@@ -25,6 +27,7 @@ Reusable configuration files and templates:
 ### Images and Graphics
 
 Pictures, screenshots, and visual aids:
+
 - Setup screenshots and walkthroughs
 - Architecture visualizations
 - Topology diagrams
@@ -34,6 +37,7 @@ Pictures, screenshots, and visual aids:
 ### Reference Materials
 
 Reference documents and quick guides:
+
 - Command reference sheets
 - Configuration checklists
 - Compliance matrices
@@ -71,6 +75,7 @@ assets/
 ### Infrastructure Architecture
 
 Visual overview of complete lab infrastructure:
+
 - Component relationships
 - Network segmentation
 - VM configurations
@@ -80,6 +85,7 @@ Visual overview of complete lab infrastructure:
 ### Network Topology
 
 Detailed network layouts:
+
 - IP addressing schemes
 - VLAN configurations
 - Routing paths
@@ -89,6 +95,7 @@ Detailed network layouts:
 ### Active Directory Forest
 
 AD environment structure:
+
 - Domain hierarchy
 - Trust relationships
 - Organizational Unit (OU) structure
@@ -98,6 +105,7 @@ AD environment structure:
 ### VLAN Configuration
 
 Network segmentation diagrams:
+
 - VLAN assignments
 - Inter-VLAN routing
 - Access control lists
@@ -109,6 +117,7 @@ Network segmentation diagrams:
 ### Vagrant Templates
 
 Reusable Vagrantfile configurations:
+
 - Multi-VM setup template
 - Network configuration template
 - Provisioning script template
@@ -118,6 +127,7 @@ Reusable Vagrantfile configurations:
 ### Ansible Templates
 
 Playbook and role templates:
+
 - Host inventory template
 - Role structure template
 - Handler template
@@ -127,6 +137,7 @@ Playbook and role templates:
 ### Terraform Templates
 
 Infrastructure code templates:
+
 - Provider configuration template
 - Resource definition template
 - Module structure template
@@ -136,6 +147,7 @@ Infrastructure code templates:
 ### Network Configuration Templates
 
 Network setup examples:
+
 - Linux network interface template
 - Firewall rule template
 - DNS configuration template
@@ -147,6 +159,7 @@ Network setup examples:
 ### Setup Screenshots
 
 Step-by-step visual guides:
+
 - Installation process screenshots
 - Configuration UI screenshots
 - Output examples
@@ -156,6 +169,7 @@ Step-by-step visual guides:
 ### Architecture Diagrams
 
 Visual system overviews:
+
 - System component layout
 - Data flow diagrams
 - Integration points
@@ -165,6 +179,7 @@ Visual system overviews:
 ### Tutorial Illustrations
 
 Educational graphics:
+
 - Concept illustrations
 - Attack flow diagrams
 - Defense mechanisms
@@ -176,6 +191,7 @@ Educational graphics:
 ### Configuration Checklists
 
 Step-by-step configuration guides:
+
 - Pre-deployment checklist
 - Installation verification
 - Security configuration checklist
@@ -185,6 +201,7 @@ Step-by-step configuration guides:
 ### Command Reference
 
 Quick command reference sheets:
+
 - Vagrant command reference
 - Ansible command reference
 - Terraform command reference
@@ -194,6 +211,7 @@ Quick command reference sheets:
 ### Tool Comparison
 
 Comparison matrices:
+
 - Virtualization platforms
 - Configuration management tools
 - Infrastructure provisioning tools
@@ -203,6 +221,7 @@ Comparison matrices:
 ### Quick Guides
 
 Quick reference documentation:
+
 - Getting started guides
 - Common task workflows
 - Emergency procedures
@@ -214,6 +233,7 @@ Quick reference documentation:
 ### Embedding Diagrams
 
 To include diagrams in documentation:
+
 ```markdown
 ![Architecture Overview](assets/diagrams/infrastructure/architecture.png)
 ```
@@ -221,6 +241,7 @@ To include diagrams in documentation:
 ### Using Configuration Templates
 
 To adapt templates for your use:
+
 1. Copy template from assets/templates/
 2. Customize for your environment
 3. Save in appropriate location
@@ -230,6 +251,7 @@ To adapt templates for your use:
 ### Referencing Materials
 
 To cite reference materials:
+
 1. Locate relevant reference in assets/reference/
 2. Include appropriate attribution
 3. Link to original asset
@@ -271,6 +293,7 @@ See CONTRIBUTING.md for detailed guidelines.
 ## Organization
 
 Assets should be organized by type and purpose:
+
 - Clear directory structure
 - Descriptive filenames
 - Version numbers in filenames if multiple versions

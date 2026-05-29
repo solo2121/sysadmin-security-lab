@@ -1,6 +1,6 @@
 # Tutorials & Reference Guides
 
-This directory contains **educational tutorials, guides, and reference material** to support security, system administration, and PJPT-style Active Directory labs.
+This directory contains **educational tutorials, guides, and reference material** to support security, system administration, and penetration testing labs.
 
 All tutorials are intended for **learning and authorized practice only**. They complement the scripts and labs in this repository.
 
@@ -35,4 +35,4 @@ All tutorials are intended for **learning and authorized practice only**. They c
 
 ---
 
-> Note: All tutorials are designed for **authorized environments**. Do not attempt on production systems without permission.
+**Note:** All tutorials are designed for **authorized environments**. Do not attempt on production systems without permission.
