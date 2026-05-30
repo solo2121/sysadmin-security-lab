@@ -1,5 +1,81 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
+
+# =============================================================================
+# Enterprise DevSecOps Air-Gap Lab
+# =============================================================================
+#
+# Author        : Miguel Carlo (solo2121)
+# Version       : 7.0.0
+# Created       : 2025
+# Last Updated  : 2026-05-29
+# Status        : Active & Maintained
+# License       : Personal / Educational Use
+#
+# -----------------------------------------------------------------------------
+# DESCRIPTION
+# -----------------------------------------------------------------------------
+# Enterprise Kubernetes Lab built with Vagrant + Libvirt for learning,
+# testing, and validating modern DevOps, DevSecOps, GitOps, Platform
+# Engineering, and Cloud-Native technologies.
+#
+# Components:
+#   • K3s Kubernetes Cluster
+#   • Harbor Container Registry
+#   • Argo CD GitOps Platform
+#   • Prometheus & Grafana Monitoring
+#   • Falco Runtime Security
+#   • Kyverno Policy Enforcement
+#   • Cert-Manager TLS Automation
+#   • Linux Training Nodes
+#   • Ansible Management Nodes
+#
+# Features:
+#   • Multi-Profile Deployment (minimal/dev/full)
+#   • Air-Gap Image Management
+#   • Automated Cluster Bootstrap
+#   • Enterprise Security Tooling
+#   • Infrastructure as Code (IaC)
+#   • Zero-Cache Harbor Mode
+#   • Dynamic Network Discovery
+#   • Automated Node Provisioning
+#
+# Requirements:
+#   • Vagrant >= 2.4
+#   • Libvirt Provider
+#   • KVM/QEMU Virtualization
+#   • Linux Host (Ubuntu Recommended)
+#
+# Maintainer:
+#   Miguel Carlo (solo2121)
+#
+# Changelog:
+#   v7.0.0 - Enterprise Release
+#            - K3s v1.31.4+k3s1
+#            - Harbor Integration
+#            - Argo CD GitOps
+#            - Prometheus/Grafana Stack
+#            - Falco Runtime Security
+#            - Kyverno Policy Engine
+#            - Air-Gap Registry Support
+#
+# =============================================================================
+
+LAB_NAME        = "Enterprise DevSecOps Air-Gap Lab"
+LAB_VERSION     = "7.0.0"
+LAB_AUTHOR      = "Miguel Carlo (solo2121)"
+LAB_CREATED     = "2025"
+LAB_UPDATED     = "2026-05-29"
+LAB_STATUS      = "Active & Maintained"
+
+puts "=================================================="
+puts "#{LAB_NAME}"
+puts "Version      : #{LAB_VERSION}"
+puts "Author       : #{LAB_AUTHOR}"
+puts "Last Updated : #{LAB_UPDATED}"
+puts "Status       : #{LAB_STATUS}"
+puts "=================================================="
+
 require 'ipaddr'
 require 'rexml/document'
 ENV['LIBVIRT_DEFAULT_URI'] ||= 'qemu:///system'
@@ -28,6 +104,9 @@ PROMETHEUS_VERSION = "68.3.0"
 FALCO_VERSION = "2.3.0"
 KYVERNO_VERSION = "3.3.7"
 CERT_MANAGER_VERSION = "1.16.2"
+
+# Harbor Password Configuration (can be overridden via env var)
+HARBOR_PASS = ENV['HARBOR_PASS'] || 'Harbor12345'
 
 # Auto-detect libvirt network
 def detect_libvirt_network
@@ -268,6 +347,7 @@ EOF
           INGRESS_NGINX_VERSION="#{INGRESS_NGINX_VERSION}"
           K3S_VERSION="#{K3S_VERSION}"
           DOCKER_VERSION="#{DOCKER_VERSION}"
+          HARBOR_PASS="#{HARBOR_PASS}"
           TOKEN_PATH=/vagrant/.k3s_token
           CLUSTER_READY=/vagrant/.cluster_ready
           FAST_BOOT="#{FAST_BOOT}"
@@ -493,7 +573,7 @@ configs:
       insecure_skip_verify: true
     auth:
       username: admin
-      password: Harbor12345
+      password: ${HARBOR_PASS}
 EOF
 
           systemctl restart k3s
@@ -594,7 +674,7 @@ expose:
       https:
         nodePort: 30001
 externalURL: https://${MASTER_IP}:30001
-harborAdminPassword: Harbor12345
+harborAdminPassword: ${HARBOR_PASS}
 persistence:
   enabled: true
   persistentVolumeClaim:
@@ -612,14 +692,20 @@ EOF
             }
 
             echo "Waiting for Harbor API to be healthy..."
+            HARBOR_HEALTHY=false
             for i in $(seq 1 120); do
               if curl -sk --max-time 10 "https://${MASTER_IP}:30001/api/v2.0/health" 2>/dev/null | grep -q '"status":"healthy"'; then
                 echo "Harbor API is healthy"
+                HARBOR_HEALTHY=true
                 break
               fi
               echo " Waiting for Harbor API... ($i/120)"
               sleep 10
             done
+            if [ "$HARBOR_HEALTHY" = "false" ]; then
+              echo "ERROR: Harbor API failed to become healthy after 120 attempts"
+              exit 1
+            fi
 
             echo "=========================================="
             echo "Seeding ${HARBOR_PROJECT} project with airgap images"
@@ -640,7 +726,7 @@ EOF
               PROJECT_JSON=$(printf '{"project_name":"%s","metadata":{"public":"true"}}' "${HARBOR_PROJECT}")
               HTTP_CODE=$(curl -sk -o /tmp/harbor_create_resp.json -w '%{http_code}' \
                 -X POST "https://${MASTER_IP}:30001/api/v2.0/projects" \
-                -u "admin:Harbor12345" \
+                -u "admin:${HARBOR_PASS}" \
                 -H "Content-Type: application/json" \
                 -d "$PROJECT_JSON")
               echo " Attempt $i/30 HTTP $HTTP_CODE"
@@ -654,7 +740,7 @@ EOF
 
             echo "Verifying project exists in API..."
             for i in $(seq 1 30); do
-              VERIFY_PROJECT_CODE=$(curl -sk -o /dev/null -w '%{http_code}' -u "admin:Harbor12345" "https://${MASTER_IP}:30001/api/v2.0/projects/${HARBOR_PROJECT}")
+              VERIFY_PROJECT_CODE=$(curl -sk -o /dev/null -w '%{http_code}' -u "admin:${HARBOR_PASS}" "https://${MASTER_IP}:30001/api/v2.0/projects/${HARBOR_PROJECT}")
               if [ "$VERIFY_PROJECT_CODE" = "200" ]; then
                 echo "Project verified"
                 PROJECT_READY="true"
@@ -671,7 +757,7 @@ EOF
             fi
 
             echo "Logging in to Harbor registry..."
-            echo "Harbor12345" | docker login "${MASTER_IP}:30001" -u admin --password-stdin || {
+            echo "${HARBOR_PASS}" | docker login "${MASTER_IP}:30001" -u admin --password-stdin || {
               echo "WARNING: Docker login failed"
             }
 
@@ -691,7 +777,7 @@ EOF
               target="${MASTER_IP}:30001/${HARBOR_PROJECT}/${repo}:${tag}"
               echo " Target: $target"
               repo_api="${repo//\//%252F}"
-              ARTIFACT_CODE=$(curl -sk -o /dev/null -w '%{http_code}' -u "admin:Harbor12345" \
+              ARTIFACT_CODE=$(curl -sk -o /dev/null -w '%{http_code}' -u "admin:${HARBOR_PASS}" \
                 "https://${MASTER_IP}:30001/api/v2.0/projects/${HARBOR_PROJECT}/repositories/${repo_api}/artifacts/${tag}")
               if [ "$ARTIFACT_CODE" = "200" ]; then
                 echo " SKIP: Already exists in Harbor"
@@ -717,35 +803,6 @@ EOF
 
             echo "=========================================="
             echo "Image seeding complete!"
-
-            # ============================================================
-            # EXTRA MIRROR PUSH - Ensure all images are in Harbor
-            # ============================================================
-            echo "Ensuring all airgap images are properly mirrored in Harbor..."
-            for img in "${AIRGAP_IMAGES[@]}"; do
-              norm="${img#docker.io/}"
-              norm="${norm#registry.k8s.io/}"
-              norm="${norm#quay.io/}"
-              norm="${norm#ghcr.io/}"
-              if [[ "$norm" == *":"* ]]; then
-                repo="${norm%:*}"
-                tag="${norm##*:}"
-              else
-                repo="$norm"
-                tag="latest"
-              fi
-              repo="${repo#library/}"
-              target="${MASTER_IP}:30001/${HARBOR_PROJECT}/${repo}:${tag}"
-              docker tag "$img" "$target" 2>/dev/null || true
-              if docker push "$target" 2>/dev/null; then
-                echo "  Mirrored: $target"
-              else
-                echo "  Warning: Could not push $target"
-              fi
-            done
-
-            echo "Harbor UI: https://${MASTER_IP}:30001"
-            echo "Login: admin / Harbor12345"
             echo "=========================================="
 
             # ============================================================
@@ -783,7 +840,7 @@ EOF
             kubectl create secret docker-registry harbor-secret \
               --docker-server="${MASTER_IP}:30001" \
               --docker-username="admin" \
-              --docker-password="Harbor12345" \
+              --docker-password="${HARBOR_PASS}" \
               --docker-email="admin@example.com" \
               --namespace=default
             kubectl patch serviceaccount default -n default -p '{"imagePullSecrets": [{"name": "harbor-secret"}]}'
@@ -793,14 +850,17 @@ EOF
             # FINAL VALIDATION - Confirm K3s pulls directly from Harbor
             # ============================================================
             echo "Running final test: Can K3s pull directly from Harbor?"
+            kubectl delete pod test-busybox --ignore-not-found=true --grace-period=1 2>/dev/null || true
+            sleep 2
             kubectl run test-busybox --image=192.168.121.114:30001/airgap/busybox:1.36 --command -- sleep 10
 
             if kubectl wait --for=condition=Ready pod/test-busybox --timeout=60s 2>/dev/null; then
                 echo "SUCCESS: K3s successfully pulled image from Harbor!"
-                kubectl delete pod test-busybox --grace-period=1 2>/dev/null || true
+                kubectl delete pod test-busybox --ignore-not-found=true --grace-period=1 2>/dev/null || true
             else
                 echo "FAILED: K3s could not pull from Harbor. Check Harbor and registries.yaml"
                 kubectl describe pod test-busybox 2>/dev/null || true
+                kubectl delete pod test-busybox --ignore-not-found=true --grace-period=1 2>/dev/null || true
             fi
 
             echo "=========================================="
@@ -822,7 +882,7 @@ EOF
           echo "BASE LAB READY (Profile: ${LAB_PROFILE})"
           echo "FAST_BOOT: ${FAST_BOOT}"
           echo "CACHE_MODE: ${CACHE_MODE}"
-          echo "Harbor: https://${MASTER_IP}:30001 (admin / Harbor12345)"
+          echo "Harbor: https://${MASTER_IP}:30001 (admin / ${HARBOR_PASS})"
           echo "Harbor Project: ${HARBOR_PROJECT}"
           echo "=================================================="
 
@@ -848,8 +908,19 @@ EOF
           export PATH=$PATH:/usr/local/bin
           export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
 
+          # Individual tool markers for granular retry capability
           ENTERPRISE_MARKER="/var/lib/enterprise_tools_installed"
-          [ -f "$ENTERPRISE_MARKER" ] && { echo "Enterprise tools already installed, skipping"; exit 0; }
+          CERTS_MARKER="/var/lib/cert_manager_installed"
+          KYVERNO_MARKER="/var/lib/kyverno_installed"
+          FALCO_MARKER="/var/lib/falco_installed"
+          PROMETHEUS_MARKER="/var/lib/prometheus_installed"
+          ARGOCD_MARKER="/var/lib/argocd_installed"
+
+          # If the old marker exists, respect it for backward compatibility
+          if [ -f "$ENTERPRISE_MARKER" ]; then
+            echo "Enterprise tools already installed (legacy marker), skipping"
+            exit 0
+          fi
 
           echo "=========================================="
           echo "INSTALLING ENTERPRISE DEVSECOPS TOOLS"
@@ -860,69 +931,85 @@ EOF
             # ============================================================
             # 1. CERT-MANAGER (Certificate Management)
             # ============================================================
-            echo "Installing cert-manager ${CERT_MANAGER_VERSION}..."
-            kubectl apply -f "https://github.com/cert-manager/cert-manager/releases/download/v${CERT_MANAGER_VERSION}/cert-manager.yaml"
-            echo "Waiting for cert-manager pods..."
-            for i in $(seq 1 60); do
-              if kubectl get pods -n cert-manager --no-headers 2>/dev/null | grep -q Running; then
-                echo "cert-manager is ready"
-                break
-              fi
-              echo " Waiting for cert-manager... ($i/60)"
-              sleep 5
-            done
+            if [ ! -f "$CERTS_MARKER" ]; then
+              echo "Installing cert-manager ${CERT_MANAGER_VERSION}..."
+              kubectl apply -f "https://github.com/cert-manager/cert-manager/releases/download/v${CERT_MANAGER_VERSION}/cert-manager.yaml"
+              echo "Waiting for cert-manager pods..."
+              for i in $(seq 1 60); do
+                if kubectl get pods -n cert-manager --no-headers 2>/dev/null | grep -q Running; then
+                  echo "cert-manager is ready"
+                  break
+                fi
+                echo " Waiting for cert-manager... ($i/60)"
+                sleep 5
+              done
+              touch "$CERTS_MARKER"
+            else
+              echo "cert-manager already installed, skipping"
+            fi
 
             # ============================================================
             # 2. KYVERNO (Policy Enforcement)
             # ============================================================
-            echo "Installing Kyverno ${KYVERNO_VERSION}..."
-            helm repo add kyverno https://kyverno.github.io/kyverno/ --force-update
-            helm repo update
-            helm upgrade --install kyverno kyverno/kyverno \
-              --namespace kyverno \
-              --create-namespace \
-              --version ${KYVERNO_VERSION} \
-              --wait \
-              --timeout 10m || echo "WARNING: Kyverno install had issues"
+            if [ ! -f "$KYVERNO_MARKER" ]; then
+              echo "Installing Kyverno ${KYVERNO_VERSION}..."
+              helm repo add kyverno https://kyverno.github.io/kyverno/ --force-update
+              helm repo update
+              helm upgrade --install kyverno kyverno/kyverno \
+                --namespace kyverno \
+                --create-namespace \
+                --version ${KYVERNO_VERSION} \
+                --wait \
+                --timeout 10m || echo "WARNING: Kyverno install had issues"
 
-            echo "Waiting for Kyverno pods..."
-            for i in $(seq 1 60); do
-              if kubectl get pods -n kyverno --no-headers 2>/dev/null | grep -q Running; then
-                echo "Kyverno is ready"
-                break
-              fi
-              echo " Waiting for Kyverno... ($i/60)"
-              sleep 5
-            done
+              echo "Waiting for Kyverno pods..."
+              for i in $(seq 1 60); do
+                if kubectl get pods -n kyverno --no-headers 2>/dev/null | grep -q Running; then
+                  echo "Kyverno is ready"
+                  break
+                fi
+                echo " Waiting for Kyverno... ($i/60)"
+                sleep 5
+              done
+              touch "$KYVERNO_MARKER"
+            else
+              echo "Kyverno already installed, skipping"
+            fi
 
             # ============================================================
             # 3. FALCO (Runtime Security)
             # ============================================================
-            echo "Installing Falco ${FALCO_VERSION}..."
-            helm repo add falcosecurity https://falcosecurity.github.io/charts --force-update
-            helm repo update
-            helm upgrade --install falco falcosecurity/falco \
-              --namespace falco \
-              --create-namespace \
-              --version ${FALCO_VERSION} \
-              --set falco.jsonOutput=true \
-              --set falco.fileOutput.enabled=true \
-              --set falco.fileOutput.json=true \
-              --wait \
-              --timeout 10m || echo "WARNING: Falco install had issues"
+            if [ ! -f "$FALCO_MARKER" ]; then
+              echo "Installing Falco ${FALCO_VERSION}..."
+              helm repo add falcosecurity https://falcosecurity.github.io/charts --force-update
+              helm repo update
+              helm upgrade --install falco falcosecurity/falco \
+                --namespace falco \
+                --create-namespace \
+                --version ${FALCO_VERSION} \
+                --set falco.jsonOutput=true \
+                --set falco.fileOutput.enabled=true \
+                --set falco.fileOutput.json=true \
+                --wait \
+                --timeout 10m || echo "WARNING: Falco install had issues"
+              touch "$FALCO_MARKER"
+            else
+              echo "Falco already installed, skipping"
+            fi
 
             # ============================================================
             # 4. PROMETHEUS + GRAFANA (Observability) - WITH AUTO-ASSIGN PORT
             # ============================================================
-            echo "Installing Prometheus Stack ${PROMETHEUS_VERSION}..."
+            if [ ! -f "$PROMETHEUS_MARKER" ]; then
+              echo "Installing Prometheus Stack ${PROMETHEUS_VERSION}..."
 
-            # Clean up any existing Grafana service that might be using a fixed port
-            kubectl delete svc prometheus-stack-grafana -n monitoring --ignore-not-found=true
+              # Clean up any existing Grafana service that might be using a fixed port
+              kubectl delete svc prometheus-stack-grafana -n monitoring --ignore-not-found=true
 
-            helm repo add prometheus-community https://prometheus-community.github.io/helm-charts --force-update
-            helm repo update
+              helm repo add prometheus-community https://prometheus-community.github.io/helm-charts --force-update
+              helm repo update
 
-            cat > /tmp/prometheus-values.yaml <<EOF
+              cat > /tmp/prometheus-values.yaml <<EOF
 prometheus:
   prometheusSpec:
     serviceMonitorSelectorNilUsesHelmValues: false
@@ -940,110 +1027,121 @@ alertmanager:
   enabled: true
 EOF
 
-            helm upgrade --install prometheus-stack prometheus-community/kube-prometheus-stack \
-              --namespace monitoring \
-              --create-namespace \
-              --version ${PROMETHEUS_VERSION} \
-              --values /tmp/prometheus-values.yaml \
-              --wait \
-              --timeout 15m || echo "WARNING: Prometheus stack install had issues"
+              helm upgrade --install prometheus-stack prometheus-community/kube-prometheus-stack \
+                --namespace monitoring \
+                --create-namespace \
+                --version ${PROMETHEUS_VERSION} \
+                --values /tmp/prometheus-values.yaml \
+                --wait \
+                --timeout 15m || echo "WARNING: Prometheus stack install had issues"
 
-            echo "Waiting for Prometheus and Grafana pods..."
-            for i in $(seq 1 90); do
-              if kubectl get pods -n monitoring --no-headers 2>/dev/null | grep -q Running; then
-                RUNNING_COUNT=$(kubectl get pods -n monitoring --no-headers | grep -c Running || echo "0")
-                TOTAL_COUNT=$(kubectl get pods -n monitoring --no-headers | wc -l || echo "0")
-                echo " Monitoring pods: $RUNNING_COUNT/$TOTAL_COUNT running... ($i/90)"
-                if [ "$RUNNING_COUNT" -eq "$TOTAL_COUNT" ] && [ "$TOTAL_COUNT" -gt 5 ]; then
-                  echo "All monitoring pods are ready"
-                  break
+              echo "Waiting for Prometheus and Grafana pods..."
+              for i in $(seq 1 90); do
+                if kubectl get pods -n monitoring --no-headers 2>/dev/null | grep -q Running; then
+                  RUNNING_COUNT=$(kubectl get pods -n monitoring --no-headers | grep -c Running || echo "0")
+                  TOTAL_COUNT=$(kubectl get pods -n monitoring --no-headers | wc -l || echo "0")
+                  echo " Monitoring pods: $RUNNING_COUNT/$TOTAL_COUNT running... ($i/90)"
+                  if [ "$RUNNING_COUNT" -eq "$TOTAL_COUNT" ] && [ "$TOTAL_COUNT" -gt 5 ]; then
+                    echo "All monitoring pods are ready"
+                    break
+                  fi
                 fi
-              fi
-              sleep 10
-            done
+                sleep 10
+              done
 
-            # Get the auto-assigned Grafana port
-            GRAFANA_PORT=$(kubectl get svc -n monitoring prometheus-stack-grafana -o jsonpath='{.spec.ports[0].nodePort}' 2>/dev/null || echo "30002")
-            echo "Grafana will be available at: https://${MASTER_IP}:${GRAFANA_PORT} (admin/admin)"
+              # Get the auto-assigned Grafana port
+              GRAFANA_PORT=$(kubectl get svc -n monitoring prometheus-stack-grafana -o jsonpath='{.spec.ports[0].nodePort}' 2>/dev/null || echo "30002")
+              echo "Grafana will be available at: https://${MASTER_IP}:${GRAFANA_PORT} (admin/admin)"
+              touch "$PROMETHEUS_MARKER"
+            else
+              echo "Prometheus stack already installed, skipping"
+              # Still get the port for display
+              GRAFANA_PORT=$(kubectl get svc -n monitoring prometheus-stack-grafana -o jsonpath='{.spec.ports[0].nodePort}' 2>/dev/null || echo "30002")
+            fi
 
             # ============================================================
             # 5. ARGO CD (GitOps) - CLEAN INSTALL WITH FULL CLUSTER CLEANUP
             # ============================================================
-            echo "Installing Argo CD ${ARGOCD_VERSION}..."
+            if [ ! -f "$ARGOCD_MARKER" ]; then
+              echo "Installing Argo CD ${ARGOCD_VERSION}..."
 
-            # ============================================================
-            # CLEAN OLD ARGO CD RESOURCES (VERY IMPORTANT)
-            # ============================================================
-            echo "Cleaning old Argo CD resources..."
+              # ============================================================
+              # CLEAN OLD ARGO CD RESOURCES (VERY IMPORTANT)
+              # ============================================================
+              echo "Cleaning old Argo CD resources..."
 
-            helm uninstall argocd -n argocd 2>/dev/null || true
+              helm uninstall argocd -n argocd 2>/dev/null || true
 
-            kubectl delete namespace argocd --ignore-not-found=true
+              kubectl delete namespace argocd --ignore-not-found=true
 
-            # Delete CRDs
-            kubectl delete crd applications.argoproj.io --ignore-not-found=true
-            kubectl delete crd appprojects.argoproj.io --ignore-not-found=true
-            kubectl delete crd applicationsets.argoproj.io --ignore-not-found=true
-            kubectl delete crd argocdextensions.argoproj.io --ignore-not-found=true
+              # Delete CRDs
+              kubectl delete crd applications.argoproj.io --ignore-not-found=true
+              kubectl delete crd appprojects.argoproj.io --ignore-not-found=true
+              kubectl delete crd applicationsets.argoproj.io --ignore-not-found=true
+              kubectl delete crd argocdextensions.argoproj.io --ignore-not-found=true
 
-            # Delete cluster roles
-            kubectl delete clusterrole argocd-application-controller --ignore-not-found=true
-            kubectl delete clusterrole argocd-server --ignore-not-found=true
-            kubectl delete clusterrole argocd-dex-server --ignore-not-found=true
-            kubectl delete clusterrole argocd-notifications-controller --ignore-not-found=true
-            kubectl delete clusterrole argocd-redis-ha-haproxy --ignore-not-found=true
-            kubectl delete clusterrole argocd-redis-ha-server --ignore-not-found=true
+              # Delete cluster roles
+              kubectl delete clusterrole argocd-application-controller --ignore-not-found=true
+              kubectl delete clusterrole argocd-server --ignore-not-found=true
+              kubectl delete clusterrole argocd-dex-server --ignore-not-found=true
+              kubectl delete clusterrole argocd-notifications-controller --ignore-not-found=true
+              kubectl delete clusterrole argocd-redis-ha-haproxy --ignore-not-found=true
+              kubectl delete clusterrole argocd-redis-ha-server --ignore-not-found=true
 
-            # Delete cluster role bindings
-            kubectl delete clusterrolebinding argocd-application-controller --ignore-not-found=true
-            kubectl delete clusterrolebinding argocd-server --ignore-not-found=true
-            kubectl delete clusterrolebinding argocd-dex-server --ignore-not-found=true
-            kubectl delete clusterrolebinding argocd-notifications-controller --ignore-not-found=true
+              # Delete cluster role bindings
+              kubectl delete clusterrolebinding argocd-application-controller --ignore-not-found=true
+              kubectl delete clusterrolebinding argocd-server --ignore-not-found=true
+              kubectl delete clusterrolebinding argocd-dex-server --ignore-not-found=true
+              kubectl delete clusterrolebinding argocd-notifications-controller --ignore-not-found=true
 
-            # Delete webhook configs
-            kubectl delete validatingwebhookconfiguration argocd-application-controller --ignore-not-found=true
-            kubectl delete mutatingwebhookconfiguration argocd-application-controller --ignore-not-found=true
+              # Delete webhook configs
+              kubectl delete validatingwebhookconfiguration argocd-application-controller --ignore-not-found=true
+              kubectl delete mutatingwebhookconfiguration argocd-application-controller --ignore-not-found=true
 
-            # Give Kubernetes time to fully clean up
-            sleep 30
+              # Give Kubernetes time to fully clean up
+              sleep 30
 
-            # Install Argo CD using Helm (clean install)
-            echo "Installing Argo CD using Helm..."
-            helm repo add argo https://argoproj.github.io/argo-helm --force-update
-            helm repo update
+              # Install Argo CD using Helm (clean install)
+              echo "Installing Argo CD using Helm..."
+              helm repo add argo https://argoproj.github.io/argo-helm --force-update
+              helm repo update
 
-            helm upgrade --install argocd argo/argo-cd \
-              --namespace argocd \
-              --create-namespace \
-              --version ${ARGOCD_VERSION} \
-              --set server.service.type=NodePort \
-              --set server.service.servicePortHttp=80 \
-              --set server.service.servicePortHttps=443 \
-              --set server.service.nodePortHttp=30003 \
-              --set server.service.nodePortHttps=30004 \
-              --wait \
-              --timeout 10m || echo "WARNING: Argo CD install had issues"
+              helm upgrade --install argocd argo/argo-cd \
+                --namespace argocd \
+                --create-namespace \
+                --version ${ARGOCD_VERSION} \
+                --set server.service.type=NodePort \
+                --set server.service.servicePortHttp=80 \
+                --set server.service.servicePortHttps=443 \
+                --set server.service.nodePortHttp=30003 \
+                --set server.service.nodePortHttps=30004 \
+                --wait \
+                --timeout 10m || echo "WARNING: Argo CD install had issues"
 
-            echo "Waiting for Argo CD pods..."
-            for i in $(seq 1 120); do
-              if kubectl get pods -n argocd --no-headers 2>/dev/null | grep -q Running; then
-                RUNNING_COUNT=$(kubectl get pods -n argocd --no-headers | grep -c Running || echo "0")
-                TOTAL_COUNT=$(kubectl get pods -n argocd --no-headers | wc -l || echo "0")
-                echo " Argo CD pods: $RUNNING_COUNT/$TOTAL_COUNT running... ($i/120)"
-                if [ "$RUNNING_COUNT" -eq "$TOTAL_COUNT" ] && [ "$TOTAL_COUNT" -gt 5 ]; then
-                  echo "All Argo CD pods are ready"
-                  break
+              echo "Waiting for Argo CD pods..."
+              for i in $(seq 1 120); do
+                if kubectl get pods -n argocd --no-headers 2>/dev/null | grep -q Running; then
+                  RUNNING_COUNT=$(kubectl get pods -n argocd --no-headers | grep -c Running || echo "0")
+                  TOTAL_COUNT=$(kubectl get pods -n argocd --no-headers | wc -l || echo "0")
+                  echo " Argo CD pods: $RUNNING_COUNT/$TOTAL_COUNT running... ($i/120)"
+                  if [ "$RUNNING_COUNT" -eq "$TOTAL_COUNT" ] && [ "$TOTAL_COUNT" -gt 5 ]; then
+                    echo "All Argo CD pods are ready"
+                    break
+                  fi
                 fi
-              fi
-              sleep 10
-            done
+                sleep 10
+              done
 
-            echo ""
-            echo "=========================================="
-            echo "Argo CD initial admin password:"
-            kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" 2>/dev/null | base64 -d || echo "Password extraction failed, check manually"
-            echo ""
-            echo "=========================================="
+              echo ""
+              echo "=========================================="
+              echo "Argo CD initial admin password:"
+              kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" 2>/dev/null | base64 -d || echo "Password extraction failed, check manually"
+              echo ""
+              echo "=========================================="
+              touch "$ARGOCD_MARKER"
+            else
+              echo "Argo CD already installed, skipping"
+            fi
 
             # ============================================================
             # CREATE INGRESS FOR GRAFANA
@@ -1070,6 +1168,27 @@ EOF
 
             kubectl apply -f /tmp/grafana-ingress.yaml 2>/dev/null || true
 
+            # ============================================================
+            # INSTALL K9S, KUBECTX, KUBENS, STERN (Day-2 Tools)
+            # ============================================================
+            echo "Installing kubectx, kubens, stern, and k9s..."
+
+            # Install kubectx and kubens
+            git clone https://github.com/ahmetb/kubectx /opt/kubectx 2>/dev/null || true
+            ln -sf /opt/kubectx/kubectx /usr/local/bin/kubectx
+            ln -sf /opt/kubectx/kubens /usr/local/bin/kubens
+
+            # Install stern
+            curl -sSLo /usr/local/bin/stern "https://github.com/stern/stern/releases/download/v1.28.0/stern_linux_amd64" && \
+              chmod +x /usr/local/bin/stern
+
+            # Install k9s
+            curl -sSLo /tmp/k9s.tar.gz "https://github.com/derailed/k9s/releases/download/v0.32.5/k9s_Linux_amd64.tar.gz" && \
+              tar -xzf /tmp/k9s.tar.gz -C /usr/local/bin k9s && \
+              chmod +x /usr/local/bin/k9s
+
+            echo "Day-2 tools installed: kubectx, kubens, stern, k9s"
+
             echo "=========================================="
             echo "ENTERPRISE TOOLS INSTALLATION COMPLETE"
             echo "=========================================="
@@ -1091,6 +1210,7 @@ EOF
             echo "=========================================="
           fi
 
+          # Keep the original marker for backward compatibility
           touch "$ENTERPRISE_MARKER"
         SHELL
 
