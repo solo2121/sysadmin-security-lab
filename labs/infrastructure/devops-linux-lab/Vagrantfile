@@ -2,7 +2,7 @@
 # vi: set ft=ruby :
 
 # =============================================================================
-# Enterprise DevSecOps Air-Gap Lab
+# Enterprise Cloud-Native DevSecOps Lab
 # =============================================================================
 #
 # Author        : Miguel Carlo (solo2121)
@@ -27,6 +27,7 @@
 #   • Falco Runtime Security
 #   • Kyverno Policy Enforcement
 #   • Cert-Manager TLS Automation
+#   • Terraform Infrastructure as Code
 #   • Linux Training Nodes
 #   • Ansible Management Nodes
 #
@@ -58,10 +59,11 @@
 #            - Falco Runtime Security
 #            - Kyverno Policy Engine
 #            - Air-Gap Registry Support
+#            - Terraform IaC Integration
 #
 # =============================================================================
 
-LAB_NAME        = "Enterprise DevSecOps Air-Gap Lab"
+LAB_NAME        = "Enterprise Cloud-Native DevSecOps Lab"
 LAB_VERSION     = "7.0.0"
 LAB_AUTHOR      = "Miguel Carlo (solo2121)"
 LAB_CREATED     = "2025"
@@ -104,6 +106,7 @@ PROMETHEUS_VERSION = "68.3.0"
 FALCO_VERSION = "2.3.0"
 KYVERNO_VERSION = "3.3.7"
 CERT_MANAGER_VERSION = "1.16.2"
+TERRAFORM_VERSION = "1.9.8"
 
 # Harbor Password Configuration (can be overridden via env var)
 HARBOR_PASS = ENV['HARBOR_PASS'] || 'Harbor12345'
@@ -903,7 +906,62 @@ EOF
           FALCO_VERSION="#{FALCO_VERSION}"
           KYVERNO_VERSION="#{KYVERNO_VERSION}"
           CERT_MANAGER_VERSION="#{CERT_MANAGER_VERSION}"
+          TERRAFORM_VERSION="#{TERRAFORM_VERSION}"
           FAST_BOOT="#{FAST_BOOT}"
+
+          # ========== TERRAFORM INSTALLATION ==========
+          TERRAFORM_MARKER="/var/lib/terraform_installed"
+
+          if [ ! -f "$TERRAFORM_MARKER" ] || [ "${FAST_BOOT}" != "true" ]; then
+            echo "=========================================="
+            echo "INSTALLING TERRAFORM ${TERRAFORM_VERSION}"
+            echo "=========================================="
+            
+            # Clean up any previous installations
+            rm -f /usr/local/bin/terraform
+            
+            # Download and install Terraform
+            TEMP_DIR=$(mktemp -d)
+            cd "$TEMP_DIR"
+            
+            echo "Downloading Terraform ${TERRAFORM_VERSION}..."
+            curl -fsSL "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip" -o terraform.zip
+            
+            echo "Extracting Terraform..."
+            apt-get install -y unzip 2>/dev/null || dnf install -y unzip 2>/dev/null || zypper install -y unzip 2>/dev/null || true
+            unzip -q terraform.zip
+            
+            echo "Installing Terraform to /usr/local/bin..."
+            mv terraform /usr/local/bin/
+            chmod +x /usr/local/bin/terraform
+            
+            # Verify installation
+            if command -v terraform >/dev/null 2>&1; then
+              TERRAFORM_INSTALLED_VERSION=$(terraform version -json 2>/dev/null | grep -o '"terraform_version":"[^"]*"' | cut -d'"' -f4 || terraform version | head -1)
+              echo "✅ Terraform installed successfully: ${TERRAFORM_INSTALLED_VERSION}"
+              
+              # Enable bash completion
+              terraform -install-autocomplete 2>/dev/null || true
+              
+              # Create marker file
+              touch "$TERRAFORM_MARKER"
+            else
+              echo "❌ ERROR: Terraform installation failed"
+              exit 1
+            fi
+            
+            # Cleanup
+            cd /
+            rm -rf "$TEMP_DIR"
+            
+            echo "=========================================="
+            echo "Terraform is ready to use!"
+            echo "Run 'terraform --version' to verify"
+            echo "=========================================="
+          else
+            echo "Terraform already installed, skipping (FAST_BOOT=true)"
+          fi
+          # ========== END TERRAFORM INSTALLATION ==========
 
           export PATH=$PATH:/usr/local/bin
           export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
@@ -1199,6 +1257,7 @@ EOF
             echo "Prometheus: Metrics collection (port 9090 via port-forward)"
             echo "Grafana: https://${MASTER_IP}:${GRAFANA_PORT} (admin/admin)"
             echo "Argo CD: https://${MASTER_IP}:30003 (admin / password above)"
+            echo "Terraform: $(terraform version | head -1)"
             echo ""
             echo "To access services:"
             echo " Grafana: https://${MASTER_IP}:${GRAFANA_PORT}"
