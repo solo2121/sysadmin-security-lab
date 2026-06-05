@@ -110,19 +110,30 @@ commit_changes() {
     git diff --cached --name-only
     printf "\\n"
     
-    while true; do
-        read -rp "Enter commit message: " message
-        if [[ -n "$message" ]]; then
-            if ! git commit -m "$message"; then
-                printf "Commit failed!\\n" >&2
-                return 1
-            fi
-            printf "Changes committed successfully!\\n"
-            break
-        else
-            printf "Commit message cannot be empty! Try again.\\n" >&2
-        fi
-    done
+    printf "Enter commit details (following CONTRIBUTING.md standards):\\n"
+    printf "Common types: feat, fix, docs, style, refactor, test, chore\\n"
+    
+    read -rp "Type (e.g., feat): " type
+    read -rp "Scope (optional, e.g., git-tool): " scope
+    read -rp "Description: " description
+
+    if [[ -z "$type" || -z "$description" ]]; then
+        printf "Error: Type and Description are required.\\n" >&2
+        return 1
+    fi
+
+    local commit_msg
+    if [[ -n "$scope" ]]; then
+        commit_msg="$type($scope): $description"
+    else
+        commit_msg="$type: $description"
+    fi
+
+    if ! git commit -m "$commit_msg"; then
+        printf "Commit failed!\\n" >&2
+        return 1
+    fi
+    printf "Changes committed successfully with message: %s\\n" "$commit_msg"
 }
 
 push_changes() {
@@ -130,7 +141,7 @@ push_changes() {
     current_branch=$(git branch --show-current)
     
     printf "\\nPushing changes to remote repository...\\n"
-    read -rp "Push to branch '%s'? (y/n): " "current_branch" confirm
+    read -rp "Push to branch '$current_branch'? (y/n): " confirm
     
     if [[ "$confirm" =~ ^[yY] ]]; then
         if ! git push origin "$current_branch"; then
@@ -139,6 +150,10 @@ push_changes() {
         fi
     else
         read -rp "Enter branch name: " branch
+        if [[ -z "$branch" ]]; then
+            printf "Error: Branch name cannot be empty.\\n" >&2
+            return 1
+        fi
         if ! git push origin "$branch"; then
             printf "Push failed!\\n" >&2
             return 1
