@@ -8,41 +8,41 @@ This directory contains supplementary assets including diagrams, configuration t
 
 Visual representations of lab architectures and network topologies:
 
-- Infrastructure architecture diagrams
-- Network topology diagrams
-- Active Directory forest structures
-- VLAN configuration diagrams
-- System component relationships
+* Infrastructure architecture diagrams
+* Network topology diagrams
+* Active Directory forest structures
+* VLAN configuration diagrams
+* System component relationships
 
 ### Configuration Templates
 
 Reusable configuration files and templates:
 
-- Vagrant configuration examples
-- Ansible playbook templates
-- Terraform module templates
-- Network configuration templates
-- Service configuration examples
+* Vagrant configuration examples
+* Ansible playbook templates
+* Terraform module templates
+* Network configuration templates
+* Service configuration examples
 
 ### Images and Graphics
 
 Pictures, screenshots, and visual aids:
 
-- Setup screenshots and walkthroughs
-- Architecture visualizations
-- Topology diagrams
-- Tutorial illustrations
-- Logo and branding assets
+* Setup screenshots and walkthroughs
+* Architecture visualizations
+* Topology diagrams
+* Tutorial illustrations
+* Logo and branding assets
 
 ### Reference Materials
 
 Reference documents and quick guides:
 
-- Command reference sheets
-- Configuration checklists
-- Compliance matrices
-- Technology stacks
-- Tool comparisons
+* Command reference sheets
+* Configuration checklists
+* Compliance matrices
+* Technology stacks
+* Tool comparisons
 
 ## Directory Structure
 
@@ -76,41 +76,41 @@ assets/
 
 Visual overview of complete lab infrastructure:
 
-- Component relationships
-- Network segmentation
-- VM configurations
-- Storage architecture
-- Monitoring stack integration
+* Component relationships and dependencies
+* Network segmentation design
+* VM configurations and resources
+* Storage architecture
+* Monitoring stack integration
 
 ### Network Topology
 
-Detailed network layouts:
+Detailed network layouts and design:
 
-- IP addressing schemes
-- VLAN configurations
-- Routing paths
-- Firewall zones
-- DMZ structures
+* IP addressing schemes
+* VLAN configurations
+* Routing paths and protocols
+* Firewall zones
+* DMZ structures
 
 ### Active Directory Forest
 
-AD environment structure:
+AD environment structure and design:
 
-- Domain hierarchy
-- Trust relationships
-- Organizational Unit (OU) structure
-- User and computer placement
-- Group Policy application
+* Domain hierarchy
+* Trust relationships
+* Organizational Unit (OU) structure
+* User and computer placement
+* Group Policy application
 
 ### VLAN Configuration
 
-Network segmentation diagrams:
+Network segmentation diagrams and specifications:
 
-- VLAN assignments
-- Inter-VLAN routing
-- Access control lists
-- Network services placement
-- Security zones
+* VLAN assignments
+* Inter-VLAN routing
+* Access control lists
+* Network services placement
+* Security zones and boundaries
 
 ## Configuration Templates
 
@@ -118,41 +118,41 @@ Network segmentation diagrams:
 
 Reusable Vagrantfile configurations:
 
-- Multi-VM setup template
-- Network configuration template
-- Provisioning script template
-- Resource allocation template
-- Box selection guide
+* Multi-VM setup template
+* Network configuration template
+* Provisioning script template
+* Resource allocation template
+* Box selection guide
 
 ### Ansible Templates
 
 Playbook and role templates:
 
-- Host inventory template
-- Role structure template
-- Handler template
-- Variable template
-- Task template
+* Host inventory template
+* Role structure template
+* Handler template
+* Variable definition template
+* Task template
 
 ### Terraform Templates
 
 Infrastructure code templates:
 
-- Provider configuration template
-- Resource definition template
-- Module structure template
-- Variable and output template
-- Backend configuration template
+* Provider configuration template
+* Resource definition template
+* Module structure template
+* Variable and output template
+* Backend configuration template
 
 ### Network Configuration Templates
 
-Network setup examples:
+Network setup examples and patterns:
 
-- Linux network interface template
-- Firewall rule template
-- DNS configuration template
-- DHCP configuration template
-- Routing configuration template
+* Linux network interface template
+* Firewall rule template
+* DNS configuration template
+* DHCP configuration template
+* Routing configuration template
 
 ## Images and Graphics
 
@@ -160,31 +160,31 @@ Network setup examples:
 
 Step-by-step visual guides:
 
-- Installation process screenshots
-- Configuration UI screenshots
-- Output examples
-- Error message references
-- Successful completion indicators
+* Installation process screenshots
+* Configuration UI screenshots
+* Output examples and references
+* Error message references
+* Successful completion indicators
 
 ### Architecture Diagrams
 
 Visual system overviews:
 
-- System component layout
-- Data flow diagrams
-- Integration points
-- Communication paths
-- Dependency graphs
+* System component layout
+* Data flow diagrams
+* Integration points
+* Communication paths
+* Dependency graphs
 
 ### Tutorial Illustrations
 
 Educational graphics:
 
-- Concept illustrations
-- Attack flow diagrams
-- Defense mechanisms
-- Protocol interactions
-- Process flows
+* Concept illustrations
+* Attack flow diagrams
+* Defense mechanisms
+* Protocol interactions
+* Process flow diagrams
 
 ## Reference Materials
 
@@ -192,41 +192,41 @@ Educational graphics:
 
 Step-by-step configuration guides:
 
-- Pre-deployment checklist
-- Installation verification
-- Security configuration checklist
-- Post-deployment validation
-- Troubleshooting checklist
+* Pre-deployment checklist
+* Installation verification checklist
+* Security configuration checklist
+* Post-deployment validation checklist
+* Troubleshooting checklist
 
 ### Command Reference
 
 Quick command reference sheets:
 
-- Vagrant command reference
-- Ansible command reference
-- Terraform command reference
-- Common Linux commands
-- Kubernetes command reference
+* Vagrant command reference
+* Ansible command reference
+* Terraform command reference
+* Common Linux commands
+* Kubernetes command reference
 
 ### Tool Comparison
 
-Comparison matrices:
+Comparison matrices and analysis:
 
-- Virtualization platforms
-- Configuration management tools
-- Infrastructure provisioning tools
-- Monitoring and observability tools
-- Security testing frameworks
+* Virtualization platform comparison
+* Configuration management tools comparison
+* Infrastructure provisioning tools comparison
+* Monitoring and observability tools comparison
+* Security testing framework comparison
 
 ### Quick Guides
 
 Quick reference documentation:
 
-- Getting started guides
-- Common task workflows
-- Emergency procedures
-- Performance tuning guides
-- Optimization techniques
+* Getting started guides
+* Common task workflows
+* Emergency procedures
+* Performance tuning guides
+* Optimization techniques
 
 ## Using Assets
 
@@ -270,36 +270,36 @@ To contribute assets:
 6. Update this README with new assets
 7. Include alt-text for images
 
-See CONTRIBUTING.md for detailed guidelines.
+See [`CONTRIBUTING.md`](../CONTRIBUTING.md) for detailed guidelines.
 
 ## Asset Formats
 
 ### Recommended Formats
 
-- Diagrams: PNG, SVG, PDF
-- Templates: YAML, JSON, Terraform (.tf)
-- Images: PNG, JPG for screenshots
-- Documents: Markdown, PDF
-- Spreadsheets: CSV for data matrices
+* Diagrams: PNG, SVG, PDF
+* Templates: YAML, JSON, Terraform (.tf)
+* Images: PNG, JPG for screenshots
+* Documents: Markdown, PDF
+* Spreadsheets: CSV for data matrices
 
 ### Image Guidelines
 
-- Minimum 1024x768 resolution
-- Clear, legible text
-- High contrast for readability
-- Include captions and descriptions
-- Optimize for web (compressed)
+* Minimum 1024x768 resolution
+* Clear, legible text
+* High contrast for readability
+* Include captions and descriptions
+* Optimize for web deployment (compressed)
 
 ## Organization
 
 Assets should be organized by type and purpose:
 
-- Clear directory structure
-- Descriptive filenames
-- Version numbers in filenames if multiple versions
-- Readme files in subdirectories
-- Consistent naming conventions
+* Clear directory structure
+* Descriptive filenames
+* Version numbers in filenames if multiple versions exist
+* Readme files in subdirectories
+* Consistent naming conventions
 
 ## License
 
-All assets are licensed under the MIT License. See LICENSE file for details.
+All assets are licensed under the MIT License. See [`LICENSE`](../LICENSE) file for details.
