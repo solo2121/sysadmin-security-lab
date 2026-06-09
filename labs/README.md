@@ -1,6 +1,6 @@
 # Labs Directory
 
-This directory contains hands-on learning labs covering infrastructure, security, and system administration topics. Each lab is designed to provide practical, real-world experience in specific areas of infrastructure, security, and system administration.
+This directory contains hands-on learning environments covering infrastructure, security, and system administration topics. Each lab is designed to provide practical, real-world experience in specific areas of technical practice.
 
 ## Available Labs
 
@@ -14,13 +14,13 @@ This directory contains hands-on learning labs covering infrastructure, security
 
 A comprehensive local DevOps and Kubernetes learning environment featuring:
 
-- LFCS / RHCSA / Linux+ certification practice
-- Kubernetes cluster setup with kubeadm
-- Infrastructure as Code with Terraform and Ansible
-- GitOps workflows using ArgoCD
-- Monitoring stack with Prometheus, Grafana, and Loki
-- Multi-node architecture simulation
-- DevOps tooling practice (Helm, kubectl, git)
+* LFCS/RHCSA/Linux+ certification practice
+* Kubernetes cluster setup with kubeadm
+* Infrastructure as Code with Terraform and Ansible
+* GitOps workflows using ArgoCD
+* Monitoring stack with Prometheus, Grafana, and Loki
+* Multi-node architecture simulation
+* DevOps tooling practice (Helm, kubectl, git)
 
 See `labs/infrastructure/devops-linux-lab/README.md` for detailed setup instructions.
 
@@ -34,12 +34,12 @@ See `labs/infrastructure/devops-linux-lab/README.md` for detailed setup instruct
 
 Simulates enterprise Active Directory environments for offensive security training:
 
-- Active Directory enumeration techniques
-- Kerberos attack chains (Kerberoasting, AS-REP roasting)
-- Certificate Services exploitation (ESC attacks)
-- SMB relay attacks and lateral movement
-- Privilege escalation and persistence techniques
-- Credential theft and pass-the-hash attacks
+* Active Directory enumeration techniques
+* Kerberos attack chains (Kerberoasting, AS-REP roasting)
+* Certificate Services exploitation (ESC attacks)
+* SMB relay attacks and lateral movement
+* Privilege escalation and persistence techniques
+* Credential theft and pass-the-hash attacks
 
 #### VLAN Enterprise Lab
 
@@ -47,12 +47,12 @@ Simulates enterprise Active Directory environments for offensive security traini
 
 Network-focused security lab for enterprise environment simulation:
 
-- Network segmentation and VLAN isolation
-- Multi-subnet enterprise architecture
-- Network topology analysis and reconnaissance
-- Cross-VLAN traffic patterns
-- Network defense and detection strategies
-- Includes architecture diagrams and automation scripts
+* Network segmentation and VLAN isolation
+* Multi-subnet enterprise architecture
+* Network topology analysis and reconnaissance
+* Cross-VLAN traffic patterns
+* Network defense and detection strategies
+* Includes architecture diagrams and automation scripts
 
 ## Quick Start Guide
 
@@ -60,14 +60,14 @@ Network-focused security lab for enterprise environment simulation:
 
 Before running any lab, ensure you have the following installed:
 
-- Vagrant
-- Libvirt / KVM hypervisor
-- QEMU
-- At least 8GB RAM (16GB recommended for larger labs)
-- Git
-- Ansible (for infrastructure configuration)
+* Vagrant
+* Libvirt/KVM hypervisor
+* QEMU
+* Minimum 8GB RAM (16GB recommended for larger labs)
+* Git
+* Ansible (for infrastructure configuration)
 
-See INSTALLATION.md for detailed setup instructions.
+See [`INSTALLATION.md`](../INSTALLATION.md) for detailed setup instructions.
 
 ### Running a Lab
 
@@ -104,7 +104,7 @@ To pause the lab:
 vagrant suspend
 ```
 
-To stop and destroy:
+To stop and destroy all resources:
 
 ```bash
 vagrant destroy -f
@@ -114,25 +114,25 @@ vagrant destroy -f
 
 Each lab typically includes the following components:
 
-- **Vagrantfile** - Vagrant configuration for VM provisioning
-- **scripts/** - Automation scripts for setup and configuration
-- **docs/** - Detailed documentation and guides
-- **terraform/** - Infrastructure as Code definitions
-- **ansible/** - Configuration management playbooks
-- **README.md** - Lab-specific setup and usage instructions
+* **Vagrantfile** — Vagrant configuration for VM provisioning
+* **scripts/** — Automation scripts for setup and configuration
+* **docs/** — Detailed documentation and guides
+* **terraform/** — Infrastructure as Code definitions
+* **ansible/** — Configuration management playbooks
+* **README.md** — Lab-specific setup and usage instructions
 
 ## Learning Path
 
-Recommended progression for getting the most from these labs:
+Recommended progression for maximum learning effectiveness:
 
-1. Start with **Linux system administration fundamentals** using the DevOps Linux Lab
-2. Practice **virtualization and networking concepts**
-3. Learn **infrastructure automation** with Terraform and Ansible
-4. Master **Kubernetes and container orchestration**
-5. Progress to **Active Directory attack simulation**
-6. Study **privilege escalation and persistence techniques**
-7. Practice **network segmentation and defense**
-8. Explore **AI / LLM security testing**
+1. Start with Linux system administration fundamentals using the DevOps Linux Lab
+2. Practice virtualization and networking concepts
+3. Learn infrastructure automation with Terraform and Ansible
+4. Master Kubernetes and container orchestration
+5. Progress to Active Directory attack simulation
+6. Study privilege escalation and persistence techniques
+7. Practice network segmentation and defense
+8. Explore AI/LLM security testing
 
 ## Lab Management
 
@@ -146,14 +146,14 @@ This tool helps manage multiple VMs and labs simultaneously.
 
 ## Troubleshooting
 
-For common issues and solutions, see TROUBLESHOOTING.md
+For common issues and solutions, see [`TROUBLESHOOTING.md`](../TROUBLESHOOTING.md)
 
 ### Common Issues
 
-- Lab fails to start: Check Vagrant and Libvirt installation
-- Network connectivity issues: Verify KVM network configuration
-- Insufficient resources: Increase allocated RAM or reduce VM count
-- Ansible provisioning fails: Check playbook syntax and host connectivity
+* Lab fails to start: Verify Vagrant and Libvirt installation
+* Network connectivity issues: Check KVM network configuration
+* Insufficient resources: Increase allocated RAM or reduce VM count
+* Ansible provisioning fails: Check playbook syntax and host connectivity
 
 ## Contributing
 
@@ -165,17 +165,17 @@ To contribute new labs or improvements:
 4. Follow the naming conventions established in existing labs
 5. Submit a pull request with your changes
 
-See CONTRIBUTING.md for detailed guidelines.
+See [`CONTRIBUTING.md`](../CONTRIBUTING.md) for detailed guidelines.
 
 ## Support
 
 For issues, questions, or suggestions:
 
-- Check existing GitHub issues
-- Review lab-specific documentation
-- Consult TROUBLESHOOTING.md
-- See SECURITY.md for security-related concerns
+* Check existing GitHub Issues
+* Review lab-specific documentation
+* Consult [`TROUBLESHOOTING.md`](../TROUBLESHOOTING.md)
+* See [`SECURITY.md`](../SECURITY.md) for security-related concerns
 
 ## License
 
-All labs are licensed under the MIT License. See LICENSE file for details.
+All labs are licensed under the MIT License. See [`LICENSE`](../LICENSE) for details.
