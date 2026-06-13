@@ -2,7 +2,7 @@
 
 ## ⚖️ Legal & Ethical Framework
 
-This repository contains **educational security content** — offensive and defensive techniques for learning purposes only. 
+This repository contains **educational security content** — offensive and defensive techniques for learning purposes only.
 
 **Your responsibility:** Use this content only in authorized, controlled environments (sandboxed VMs, test labs you own).
 
@@ -56,7 +56,7 @@ This repository contains **educational security content** — offensive and defe
 | **AD Attacks** | ✅ Yes | Kerberos, SMB relay, lateral movement — lab environment only |
 | **Network Exploitation** | ✅ Yes | VLAN hopping, ARP spoofing — isolated network labs only |
 | **Credential Attacks** | ✅ Yes | Brute force, hash cracking — dictionary attacks, not rainbow tables |
-| **Web Exploitation** | ✅ Yes | SQL injection, XXS — vulnerable test apps only |
+| **Web Exploitation** | ✅ Yes | SQL injection, XSS — vulnerable test apps only |
 | **Post-Exploitation** | ✅ Yes | Persistence, privilege escalation — lab VMs only |
 | **Wireless Testing** | ⚠️ Limited | WPA2 cracking in controlled labs only; never on public networks |
 
