@@ -1,0 +1,44 @@
+# Core dependencies
+ansible>=2.9.0
+ansible-lint>=6.0.0
+jinja2>=3.0.0
+pyyaml>=6.0
+netaddr>=0.9.0
+
+# Python development tools
+pylint>=2.15.0
+black>=22.0.0
+flake8>=4.0.0
+isort>=5.10.0
+pytest>=7.0.0
+pytest-cov>=3.0.0
+
+# Terraform/IaC
+hcl2>=3.0.0
+
+# Vagrant/VM management
+pexpect>=4.8.0
+
+# Utilities
+requests>=2.28.0
+paramiko>=2.11.0
+python-dotenv>=0.20.0
+click>=8.0.0
+pydantic>=1.9.0
+rich>=12.0.0
+
+# Documentation
+sphinx>=4.5.0
+sphinx-rtd-theme>=1.0.0
+sphinx-markdown-tables>=0.0.15
+
+# Security
+bandit>=1.7.0
+safety>=2.0.0
+
+# Linting
+shellcheck>=1.1.0
+
+# Optional: For advanced scenarios
+paramiko>=2.11.0
+cryptography>=38.0.0
