@@ -216,3 +216,4 @@ temp/
 
 .gitconfig
 .gitconfig.local.*
+.gitconfig
