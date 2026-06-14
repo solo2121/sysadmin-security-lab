@@ -19,23 +19,55 @@
 
 ---
 
+## Professional Focus
+
+This project is designed to reflect real-world engineering capabilities aligned with:
+
+- DevSecOps Engineering
+- Security Engineering (Blue Team / Red Team fundamentals)
+- Site Reliability Engineering (SRE)
+- Linux Systems Administration
+- Infrastructure Engineering
+
+It emphasizes practical implementation over theoretical exercises.
+
+---
+
 ## Overview
 
 The **Sysadmin Security Lab** is a reproducible, modular infrastructure platform designed to simulate real-world enterprise environments for hands-on learning.
 
-It simulates real-world enterprise environments across **Linux, DevOps, and security domains**, enabling hands-on, end-to-end infrastructure and attack/defense workflows.
+It integrates Linux, DevOps, and security domains to enable full lifecycle infrastructure and security engineering workflows.
 
-It integrates:
+Core areas include:
 
-* Linux system administration (LFCS / RHCSA level)
-* DevOps infrastructure automation
-* Kubernetes cluster environments
-* Active Directory attack and defense labs
-* Network segmentation and virtualization (VLANs)
-* Offensive security tooling workflows
-* AI / LLM security research scenarios
+- Linux system administration (CompTIA Linux+ / LFCS / RHCSA level)
+- DevOps infrastructure automation
+- Kubernetes cluster environments
+- Active Directory attack and defense labs
+- Network segmentation and virtualization (VLANs)
+- Security monitoring and detection engineering
+- AI / LLM security research scenarios
 
 The goal is to provide a realistic, scalable, and repeatable environment for technical mastery.
+
+---
+
+## What This Project Demonstrates
+
+This repository is not a collection of scripts.
+
+It demonstrates the ability to design and operate:
+
+- Secure Linux and hybrid infrastructure environments
+- DevOps automation workflows and infrastructure provisioning concepts
+- Security monitoring and detection systems
+- Controlled offensive security testing environments
+- Enterprise-style Active Directory lab architectures
+- Infrastructure-as-Code based reproducible systems
+- AI/LLM security testing scenarios
+
+This project reflects practical engineering capability across **SysAdmin, DevOps, DevSecOps, and Security Engineering domains**.
 
 ---
 
@@ -43,38 +75,25 @@ The goal is to provide a realistic, scalable, and repeatable environment for tec
 
 Unlike isolated labs, this platform provides:
 
-* **End-to-end environments** (not fragmented exercises)
-* **Real attack + defense scenarios** across multiple layers
-* **Reproducible infrastructure** using Vagrant and Infrastructure as Code
-* **Cross-domain learning** (Sysadmin → DevOps → Security → AI)
+- End-to-end environments (not fragmented exercises)
+- Real attack + defense scenarios across multiple layers
+- Reproducible infrastructure using Vagrant and virtualization
+- Cross-domain learning (Sysadmin → DevOps → Security → AI)
 
-This is not a single lab — it's a **complete learning ecosystem**.
+This repository is designed as a portfolio-grade engineering environment intended to demonstrate production-relevant skills to hiring teams.
 
 ---
 
 ## Authorized Use
 
-**This repository contains offensive security content.** Before using:
+This repository contains offensive security content.
 
-1. **Read** [`docs/SECURITY-SCOPE.md`](docs/SECURITY-SCOPE.md)
-2. **Verify** you have explicit permission to test any infrastructure
-3. **Isolate** labs on VMs you control (never on production networks)
-4. **Report** security issues privately to `security@solo2121.com`
+Before using:
 
-**TL;DR:** Use only in authorized, isolated lab environments.
-
----
-
-## Target Audience
-
-This project is designed for:
-
-* Linux system administrators
-* DevOps engineers
-* Cloud infrastructure engineers
-* Security engineers and penetration testers
-* Red team / blue team practitioners
-* AI security researchers
+1. Read `docs/SECURITY-SCOPE.md`
+2. Use only in isolated lab environments you control
+3. Do not run against production or unauthorized systems
+4. Follow responsible security research practices
 
 ---
 
@@ -83,18 +102,17 @@ This project is designed for:
 ```text
 Sysadmin Security Lab Platform
 ├── Infrastructure Layer (DevOps Lab)
-│   └── Terraform + Ansible + Kubernetes + Monitoring
+│   └── KVM/QEMU + Vagrant + automation tooling
 │
 ├── Security Layer
-│   ├── Active Directory Pentest Lab
-│   └── VLAN Enterprise Lab
+│   ├── Active Directory Lab
+│   └── Network segmentation (VLAN environments)
 │
 ├── System Administration Layer
-│   └── Linux automation and hardening tools
+│   └── Linux automation, monitoring, and hardening
 │
 └── Research Layer
-    └── AI / LLM security testing
-```
+    └── AI / LLM security testing environments
 
 Full architecture breakdown: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
 
