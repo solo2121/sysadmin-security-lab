@@ -1,27 +1,50 @@
+# =====================================================
+
+# Sysadmin Security Lab - Global .gitignore
+
+# =====================================================
+
+# Purpose:
+
+# Ignore OS, IDE, runtime, build artifacts, and secrets
+
+# across multi-language DevSecOps lab environments.
+
+# =====================================================
+
 # =========================
+
 # Operating System Files
+
 # =========================
+
 .DS_Store
+.DS_Store?
 ._*
 Thumbs.db
 desktop.ini
 *.lnk
 
 # =========================
-# Editor / IDE Files
+
+# Editors / IDEs
+
 # =========================
+
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 *.orig
-idea/workspace.xml   # JetBrains secrets
 
 # =========================
+
 # Python
+
 # =========================
-__pycache__/
+
+**pycache**/
 *.py[cod]
 *$py.class
 *.egg-info/
@@ -30,22 +53,29 @@ __pycache__/
 htmlcov/
 
 # Virtual environments
+
 venv/
 env/
 .venv/
 
 # =========================
+
 # Node / JavaScript
+
 # =========================
+
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-.pnpm-debug.log*
+pnpm-debug.log*
 
 # =========================
+
 # Java / Kotlin / Scala
+
 # =========================
+
 *.class
 *.jar
 *.war
@@ -56,8 +86,11 @@ build/
 target/
 
 # =========================
+
 # Go
+
 # =========================
+
 *.exe
 *.exe~
 *.dll
@@ -66,39 +99,58 @@ target/
 vendor/
 
 # =========================
+
 # Rust
-# =========================
-/target/
-# Cargo.lock   # Uncomment for libraries, keep for binaries
 
 # =========================
-# .NET
+
+target/
+
+# Cargo.lock (uncomment for libraries only)
+
 # =========================
+
+# .NET
+
+# =========================
+
 bin/
 obj/
 *.user
 *.suo
 
 # =========================
+
 # Ruby
+
 # =========================
+
 *.gem
 .bundle/
 vendor/bundle
 
 # =========================
+
 # PHP
-# =========================
-/vendor/
 
 # =========================
-# Vagrant / Labs
+
+vendor/
+
 # =========================
+
+# Vagrant / Virtual Labs
+
+# =========================
+
 .vagrant/
 
 # =========================
-# Logs / Databases
+
+# Logs / Databases / Runtime Data
+
 # =========================
+
 *.log
 *.log.*
 *.sqlite
@@ -108,24 +160,35 @@ vendor/bundle
 *.pid.lock
 
 # =========================
-# Secrets / Sensitive Files
+
+# Secrets / Sensitive Data
+
 # =========================
-.env*
+
+.env
+.env.*
 !.env.example
+
 *.key
 *.pem
 *.secret
 *.token
+
 secrets.yaml
 credentials.*
 vault.yml
 
-# Only ignore config.json if it contains secrets
-config.json
+# IMPORTANT: never track local overrides or secrets
+
+config.local.json
+config.*.local.json
 
 # =========================
+
 # Temporary / Cache Files
+
 # =========================
+
 tmp/
 temp/
 *.tmp
@@ -135,7 +198,21 @@ temp/
 .cache/
 
 # =========================
-# Local Overrides (Safe)
+
+# Security / Lab Runtime Artifacts
+
 # =========================
-.gitconfig.local.codex
+
+*.pcap
+*.pcapng
+*.dump
+*.trace
+
+# =========================
+
+# Git / Local Developer Overrides
+
+# =========================
+
 .gitconfig
+.gitconfig.local.*
