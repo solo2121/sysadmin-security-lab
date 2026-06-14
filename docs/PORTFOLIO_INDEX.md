@@ -1,104 +1,80 @@
-# Portfolio Index — DevSecOps & Security Engineering Lab
+# Portfolio Index
 
-This document is a navigation guide for reviewers and engineers exploring this repository. Each section links directly to relevant lab components, tooling, and documentation.
+> Click map for engineers and recruiters. Each section links to the relevant lab, tooling, or documentation.
 
 **Status:** Active &nbsp;|&nbsp; **Last Updated:** 2026-05-29
 
 ---
 
-## 1. Active Directory Security
+## Labs
 
-**Focus:** Enterprise identity attacks, Windows domain exploitation, red/blue team simulation
-
-| Component | Path |
-|---|---|
-| AD Pentest Lab | `labs/security/ad-pentest/` |
-| Security Testing Lab | `security/security-testing-lab/` |
-| MITRE Log Source Playbook | `docs/guides/security/AD_MITRE_log_source_playbook.md` |
-| AD Pentest Guide (PJPT-aligned) | `docs/guides/security/Windows_AD_Pentest_Guide_PJPT_Aligned.md` |
-
-**Demonstrated techniques:**
-- Kerberoasting and AS-REP roasting against a live domain controller
-- LDAP enumeration and BloodHound attack path analysis
-- AD Certificate Services exploitation (ESC1–ESC8 attack chain)
-- Privilege escalation from low-privileged domain user to Domain Admin
+| Lab | Path | Focus |
+|---|---|---|
+| AD Pentest Lab | `labs/security/ad-pentest/` | Kerberos attacks, ESC chains, privilege escalation |
+| VLAN Enterprise Lab | `labs/security/ad-pentest-vlan/` | Network segmentation, VLAN isolation, traffic analysis |
+| DevOps Linux Lab | `labs/infrastructure/devops-linux-lab/` | Kubernetes, Ansible, Terraform, monitoring stack |
 
 ---
 
-## 2. DevSecOps Infrastructure Engineering
+## Security Tooling
 
-**Focus:** Reproducible lab provisioning, virtualization, infrastructure automation
-
-| Component | Path |
-|---|---|
-| DevOps Linux Lab | `labs/infrastructure/devops-linux-lab/` |
-| Sysadmin Automation Scripts | `sysadmin/automation/` |
-| Infrastructure Guides | `docs/guides/infrastructure/` |
-
-**Demonstrated techniques:**
-- Multi-VM environments provisioned with Vagrant and KVM/QEMU
-- Ansible playbooks for configuration management and hardening
-- Terraform workflows for infrastructure-as-code provisioning
-- Prometheus + Grafana + Loki monitoring stack deployment
+| Component | Path | Purpose |
+|---|---|---|
+| Threat Reconnaissance | `security/threat-reconnaissance/` | Nmap automation, surface enumeration |
+| Network Security Analysis | `security/network-security-analysis/` | Traffic analysis, topology mapping |
+| Detection Engineering | `security/detection-engineering/` | MITRE-aligned detection rules, log pipelines |
+| Security Testing Lab | `security/security-testing-lab/` | Offensive tooling and post-exploitation workflows |
 
 ---
 
-## 3. Detection Engineering & Blue Team
+## Key Techniques by Domain
 
-**Focus:** Security telemetry, log analysis, detection rule development
+### Active Directory
+- Kerberoasting and AS-REP roasting against live domain controller
+- BloodHound attack path enumeration via LDAP
+- AD Certificate Services exploitation: ESC1–ESC8 chain → domain compromise
+- SMB relay, lateral movement, and persistence
 
-| Component | Path |
-|---|---|
-| Detection Engineering Lab | `security/detection-engineering/` |
+### Infrastructure & DevSecOps
+- Vagrant + KVM/QEMU multi-VM provisioning
+- Ansible configuration management and Linux hardening
+- Terraform infrastructure-as-code workflows
+- Prometheus + Grafana + Loki on Kubernetes
 
-**Demonstrated techniques:**
-- Detection rule authoring based on MITRE ATT&CK telemetry sources
-- Log pipeline analysis for Windows event and Sysmon data
-- System auditing automation for Linux and AD environments
+### Detection Engineering
+- Detection rules mapped to MITRE ATT&CK telemetry sources
+- Windows event log and Sysmon pipeline analysis
 - Threat visibility gap analysis across simulated attack chains
 
----
+### Network Security
+- Automated Nmap scanning with structured output parsing
+- Multi-subnet VLAN segmentation and inter-VLAN traffic inspection
+- Enterprise network topology mapping and service fingerprinting
 
-## 4. Network Security & Reconnaissance
-
-**Focus:** Network scanning, enumeration, attack surface analysis
-
-| Component | Path |
-|---|---|
-| Threat Reconnaissance | `security/threat-reconnaissance/` |
-| Network Security Analysis | `security/network-security-analysis/` |
-| VLAN Enterprise Lab | `labs/security/ad-pentest-vlan/` |
-
-**Demonstrated techniques:**
-- Automated Nmap scanning pipelines with structured output parsing
-- Multi-subnet VLAN segmentation and inter-VLAN traffic analysis
-- Attack surface enumeration across simulated enterprise networks
-- Network topology mapping and service fingerprinting
-
----
-
-## 5. AI / LLM Security Research
-
-**Focus:** Prompt injection, LLM misuse scenarios, AI attack surface analysis
-
-| Component | Path |
-|---|---|
-| LLM Security Compliance Lab | `docs/guides/security/llm-security-compliance-lab.md` |
-
-**Demonstrated techniques:**
+### AI / LLM Security
 - Prompt injection testing against instrumented LLM integrations
 - Context manipulation and data leakage scenario modeling
 - Misconfigured AI deployment attack surface analysis
-- Security risk documentation for AI-integrated systems
 
 ---
 
-## 6. How to Navigate This Repository
+## Documentation
 
-Recommended exploration path:
+| Document | Purpose |
+|---|---|
+| `docs/architecture/ARCHITECTURE.md` | Full system design and component diagrams |
+| `docs/guides/security/AD_MITRE_log_source_playbook.md` | AD detection playbook |
+| `docs/guides/security/Windows_AD_Pentest_Guide_PJPT_Aligned.md` | AD pentest methodology |
+| `docs/guides/security/llm-security-compliance-lab.md` | LLM security research notes |
+| `docs/workflows/` | Automation and operational runbooks |
+| `INSTALLATION.md` | Environment setup and validation |
+| `TROUBLESHOOTING.md` | Common issues and fixes |
 
-1. **Start here:** `labs/infrastructure/devops-linux-lab/README.md` — understand the base infrastructure
-2. **Core lab:** `labs/security/ad-pentest/README.md` — the primary security environment
-3. **Supporting tooling:** `security/` — reconnaissance, detection, and analysis tools
-4. **Architecture:** `docs/architecture/ARCHITECTURE.md` — full system design
-5. **Operational workflows:** `docs/workflows/` — automation and operational runbooks
+---
+
+## Suggested Exploration Path
+
+1. `labs/infrastructure/devops-linux-lab/README.md` — start with the base infrastructure
+2. `labs/security/ad-pentest/README.md` — core offensive security environment
+3. `security/detection-engineering/` — blue team and detection layer
+4. `docs/architecture/ARCHITECTURE.md` — full system design
