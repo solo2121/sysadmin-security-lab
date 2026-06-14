@@ -61,7 +61,7 @@ vagrant up && vagrant status
 
 ## Navigate This Repo
 
-→ → **[PORTFOLIO.md](docs/PORTFOLIO.md)** — full lab index, techniques, and documentation map
+→ **[PORTFOLIO.md](docs/PORTFOLIO.md)** — full lab index, techniques, and documentation map
 
 ---
 
