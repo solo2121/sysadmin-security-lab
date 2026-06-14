@@ -73,12 +73,12 @@ vagrant status
 ```text
 .
 ├── docs/               # Architecture, workflows, and detailed guides
-├── labs/               # Runnable Vagrant/KVM lab environments
-├── security/           # Standalone security tools (Recon, Audit, Network)
-├── sysadmin/           # Automation and monitoring scripts
+├── labs/               # Enterprise-grade lab environments (Vagrant/KVM)
+├── security/           # Phase-based security tooling (Audit, Network, Recon)
+├── sysadmin/           # Platform automation and monitoring
 ├── CHANGELOG.md        # Project history
 ├── CODE_OF_CONDUCT.md  # Community standards
-└── requirements-dev.txt # Development tool dependencies
+└── requirements.txt    # Dev environment dependencies (linting, docs)
 ```
 
 ## Documentation Index
