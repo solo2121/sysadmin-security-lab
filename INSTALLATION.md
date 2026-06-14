@@ -83,14 +83,14 @@ vagrant --version
 
 ### 3. Install Vagrant Plugins
 
-Required for KVM/libvirt support:
+Required for KVM/libvirt and security-lab reboot provisioning:
 ```bash
 vagrant plugin install vagrant-libvirt
+vagrant plugin install vagrant-reload
 ```
 
 Optional but useful:
 ```bash
-vagrant plugin install vagrant-reload
 vagrant plugin install vagrant-disksize
 ```
 
@@ -470,7 +470,7 @@ sudo sysctl --system
 
 1. Review lab-specific `README` files in the `labs/` directory
 2. Read `CONTRIBUTING.md` for contribution guidelines
-3. Explore the `tutorials/` directory for detailed walkthroughs
+3. Explore `docs/guides/` for detailed walkthroughs
 4. Check `TROUBLESHOOTING.md` for known issues
 5. Start with the **DevOps Linux Lab** for foundational concepts
 

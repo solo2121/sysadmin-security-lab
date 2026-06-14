@@ -1,288 +1,81 @@
 # Sysadmin Security Lab
 
 <p align="center">
+  <img src="assets/sysadmin-security-lab-banner.png" alt="Sysadmin Security Lab banner" width="900">
+</p>
+
+<p align="center">
   <img src="https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge">
   <img src="https://img.shields.io/badge/Python-3.10+-3776AB.svg?style=for-the-badge&logo=python&logoColor=white">
   <img src="https://img.shields.io/badge/Bash-5.x-4EAA25.svg?style=for-the-badge&logo=gnubash&logoColor=white">
   <img src="https://img.shields.io/badge/Vagrant-Libvirt-1563FF.svg?style=for-the-badge&logo=vagrant&logoColor=white">
   <img src="https://img.shields.io/badge/KVM_QEMU-FF6600.svg?style=for-the-badge&logo=qemu&logoColor=white">
-  <img src="https://img.shields.io/badge/Security-Pentesting-red.svg?style=for-the-badge">
-  <img src="https://img.shields.io/badge/AD-Lab-FF8C00.svg?style=for-the-badge">
-  <img src="https://img.shields.io/badge/LLM-Security-8A2BE2.svg?style=for-the-badge">
+  <img src="https://img.shields.io/badge/DevSecOps-Lab-red.svg?style=for-the-badge">
 </p>
 
----
-
-**Last Updated:** 2026-05-29  
-**Maintained By:** solo2121  
-**Status:** Active & Maintained
-
----
-
-## Professional Focus
-
-This project is designed to reflect real-world engineering capabilities aligned with:
-
-- DevSecOps Engineering
-- Security Engineering (Blue Team / Red Team fundamentals)
-- Site Reliability Engineering (SRE)
-- Linux Systems Administration
-- Infrastructure Engineering
-
-It emphasizes practical implementation over theoretical exercises.
+**Status:** Active portfolio project
+**Maintainer:** solo2121
+**Primary focus:** Linux administration, infrastructure automation, security engineering, and reproducible lab design
 
 ---
 
 ## Overview
 
-The **Sysadmin Security Lab** is a reproducible, modular infrastructure platform designed to simulate real-world enterprise environments for hands-on learning.
+Sysadmin Security Lab is a portfolio-grade monorepo for building, operating, and testing realistic local infrastructure and security environments. It combines Linux administration scripts, Vagrant/KVM lab environments, Active Directory attack-defense scenarios, network segmentation practice, and detection/security research tooling.
 
-It integrates Linux, DevOps, and security domains to enable full lifecycle infrastructure and security engineering workflows.
-
-Core areas include:
-
-- Linux system administration (CompTIA Linux+ / LFCS / RHCSA level)
-- DevOps infrastructure automation
-- Kubernetes cluster environments
-- Active Directory attack and defense labs
-- Network segmentation and virtualization (VLANs)
-- Security monitoring and detection engineering
-- AI / LLM security research scenarios
-
-The goal is to provide a realistic, scalable, and repeatable environment for technical mastery.
+This repository is designed to show practical engineering ability, not just isolated notes or scripts. It demonstrates how to organize repeatable labs, document safe usage boundaries, automate common operations, and connect sysadmin, DevOps, and security workflows into one coherent platform.
 
 ---
 
-## What This Project Demonstrates
+## What This Demonstrates
 
-This repository is not a collection of scripts.
-
-It demonstrates the ability to design and operate:
-
-- Secure Linux and hybrid infrastructure environments
-- DevOps automation workflows and infrastructure provisioning concepts
-- Security monitoring and detection systems
-- Controlled offensive security testing environments
-- Enterprise-style Active Directory lab architectures
-- Infrastructure-as-Code based reproducible systems
-- AI/LLM security testing scenarios
-
-This project reflects practical engineering capability across **SysAdmin, DevOps, DevSecOps, and Security Engineering domains**.
+| Area | Evidence in this repo |
+|------|------------------------|
+| Linux systems administration | Hardening, monitoring, maintenance, firewall, backup, and utility scripts under [`sysadmin/`](sysadmin/) |
+| Infrastructure engineering | Vagrant + KVM/libvirt labs under [`labs/infrastructure/`](labs/infrastructure/) |
+| DevOps foundations | Kubernetes, Ansible, Terraform, Helm, GitOps, and observability documentation |
+| Security engineering | Reconnaissance, network testing, detection engineering, and security validation tools under [`security/`](security/) |
+| Active Directory security | AD attack-chain lab, VLAN segmentation lab, lab credentials, and defense documentation |
+| Documentation quality | Architecture, installation, workflow, troubleshooting, and safety scope docs under [`docs/`](docs/) |
 
 ---
 
-## Why This Project?
+## Featured Labs
 
-Unlike isolated labs, this platform provides:
+| Lab | Path | What it proves |
+|-----|------|----------------|
+| DevOps Linux Lab | [`labs/infrastructure/devops-linux-lab/`](labs/infrastructure/devops-linux-lab/) | Local infrastructure provisioning, Linux administration, Kubernetes practice, monitoring, and automation |
+| Active Directory Pentest Lab | [`labs/security/ad-pentest/`](labs/security/ad-pentest/) | Controlled AD enumeration, Kerberos attacks, privilege escalation paths, and remediation thinking |
+| VLAN Enterprise Lab | [`labs/security/ad-pentest-vlan/`](labs/security/ad-pentest-vlan/) | Network segmentation, subnet design, VLAN testing, and enterprise-style lab architecture |
 
-- End-to-end environments (not fragmented exercises)
-- Real attack + defense scenarios across multiple layers
-- Reproducible infrastructure using Vagrant and virtualization
-- Cross-domain learning (Sysadmin → DevOps → Security → AI)
-
-This repository is designed as a portfolio-grade engineering environment intended to demonstrate production-relevant skills to hiring teams.
-
----
-
-## Authorized Use
-
-This repository contains offensive security content.
-
-Before using:
-
-1. Read `docs/SECURITY-SCOPE.md`
-2. Use only in isolated lab environments you control
-3. Do not run against production or unauthorized systems
-4. Follow responsible security research practices
+Each lab includes its own README, Vagrantfile, scripts, and supporting documentation.
 
 ---
 
-## Architecture
-
-```text
-Sysadmin Security Lab Platform
-├── Infrastructure Layer (DevOps Lab)
-│   └── KVM/QEMU + Vagrant + automation tooling
-│
-├── Security Layer
-│   ├── Active Directory Lab
-│   └── Network segmentation (VLAN environments)
-│
-├── System Administration Layer
-│   └── Linux automation, monitoring, and hardening
-│
-└── Research Layer
-    └── AI / LLM security testing environments
-
-Full architecture breakdown: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
-
----
-
-## Core Capabilities
-
-* Full local enterprise infrastructure simulation using **Vagrant + Libvirt + KVM**
-* Multi-node Linux environments
-* Kubernetes cluster deployment (kubeadm-based)
-* Infrastructure as Code (Terraform + Ansible)
-* Observability stack (Prometheus, Grafana, Loki)
-* Active Directory attack chain simulation
-* Network segmentation using VLANs
-* Offensive security workflows
-* AI / LLM security experimentation
-
----
-
-## Labs
-
-### DevOps Linux Lab (Core Platform)
-
-**Path:** `labs/infrastructure/devops-linux-lab/`
-
-Includes:
-
-* Kubernetes cluster (kubeadm-based)
-* Terraform provisioning
-* Ansible configuration management
-* Helm deployments
-* Monitoring stack (Prometheus, Grafana, Loki)
-* Linux certification practice environments
-
----
-
-### Active Directory Pentest Lab
-
-**Path:** `labs/security/ad-pentest/`
-
-Focus areas:
-
-* Active Directory enumeration
-* Kerberos attacks (Kerberoasting, AS-REP roasting)
-* Certificate Services exploitation (ESC attacks)
-* SMB relay and lateral movement
-* Privilege escalation and persistence
-
----
-
-### VLAN Enterprise Lab
-
-**Path:** `labs/security/ad-pentest-vlan/`
-
-Focus areas:
-
-* Network segmentation and isolation
-* VLAN configuration and testing
-* Multi-subnet enterprise simulation
-* Network topology analysis
-
-Includes:
-
-* Architecture diagrams
-* Automation scripts
-* Troubleshooting guides
-
----
-
-## Security Tooling
-
-Includes practical tooling for:
-
-* Network scanning (e.g., nmap, masscan)
-* Active Directory attacks (e.g., impacket, bloodhound)
-* Web application testing workflows
-* Post-exploitation techniques
-
----
-
-## AI / LLM Security Research
-
-Hands-on scenarios exploring:
-
-* Prompt injection attacks
-* Context manipulation and data leakage
-* Abuse of LLM-integrated APIs
-* Misconfigured AI deployments
-* Supply chain vulnerabilities
-
-Includes experimental environments for testing real-world AI attack surfaces.
-
----
-
-## Quick Start
-
-```bash
-git clone https://github.com/solo2121/sysadmin-security-lab.git
-cd sysadmin-security-lab
-```
-
-Install dependencies:
-
-```bash
-sudo apt update
-sudo apt install qemu-kvm libvirt-daemon-system virt-manager vagrant -y
-```
-
-Validate setup:
-
-```bash
-vagrant up
-vagrant status
-```
-
-Example (Kubernetes validation):
-
-```bash
-kubectl get nodes
-```
-
-See [`INSTALLATION.md`](INSTALLATION.md) for full setup instructions.
-
----
-
-## Running Labs
-
-```bash
-cd labs/security/ad-pentest
-vagrant up
-```
-
-Each lab includes setup steps, architecture overview, execution guidance, and troubleshooting.
-
----
-
-## Learning Path
-
-Follow this progression:
-
-1. Linux fundamentals
-2. Virtualization and networking
-3. Infrastructure as Code (Ansible, Terraform)
-4. Kubernetes and containers
-5. Active Directory security
-6. Privilege escalation and persistence
-7. AI / LLM security testing
-
----
-
-## Repository Structure
+## Repository Map
 
 ```text
 sysadmin-security-lab/
-├── docs/
-│   ├── ARCHITECTURE.md
-│   ├── SECURITY-SCOPE.md
-│   └── WORKFLOWS.md
-│
-├── labs/
+├── assets/                         # Banner and visual assets
+├── docs/                           # Architecture, workflows, security scope, setup examples
+├── labs/                           # Reproducible infrastructure and security labs
 │   ├── infrastructure/
-│   ├── security/
-│   └── README.md
-│
-├── security/
-├── sysadmin/
-├── tutorials/
-├── assets/
-├── LICENSE
-├── CONTRIBUTING.md
+│   │   └── devops-linux-lab/
+│   └── security/
+│       ├── ad-pentest/
+│       └── ad-pentest-vlan/
+├── security/                       # Standalone security tools and experiments
+│   ├── detection-engineering/
+│   ├── network-security-analysis/
+│   ├── security-testing-lab/
+│   ├── threat-reconnaissance/
+│   └── wireless-security-lab/
+├── sysadmin/                       # Linux automation, monitoring, hardening, utilities
+│   ├── automation/
+│   ├── git/
+│   ├── monitoring/
+│   ├── system-hardening/
+│   └── utilities/
 ├── INSTALLATION.md
 ├── TROUBLESHOOTING.md
 ├── SECURITY.md
@@ -291,47 +84,89 @@ sysadmin-security-lab/
 
 ---
 
-## Documentation
+## Quick Start
 
-| Document | Purpose |
-|----------|----------|
-| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Design and structure |
-| [`docs/SECURITY-SCOPE.md`](docs/SECURITY-SCOPE.md) | Authorized use |
-| [`CONTRIBUTING.md`](CONTRIBUTING.md) | Contribution guidelines |
-| [`INSTALLATION.md`](INSTALLATION.md) | Setup instructions |
-| [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md) | Fixes |
-| [`SECURITY.md`](SECURITY.md) | Vulnerability reporting |
+Install the host dependencies first:
+
+```bash
+sudo apt update
+sudo apt install -y qemu-system-x86 libvirt-daemon-system libvirt-clients \
+  bridge-utils virt-manager vagrant
+sudo usermod -aG libvirt,kvm "$USER"
+```
+
+Install the required Vagrant plugins:
+
+```bash
+vagrant plugin install vagrant-libvirt
+vagrant plugin install vagrant-reload
+```
+
+Clone the repository:
+
+```bash
+git clone https://github.com/solo2121/sysadmin-security-lab.git
+cd sysadmin-security-lab
+```
+
+Run a specific lab from its directory:
+
+```bash
+cd labs/infrastructure/devops-linux-lab
+vagrant validate
+vagrant up
+```
+
+For full setup instructions, see [`INSTALLATION.md`](INSTALLATION.md).
 
 ---
 
-## Contributing
+## Safe Use
 
-Contributions are welcome.
+This repository contains offensive security content for controlled labs only. Before running any security lab:
 
-* Review architecture and structure
-* Follow contribution guidelines
-* Ensure security scope compliance
+1. Read [`docs/SECURITY-SCOPE.md`](docs/SECURITY-SCOPE.md).
+2. Use only isolated VMs and networks you own or are authorized to test.
+3. Do not run offensive tooling against public, production, employer, or third-party systems without explicit written permission.
+4. Treat all included credentials as intentionally weak lab-only credentials.
 
-Submit pull requests that:
+---
 
-* Add labs or tools with documentation
-* Improve existing components
-* Fix bugs or issues
-* Enhance documentation
+## Documentation
+
+| Document | Purpose |
+|----------|---------|
+| [`INSTALLATION.md`](INSTALLATION.md) | Host setup, dependencies, Vagrant/libvirt installation |
+| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Repository architecture and design boundaries |
+| [`docs/SECURITY-SCOPE.md`](docs/SECURITY-SCOPE.md) | Authorized-use policy and lab isolation requirements |
+| [`docs/WORKFLOWS.md`](docs/WORKFLOWS.md) | Operational and development workflows |
+| [`docs/SETUP-WITH-EXAMPLES.md`](docs/SETUP-WITH-EXAMPLES.md) | Example setup paths and commands |
+| [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md) | Common problems and fixes |
+| [`CONTRIBUTING.md`](CONTRIBUTING.md) | Contribution expectations |
+
+---
+
+## Suggested Reviewer Path
+
+If you are reviewing this as a portfolio project, start here:
+
+1. Read this README for scope and project structure.
+2. Review [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for design intent.
+3. Inspect [`labs/infrastructure/devops-linux-lab/Vagrantfile`](labs/infrastructure/devops-linux-lab/Vagrantfile) for infrastructure automation.
+4. Inspect [`labs/security/ad-pentest/docs/ATTACK_CHAIN.md`](labs/security/ad-pentest/docs/ATTACK_CHAIN.md) for AD lab methodology.
+5. Review [`sysadmin/system-hardening/`](sysadmin/system-hardening/) and [`security/detection-engineering/`](security/detection-engineering/) for practical scripting examples.
+
+---
+
+## Roadmap
+
+- Add a unified lab launcher for common `vagrant` operations.
+- Add CI checks for shell syntax, Python syntax, Markdown links, and Vagrant validation.
+- Add more diagrams and screenshots for each featured lab.
+- Standardize per-lab metadata files for prerequisites, resources, and expected outputs.
 
 ---
 
 ## License
 
-This project is licensed under the **MIT License**.
-
-See [`LICENSE`](LICENSE) for details.
-
----
-
-## Support
-
-* Check GitHub Issues
-* Review troubleshooting docs
-* Consult lab documentation
-* Report security issues via [`SECURITY.md`](SECURITY.md)
+This project is licensed under the MIT License. See [`LICENSE`](LICENSE) for details.
