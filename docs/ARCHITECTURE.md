@@ -1,302 +1,169 @@
 # Repository Architecture
 
-## Vision
+## Purpose
 
-**Sysadmin Security Lab** is a modular, reproducible **DevSecOps + Offensive Security + Infrastructure Lab Platform** — a monorepo that serves as both:
-- 🧪 **Learning environment** for hands-on security and infrastructure skill building
-- 🛠 **Operational toolkit** for system administrators and security engineers
-- 📚 **Knowledge base** of industry best practices and attack/defense patterns
+Sysadmin Security Lab is organized as a modular DevSecOps and security-learning platform. The repository separates runnable labs, reusable tools, operational scripts, and long-form documentation so each part can be reviewed or improved independently.
 
----
-
-## Core Principles
-
-1. **Separation of Concerns** — infrastructure, security tools, educational content are distinct
-2. **Reproducibility** — every lab must run consistently across environments (Vagrant + IaC)
-3. **Modularity** — labs are self-contained and composable
-4. **Governed Scope** — clear boundaries on what this repo does (and doesn't do)
-5. **Automation-First** — manual steps are documented but scripted where possible
+The project is intentionally local-first: labs are designed for Vagrant, KVM/QEMU, and libvirt rather than public cloud infrastructure. This keeps security testing contained and makes the environments repeatable on a workstation.
 
 ---
 
-## Directory Structure
+## Design Principles
 
-```
+1. **Reproducible labs:** Lab environments should be deployable from documented Vagrantfiles and scripts.
+2. **Clear safety boundaries:** Offensive content belongs in isolated lab contexts with explicit authorization guidance.
+3. **Separation of concerns:** Labs, standalone security tools, sysadmin utilities, and guides live in distinct directories.
+4. **Documentation with examples:** Setup, architecture, workflows, and troubleshooting are documented near the code they support.
+5. **Portfolio readability:** A reviewer should be able to identify the purpose, skills demonstrated, and runnable entry points quickly.
+
+---
+
+## Current Structure
+
+```text
 sysadmin-security-lab/
-│
-├── docs/                          # Repository governance & architecture
-│   ├── ARCHITECTURE.md            # This file
-│   ├── CONTRIBUTING.md            # Contribution workflow (linked from root)
-│   ├── SECURITY-SCOPE.md          # Authorized use boundaries
-│   └── WORKFLOWS.md               # CI/CD, testing, deployment patterns
-│
-├── labs/                          # Hands-on environments (Vagrant + IaC)
-│   ├── infrastructure/            # DevOps, Kubernetes, Linux admin labs
-│   │   ├── devops-linux-lab/      # Core: Kubernetes, Terraform, Ansible, monitoring
-│   │   └── README.md              # Infrastructure labs index
-│   │
-│   ├── security/                  # Attack/defense environment simulations
-│   │   ├── ad-pentest/            # Active Directory pentest lab
-│   │   ├── ad-pentest-vlan/       # VLAN + network segmentation lab
-│   │   └── README.md              # Security labs index
-│   │
-│   └── README.md                  # Labs guide + quick start
-│
-├── security/                      # Standalone offensive/defensive tooling
-│   ├── tools/                     # Python/Bash/Rust utilities
-│   │   ├── network/               # Network scanning, reconnaissance
-│   │   ├── exploitation/          # Exploit scripts, payloads
-│   │   ├── post-exploitation/     # Persistence, lateral movement
-│   │   └── README.md
-│   │
-│   ├── frameworks/                # Coordinated attack/defense workflows
-│   │   └── README.md
-│   │
-│   └── README.md                  # Security tools index
-│
-├── sysadmin/                      # System administration automation
-│   ├── hardening/                 # Linux hardening scripts
-│   ├── automation/                # Day-2 ops, maintenance scripts
-│   ├── monitoring/                # Observability, alerting configs
-│   └── README.md
-│
-├── tutorials/                     # Educational content (documentation)
-│   ├── devops/                    # Infrastructure, Kubernetes, GitOps
-│   ├── security/                  # Pentest methodology, attack chains
-│   ├── linux/                     # System administration, LFCS/RHCSA prep
-│   ├── virtualization/            # Vagrant, KVM, networking concepts
-│   └── README.md
-│
-├── assets/                        # Diagrams, templates, reference materials
-│   ├── diagrams/                  # Architecture, network topology
-│   ├── templates/                 # Vagrantfile, Terraform, Ansible templates
-│   ├── images/                    # Screenshots, illustrations
-│   └── README.md
-│
-└── Root governance files
-    ├── README.md                  # Project overview & quick start
-    ├── SECURITY.md                # Vulnerability reporting
-    ├── LICENSE                    # MIT License
-    ├── CONTRIBUTING.md            # Contribution guidelines
-    ├── INSTALLATION.md            # Dependency setup
-    ├── TROUBLESHOOTING.md         # Common issues & fixes
-    └── .github/workflows/         # CI/CD automation (GitHub Actions)
+├── assets/
+│   ├── README.md
+│   └── sysadmin-security-lab-banner.png
+├── docs/
+│   ├── ARCHITECTURE.md
+│   ├── LAB-DEPLOYMENT-WORKFLOW.md
+│   ├── SECURITY-SCOPE.md
+│   ├── SETUP-WITH-EXAMPLES.md
+│   ├── WORKFLOWS.md
+│   └── guides/
+├── labs/
+│   ├── infrastructure/
+│   │   └── devops-linux-lab/
+│   └── security/
+│       ├── ad-pentest/
+│       └── ad-pentest-vlan/
+├── security/
+│   ├── detection-engineering/
+│   ├── network-security-analysis/
+│   ├── security-testing-lab/
+│   ├── threat-reconnaissance/
+│   └── wireless-security-lab/
+├── sysadmin/
+│   ├── automation/
+│   ├── git/
+│   ├── monitoring/
+│   ├── system-hardening/
+│   └── utilities/
+├── CHANGELOG.md
+├── CODE_OF_CONDUCT.md
+├── CONTRIBUTING.md
+├── INSTALLATION.md
+├── LICENSE
+├── README.md
+├── SECURITY.md
+└── TROUBLESHOOTING.md
 ```
 
 ---
 
-## Core Directories Explained
+## Main Components
 
-### **`labs/`** — Reproducible Environments
-**Purpose:** Turn theory into practice — deploy real infrastructure locally  
-**Contents:** Vagrantfiles, Terraform/Ansible code, startup scripts  
-**Who uses it:** Students, labs, learning paths  
+### `labs/`
 
-**Subdirectories:**
-- `infrastructure/` → DevOps, Kubernetes, Linux fundamentals
-- `security/` → Attack/defense simulations, pentest environments
+Runnable environments for infrastructure and security practice.
 
-**Quality gate:** Every lab must have:
-- ✅ Vagrantfile or equivalent provisioning
-- ✅ README with setup instructions
-- ✅ Architecture diagram
-- ✅ Troubleshooting section
-- ✅ Example outputs / expected results
+| Lab | Focus |
+|-----|-------|
+| `labs/infrastructure/devops-linux-lab/` | Linux administration, Vagrant/libvirt, Kubernetes, DevOps workflow documentation |
+| `labs/security/ad-pentest/` | Active Directory attack-chain practice in a controlled lab |
+| `labs/security/ad-pentest-vlan/` | VLAN segmentation, subnet design, and network isolation testing |
 
----
+Expected lab contents:
 
-### **`security/`** — Standalone Tooling
-**Purpose:** Reusable security utilities (offensive + defensive)  
-**Contents:** Python scripts, Bash utilities, frameworks  
-**Who uses it:** Penetration testers, security engineers  
+- `Vagrantfile` for VM definition and provisioning
+- `README.md` for setup and usage
+- `scripts/` for repeatable operations
+- `docs/` for architecture, workflow, credentials, or troubleshooting notes
+- `configs/` for lab-specific configuration when needed
 
-**NOT a lab** — this is modular code you import/use in labs or standalone  
+### `security/`
 
-**Subdirectories:**
-- `tools/` → Individual utilities (network scanning, exploitation, etc.)
-- `frameworks/` → Coordinated workflows (e.g., "AD attack chain", "network defense pipeline")
+Standalone security utilities and experiments.
 
----
+| Directory | Purpose |
+|-----------|---------|
+| `detection-engineering/` | LLM/security validation and audit tooling |
+| `network-security-analysis/` | Packet capture, firewall scanning, and network analysis helpers |
+| `security-testing-lab/` | Web/security testing scripts and educational exploit tooling |
+| `threat-reconnaissance/` | Reconnaissance and scanning helpers |
+| `wireless-security-lab/` | Wireless security lab experiments |
 
-### **`sysadmin/`** — System Administration Automation
-**Purpose:** Day-2 operations, hardening, maintenance  
-**Contents:** Ansible playbooks, hardening scripts, monitoring configs  
-**Who uses it:** Sysadmins, DevOps engineers  
+### `sysadmin/`
 
-**Subdirectories:**
-- `hardening/` → CIS benchmarks, SELinux/AppArmor, firewall rules
-- `automation/` → Patching, backups, user management
-- `monitoring/` → Prometheus configs, alerting rules, dashboards
+Linux administration and day-2 operations scripts.
 
----
+| Directory | Purpose |
+|-----------|---------|
+| `automation/` | Update, package maintenance, and platform automation scripts |
+| `git/` | Git workflow helper scripts |
+| `monitoring/` | System, security, and log monitoring utilities |
+| `system-hardening/` | Audit, hardening, antivirus, rootkit, user, and network checks |
+| `utilities/` | General Linux utilities for backups, firewall, memory, DNS, and media tasks |
 
-### **`tutorials/`** — Educational Documentation
-**Purpose:** Knowledge transfer — concepts, walkthroughs, methodology  
-**Contents:** Markdown guides, attack/defense explanations, best practices  
-**Who uses it:** Learners, practitioners refreshing knowledge  
+### `docs/`
 
-**Subdirectories:**
-- `devops/` → Kubernetes, Terraform, Ansible, GitOps
-- `security/` → Pentest methodology, attack chains, exploitation techniques
-- `linux/` → System admin, LFCS/RHCSA, hardening
-- `virtualization/` → KVM, Vagrant, networking concepts
+Project-level documentation for architecture, safe use, setup, and workflows. Longer tutorials and reference guides live under `docs/guides/`.
 
 ---
 
-### **`assets/`** — Visual & Reference Materials
-**Purpose:** Diagrams, templates, checklists  
-**Contents:** PNG/SVG diagrams, template files, command references  
-**Who uses it:** Everyone (for understanding architecture, reusing templates)
+## Safety Model
 
-**Subdirectories:**
-- `diagrams/` → Architecture, network topology, AD forest structures
-- `templates/` → Vagrantfile, Terraform, Ansible, network config templates
-- `images/` → Screenshots, illustrations, logos
-- `reference/` → Checklists, command reference, tool comparisons
+The repository contains intentionally vulnerable configurations, weak lab credentials, and offensive security workflows. These are acceptable only because they are scoped to isolated labs.
 
----
+Required controls:
 
-## Language Conventions
-
-| Use Case | Primary Language | Notes |
-|----------|------------------|-------|
-| Automation, configuration management | **Bash / YAML** | Vagrant provisioning, Ansible playbooks |
-| Security tooling, scanning | **Python** | Modular, rapid prototyping |
-| High-performance system tools | **Rust** | Optional; use when performance critical |
-| IaC provisioning | **Terraform** | Infrastructure, not application code |
-
----
-
-## Boundaries & Scope
-
-### ✅ In Scope
-
-- Linux system administration labs (LFCS/RHCSA level)
-- Infrastructure as Code (Terraform, Ansible, Kubernetes)
-- Active Directory attack/defense simulation
-- Network segmentation and VLAN concepts
-- Offensive security tools and techniques (in controlled lab environments)
-- DevOps tooling and workflows
-- Monitoring and observability
-
-### ❌ Out of Scope
-
-- Malware analysis tools / reverse engineering frameworks
-- Zero-day exploits or unpatched vulnerability POCs
-- Hosted services or cloud-based infrastructure
-- Production-ready monitoring (tutorials only)
-- Kernel module development
-- Cryptographic algorithm implementations
-
-### ⚠️ Special Considerations
-
-**Authorized Use Only:**
-- All offensive security content (exploits, attack chains) is **educational only**
-- Use only in controlled lab environments (VMs, sandboxes)
-- Never use against systems you don't own or have written permission to test
-- See `docs/SECURITY-SCOPE.md` for detailed boundaries
-
----
-
-## Contribution Workflow
-
-### Adding a New Lab
-
-1. **Choose category**: infrastructure or security?
-2. **Create directory**: `labs/{category}/{lab-name}/`
-3. **Include these files**:
-   ```
-   labs/category/my-lab/
-   ├── Vagrantfile            # VM provisioning
-   ├── README.md              # Setup + instructions
-   ├── scripts/               # Automation (bash/python)
-   ├── ansible/               # Playbooks (if using)
-   ├── terraform/             # IaC (if using)
-   └── docs/                  # Architecture diagram, troubleshooting
-   ```
-4. **Update parent README**: Add entry to `labs/{category}/README.md`
-5. **Test locally**: Verify `vagrant up` works end-to-end
-6. **Submit PR** with lab + documentation
-
-### Adding a New Tool
-
-1. **Choose subdirectory**: `security/tools/{category}/`
-2. **Include**:
-   ```
-   security/tools/category/my-tool/
-   ├── tool.py / tool.sh      # Main script
-   ├── README.md              # Usage + examples
-   └── requirements.txt       # Dependencies (if Python)
-   ```
-3. **Update parent README**: Add entry to `security/tools/README.md`
-4. **Submit PR** with tool + documentation
-
-### Adding a Tutorial
-
-1. **Choose category**: `tutorials/{topic}/`
-2. **Create Markdown file**: `tutorial-name.md`
-3. **Include**:
-   - Overview / learning objectives
-   - Prerequisites
-   - Step-by-step walkthrough
-   - Examples and diagrams
-   - References and further reading
-4. **Update parent README**: Add entry to `tutorials/README.md`
-5. **Submit PR**
+- Run labs only on networks you own or control.
+- Keep lab networks isolated from production and employer systems.
+- Do not bridge intentionally vulnerable systems onto public networks.
+- Treat credentials in lab documentation as throwaway training material.
+- Review [`SECURITY-SCOPE.md`](SECURITY-SCOPE.md) before running offensive scenarios.
 
 ---
 
 ## Quality Standards
 
-### Documentation
+New labs should include:
 
-- Every lab, tool, and tutorial must have a `README.md`
-- Architecture diagrams required for labs
-- Code comments for non-obvious logic
-- Examples provided (usage, sample output)
+- Clear prerequisites and resource requirements
+- One primary setup path
+- A validation command such as `vagrant validate`, `vagrant status`, or a lab-specific test script
+- Expected outputs or success criteria
+- Cleanup instructions
+- Security scope and isolation notes
 
-### Testing
+New scripts should include:
 
-- Labs must provision cleanly (`vagrant up`, no manual steps)
-- Scripts must be idempotent where practical
-- Error handling: graceful exits with meaningful messages
-
-### Security
-
-- No hardcoded credentials; use `.env` or secrets management
-- Minimal required permissions (don't run as root unnecessarily)
-- Clear warnings on labs involving offensive techniques
+- A short usage description
+- Safe defaults
+- Input validation where practical
+- Clear error messages
+- Minimal required privileges
 
 ---
 
-## Future Roadmap
+## Roadmap
 
-### Phase 1: Consolidation (Current)
-- Unified architecture documentation ✅
-- Organize existing content into established dirs
-- Add CI/CD validation
-
-### Phase 2: Standardization
-- Unified lab launcher (`labctl` CLI tool)
-- Lab metadata format (lab.yaml)
-- Automated testing of labs via GitHub Actions
-
-### Phase 3: Tooling
-- `labctl start <lab-name>` — spin up any lab
-- `labctl test` — validate all labs
-- Lab dependency management (lab A requires lab B)
-
-### Phase 4: Scale
-- Community contributions pipeline
-- Lab versioning and backward compatibility
-- Multi-cloud support (AWS, GCP, Azure)
+| Phase | Goal |
+|-------|------|
+| Consolidation | Keep repository structure and documentation aligned with the actual tree |
+| Validation | Add CI checks for shell, Python, Markdown, and Vagrant configuration |
+| Lab UX | Add a common lab launcher or management wrapper |
+| Evidence | Add screenshots, diagrams, and expected-output captures for each featured lab |
+| Standardization | Add lab metadata files for resources, dependencies, safety level, and validation commands |
 
 ---
 
-## See Also
+## Related Documents
 
-- `CONTRIBUTING.md` — Detailed contribution guidelines
-- `docs/SECURITY-SCOPE.md` — Authorized use boundaries
-- `docs/WORKFLOWS.md` — CI/CD and testing patterns
-- `TROUBLESHOOTING.md` — Common issues and fixes
-- `README.md` — Project overview and quick start
+- [`../README.md`](../README.md)
+- [`SECURITY-SCOPE.md`](SECURITY-SCOPE.md)
+- [`WORKFLOWS.md`](WORKFLOWS.md)
+- [`SETUP-WITH-EXAMPLES.md`](SETUP-WITH-EXAMPLES.md)
+- [`../INSTALLATION.md`](../INSTALLATION.md)
+- [`../TROUBLESHOOTING.md`](../TROUBLESHOOTING.md)
