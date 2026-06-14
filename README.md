@@ -54,7 +54,12 @@ A hands-on lab platform built to replicate real enterprise environments. It cove
 git clone https://github.com/solo2121/sysadmin-security-lab.git
 cd sysadmin-security-lab
 sudo apt update && sudo apt install -y qemu-kvm libvirt-daemon-system virt-manager vagrant
-vagrant up && vagrant status
+vagrant plugin install vagrant-libvirt vagrant-reload vagrant-winrm
+
+# Start a specific lab
+cd labs/security/ad-pentest
+vagrant up dc01
+vagrant status
 ```
 
 ---
