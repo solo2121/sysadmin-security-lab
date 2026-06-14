@@ -32,7 +32,7 @@ Use these tools only in systems and lab networks you own or are explicitly autho
 Run scripts from their own directories so relative paths and output files stay predictable:
 
 ```bash
-cd security/threat-reconnaissance
+cd security/reconnaissance
 python3 port-scanner.py
 ```
 

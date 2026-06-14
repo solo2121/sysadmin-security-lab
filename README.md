@@ -66,7 +66,29 @@ vagrant status
 
 ## Navigate This Repo
 
-→ **[PORTFOLIO.md](docs/PORTFOLIO.md)** — full lab index, techniques, and documentation map
+→ **[PORTFOLIO.md](docs/PORTFOLIO.md)** — full lab index, techniques, and documentation map.
+
+## Repository Structure
+
+```text
+.
+├── docs/               # Architecture, workflows, and detailed guides
+├── labs/               # Runnable Vagrant/KVM lab environments
+├── security/           # Standalone security tools (Recon, Audit, Network)
+├── sysadmin/           # Automation and monitoring scripts
+├── CHANGELOG.md        # Project history
+├── CODE_OF_CONDUCT.md  # Community standards
+└── requirements-dev.txt # Development tool dependencies
+```
+
+## Documentation Index
+
+| Resource | Description |
+|----------|-------------|
+| [ARCHITECTURE.md](docs/architecture/ARCHITECTURE.md) | High-level system design and directory map |
+| [SECURITY-SCOPE.md](docs/architecture/SECURITY-SCOPE.md) | Critical safety boundaries and authorized use policy |
+| [INSTALLATION.md](INSTALLATION.md) | Full environment setup (KVM, Vagrant, Libvirt) |
+| [CHANGELOG.md](CHANGELOG.md) | Version history and latest updates |
 
 ---
 
