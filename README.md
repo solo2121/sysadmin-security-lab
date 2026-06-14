@@ -19,288 +19,256 @@
 
 ---
 
+```markdown
+# DevSecOps & Security Engineering Lab Portfolio
+
+This repository is a hands-on DevSecOps, security engineering, and infrastructure automation lab environment designed to simulate enterprise-grade systems.
+
+It integrates offensive security, defensive security, infrastructure engineering, and automation into a single reproducible platform for technical practice and portfolio demonstration.
+
+---
+
 ## Professional Focus
 
-This project is designed to reflect real-world engineering capabilities aligned with:
+This project demonstrates practical capability across the following domains:
 
-- DevSecOps Engineering
-- Security Engineering (Blue Team / Red Team fundamentals)
-- Site Reliability Engineering (SRE)
-- Linux Systems Administration
-- Infrastructure Engineering
+- DevSecOps engineering and infrastructure automation
+- Linux system administration and hardening
+- Active Directory attack and defense simulation
+- Network security analysis and penetration testing
+- Detection engineering and security monitoring
+- Virtualized infrastructure using KVM/QEMU and Vagrant
+- AI / LLM security experimentation and research
 
-It emphasizes practical implementation over theoretical exercises.
+The objective is to provide a realistic environment that reflects enterprise security and infrastructure workflows.
+
+---
+
+## Portfolio Highlights
+
+This project is structured as a production-style security and infrastructure lab platform.
+
+Key highlights include:
+
+- Active Directory enterprise attack simulation environment (Kerberos, LDAP, ESC attacks)
+- Modular DevSecOps infrastructure using Vagrant and KVM/QEMU
+- Detection engineering and log analysis automation tooling
+- Network segmentation and VLAN-based enterprise simulation
+- Linux hardening and system administration automation
+- Security testing frameworks for penetration testing workflows
+- AI / LLM security experimentation environments
+
+This is designed to reflect real-world engineering responsibilities in security and infrastructure roles, not isolated lab exercises.
 
 ---
 
 ## Overview
 
-The **Sysadmin Security Lab** is a reproducible, modular infrastructure platform designed to simulate real-world enterprise environments for hands-on learning.
+The platform is structured as a modular lab ecosystem combining infrastructure, security, and system administration components.
 
-It integrates Linux, DevOps, and security domains to enable full lifecycle infrastructure and security engineering workflows.
+It is designed to replicate real-world environments where infrastructure, security operations, and automation intersect.
 
-Core areas include:
+Key characteristics:
 
-- Linux system administration (CompTIA Linux+ / LFCS / RHCSA level)
-- DevOps infrastructure automation
-- Kubernetes cluster environments
-- Active Directory attack and defense labs
-- Network segmentation and virtualization (VLANs)
-- Security monitoring and detection engineering
-- AI / LLM security research scenarios
-
-The goal is to provide a realistic, scalable, and repeatable environment for technical mastery.
+- Reproducible lab environments
+- Multi-layer enterprise simulation (Linux, Active Directory, networking)
+- Offensive and defensive security workflows
+- Infrastructure-as-code style automation
+- Scalable modular design
 
 ---
 
 ## What This Project Demonstrates
 
-This repository is not a collection of scripts.
-
-It demonstrates the ability to design and operate:
+This repository demonstrates the ability to design, build, and operate:
 
 - Secure Linux and hybrid infrastructure environments
-- DevOps automation workflows and infrastructure provisioning concepts
+- DevOps automation workflows and lab orchestration
 - Security monitoring and detection systems
 - Controlled offensive security testing environments
-- Enterprise-style Active Directory lab architectures
-- Infrastructure-as-Code based reproducible systems
+- Active Directory enterprise simulation environments
+- Network segmentation and VLAN-based architectures
+- Infrastructure automation using scripting and virtualization tools
 - AI/LLM security testing scenarios
-
-This project reflects practical engineering capability across **SysAdmin, DevOps, DevSecOps, and Security Engineering domains**.
-
----
-
-## Why This Project?
-
-Unlike isolated labs, this platform provides:
-
-- End-to-end environments (not fragmented exercises)
-- Real attack + defense scenarios across multiple layers
-- Reproducible infrastructure using Vagrant and virtualization
-- Cross-domain learning (Sysadmin → DevOps → Security → AI)
-
-This repository is designed as a portfolio-grade engineering environment intended to demonstrate production-relevant skills to hiring teams.
-
----
-
-## Authorized Use
-
-This repository contains offensive security content.
-
-Before using:
-
-1. Read `docs/SECURITY-SCOPE.md`
-2. Use only in isolated lab environments you control
-3. Do not run against production or unauthorized systems
-4. Follow responsible security research practices
 
 ---
 
 ## Architecture
 
-```text
+```
+
 Sysadmin Security Lab Platform
-├── Infrastructure Layer (DevOps Lab)
-│   └── KVM/QEMU + Vagrant + automation tooling
+├── Infrastructure Layer
+│   ├── KVM/QEMU virtualization
+│   ├── Vagrant automation
+│   └── provisioning scripts
 │
 ├── Security Layer
-│   ├── Active Directory Lab
-│   └── Network segmentation (VLAN environments)
+│   ├── Active Directory lab environments
+│   ├── penetration testing tools
+│   └── network segmentation (VLANs)
 │
 ├── System Administration Layer
-│   └── Linux automation, monitoring, and hardening
+│   ├── Linux automation
+│   ├── system hardening
+│   └── monitoring scripts
 │
 └── Research Layer
-    └── AI / LLM security testing environments
+└── AI / LLM security testing environments
 
-Full architecture breakdown: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
+```
 
----
-
-## Core Capabilities
-
-* Full local enterprise infrastructure simulation using **Vagrant + Libvirt + KVM**
-* Multi-node Linux environments
-* Kubernetes cluster deployment (kubeadm-based)
-* Infrastructure as Code (Terraform + Ansible)
-* Observability stack (Prometheus, Grafana, Loki)
-* Active Directory attack chain simulation
-* Network segmentation using VLANs
-* Offensive security workflows
-* AI / LLM security experimentation
+Full architecture details: docs/ARCHITECTURE.md
 
 ---
 
 ## Labs
 
-### DevOps Linux Lab (Core Platform)
+### DevOps Linux Lab
 
-**Path:** `labs/infrastructure/devops-linux-lab/`
+Path: labs/infrastructure/devops-linux-lab/
 
 Includes:
 
-* Kubernetes cluster (kubeadm-based)
-* Terraform provisioning
-* Ansible configuration management
-* Helm deployments
-* Monitoring stack (Prometheus, Grafana, Loki)
-* Linux certification practice environments
+- Kubernetes cluster (kubeadm-based)
+- Terraform provisioning workflows
+- Ansible configuration management
+- Linux infrastructure automation
+- Monitoring stack (Prometheus, Grafana, Loki)
 
 ---
 
 ### Active Directory Pentest Lab
 
-**Path:** `labs/security/ad-pentest/`
+Path: labs/security/ad-pentest/
 
 Focus areas:
 
-* Active Directory enumeration
-* Kerberos attacks (Kerberoasting, AS-REP roasting)
-* Certificate Services exploitation (ESC attacks)
-* SMB relay and lateral movement
-* Privilege escalation and persistence
+- Active Directory enumeration and attack chains
+- Kerberos attacks (Kerberoasting, AS-REP roasting)
+- Certificate Services exploitation (ESC attacks)
+- Lateral movement and privilege escalation
+- SMB relay and persistence techniques
 
 ---
 
-### VLAN Enterprise Lab
+### VLAN Enterprise Security Lab
 
-**Path:** `labs/security/ad-pentest-vlan/`
+Path: labs/security/ad-pentest-vlan/
 
 Focus areas:
 
-* Network segmentation and isolation
-* VLAN configuration and testing
-* Multi-subnet enterprise simulation
-* Network topology analysis
+- Network segmentation and isolation
+- Multi-subnet enterprise simulation
+- VLAN configuration and testing
+- Network topology analysis
 
-Includes:
-
-* Architecture diagrams
-* Automation scripts
-* Troubleshooting guides
+Includes automation scripts and architecture diagrams.
 
 ---
 
-## Security Tooling
+## Security Engineering Tooling
 
-Includes practical tooling for:
+This repository includes tooling and scripts for:
 
-* Network scanning (e.g., nmap, masscan)
-* Active Directory attacks (e.g., impacket, bloodhound)
-* Web application testing workflows
-* Post-exploitation techniques
+- Network scanning and reconnaissance
+- Active Directory security testing
+- Web application security workflows
+- Post-exploitation and analysis tools
+- Linux system auditing and monitoring
 
 ---
 
 ## AI / LLM Security Research
 
-Hands-on scenarios exploring:
+Experimental environments for analyzing security risks in AI systems:
 
-* Prompt injection attacks
-* Context manipulation and data leakage
-* Abuse of LLM-integrated APIs
-* Misconfigured AI deployments
-* Supply chain vulnerabilities
-
-Includes experimental environments for testing real-world AI attack surfaces.
+- Prompt injection testing
+- Context manipulation attacks
+- Data leakage scenarios
+- Misconfigured LLM integrations
+- AI-enabled attack surface analysis
 
 ---
 
 ## Quick Start
 
-```bash
-git clone https://github.com/solo2121/sysadmin-security-lab.git
+```
+
+git clone [https://github.com/solo2121/sysadmin-security-lab.git](https://github.com/solo2121/sysadmin-security-lab.git)
 cd sysadmin-security-lab
+
 ```
 
 Install dependencies:
 
-```bash
+```
+
 sudo apt update
 sudo apt install qemu-kvm libvirt-daemon-system virt-manager vagrant -y
+
 ```
 
-Validate setup:
+Validate environment:
 
-```bash
+```
+
 vagrant up
 vagrant status
+
 ```
 
-Example (Kubernetes validation):
+Example validation:
 
-```bash
+```
+
 kubectl get nodes
-```
 
-See [`INSTALLATION.md`](INSTALLATION.md) for full setup instructions.
+```
 
 ---
 
 ## Running Labs
 
-```bash
-cd labs/security/ad-pentest
-vagrant up
 ```
 
-Each lab includes setup steps, architecture overview, execution guidance, and troubleshooting.
+cd labs/security/ad-pentest
+vagrant up
+
+```
+
+Each lab includes:
+
+- Setup instructions
+- Architecture documentation
+- Execution workflow
+- Troubleshooting guides
 
 ---
 
 ## Learning Path
 
-Follow this progression:
+Recommended progression:
 
-1. Linux fundamentals
-2. Virtualization and networking
-3. Infrastructure as Code (Ansible, Terraform)
-4. Kubernetes and containers
-5. Active Directory security
-6. Privilege escalation and persistence
+1. Linux systems administration
+2. Virtualization and networking fundamentals
+3. Infrastructure automation (Ansible, Terraform)
+4. Kubernetes and container orchestration
+5. Active Directory security and attack simulation
+6. Privilege escalation and persistence techniques
 7. AI / LLM security testing
-
----
-
-## Repository Structure
-
-```text
-sysadmin-security-lab/
-├── docs/
-│   ├── ARCHITECTURE.md
-│   ├── SECURITY-SCOPE.md
-│   └── WORKFLOWS.md
-│
-├── labs/
-│   ├── infrastructure/
-│   ├── security/
-│   └── README.md
-│
-├── security/
-├── sysadmin/
-├── tutorials/
-├── assets/
-├── LICENSE
-├── CONTRIBUTING.md
-├── INSTALLATION.md
-├── TROUBLESHOOTING.md
-├── SECURITY.md
-└── README.md
-```
 
 ---
 
 ## Documentation
 
 | Document | Purpose |
-|----------|----------|
-| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Design and structure |
-| [`docs/SECURITY-SCOPE.md`](docs/SECURITY-SCOPE.md) | Authorized use |
-| [`CONTRIBUTING.md`](CONTRIBUTING.md) | Contribution guidelines |
-| [`INSTALLATION.md`](INSTALLATION.md) | Setup instructions |
-| [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md) | Fixes |
-| [`SECURITY.md`](SECURITY.md) | Vulnerability reporting |
+|----------|--------|
+| docs/ARCHITECTURE.md | System design and architecture |
+| docs/SECURITY-SCOPE.md | Authorized usage boundaries |
+| INSTALLATION.md | Setup instructions |
+| TROUBLESHOOTING.md | Issue resolution |
+| CONTRIBUTING.md | Contribution guidelines |
 
 ---
 
@@ -308,30 +276,24 @@ sysadmin-security-lab/
 
 Contributions are welcome.
 
-* Review architecture and structure
-* Follow contribution guidelines
-* Ensure security scope compliance
+Please ensure:
 
-Submit pull requests that:
-
-* Add labs or tools with documentation
-* Improve existing components
-* Fix bugs or issues
-* Enhance documentation
+- Changes align with lab architecture
+- Security scope is respected
+- Documentation is included for new features
 
 ---
 
 ## License
 
-This project is licensed under the **MIT License**.
+This project is licensed under the MIT License.
 
-See [`LICENSE`](LICENSE) for details.
+See LICENSE for details.
 
 ---
 
-## Support
+## Disclaimer
 
-* Check GitHub Issues
-* Review troubleshooting docs
-* Consult lab documentation
-* Report security issues via [`SECURITY.md`](SECURITY.md)
+This repository is intended for educational and security research purposes only.
+All testing must be performed in isolated environments you control.
+```
