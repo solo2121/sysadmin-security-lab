@@ -1,0 +1,74 @@
+.
+├── assets/
+├── docs
+│   ├── archive
+│   │   └── reference
+│   │       ├── Apparmor.md
+│   │       ├── Complete-Git-Tutorial.md
+│   │       └── Complete-Pacstall-Tutorial.md
+│   ├── guides
+│   │   ├── infrastructure
+│   │   │   └── Complete-DevOps-Platform-Guide.md
+│   │   └── security
+│   │       └── AD-MITRE-log-source-playbook.md
+│   ├── meta
+│   │   └── current-structure.txt
+│   ├── ARCHITECTURE.md
+│   ├── SECURITY-SCOPE.md
+│   └── WORKFLOWS.md
+├── labs
+│   ├── infrastructure
+│   │   └── devops-linux-lab
+│   └── security
+│       ├── ad-pentest
+│       └── ad-pentest-vlan
+├── security
+│   ├── audit
+│   │   ├── cisco-switch-audit.py
+│   │   └── llm-security-validator.py
+│   ├── exploitation
+│   │   ├── exploit.py
+│   │   └── sql-injection.py
+│   ├── network
+│   │   ├── ettercap-menu.py
+│   │   ├── firewall-scan.sh
+│   │   ├── scapy-port-scan.py
+│   │   └── tcpdump-wrapper.py
+│   ├── reconnaissance
+│   │   ├── amass-scan.py
+│   │   ├── nmap-menu.py
+│   │   └── port-scanner.py
+│   └── wireless
+│       └── evil-twin.py
+├── sysadmin
+│   ├── automation
+│   │   ├── pacstall-maintenance.sh
+│   │   └── rhino-update.sh
+│   ├── monitoring
+│   │   ├── log-analyzer.sh
+│   │   ├── sec-monitor.sh
+│   │   └── system-monitor.sh
+│   ├── security
+│   │   ├── clam-scan.sh
+│   │   ├── linaudit.sh
+│   │   ├── network-audit.sh
+│   │   ├── rootkit-scan.sh
+│   │   └── user-audit.sh
+│   └── utilities
+│       ├── bind-manager.sh
+│       ├── free-mem.sh
+│       ├── git-management.sh
+│       ├── remove-subtitles.sh
+│       ├── timeshift-manager.sh
+│       └── ufw-manager.sh
+├── CHANGELOG.md
+├── CODE_OF_CONDUCT.md
+├── CONTRIBUTING.md
+├── INSTALLATION.md
+├── LICENSE
+├── README.md
+├── requirements-dev.txt
+├── SECURITY.md
+└── TROUBLESHOOTING.md
+
+33 directories, 102 files

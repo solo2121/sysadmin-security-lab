@@ -2,6 +2,10 @@
 # These tools are for code quality, linting, and documentation generation.
 # Lab runtime dependencies are found in labs/security/*/requirements.txt.
 
+# Sysadmin Security Lab - Development Environment Requirements
+# These tools are for code quality, linting, and documentation generation.
+# Lab runtime dependencies are found in labs/security/*/requirements.txt.
+
 # Core dependencies
 ansible>=2.9.0
 ansible-lint>=6.0.0
