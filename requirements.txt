@@ -14,7 +14,7 @@ pytest>=7.0.0
 pytest-cov>=3.0.0
 
 # Terraform/IaC
-hcl2>=3.0.0
+python-hcl2>=3.0.0
 
 # Vagrant/VM management
 pexpect>=4.8.0
@@ -36,9 +36,5 @@ sphinx-markdown-tables>=0.0.15
 bandit>=1.7.0
 safety>=2.0.0
 
-# Linting
-shellcheck>=1.1.0
-
 # Optional: For advanced scenarios
-paramiko>=2.11.0
 cryptography>=38.0.0
