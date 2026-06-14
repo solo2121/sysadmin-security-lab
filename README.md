@@ -74,7 +74,7 @@ vagrant status
 .
 ├── docs/               # Architecture, workflows, and detailed guides
 ├── labs/               # Enterprise-grade lab environments (Vagrant/KVM)
-├── security/           # Phase-based security tooling (Audit, Network, Recon)
+├── security/           # Phase-based security tooling (Audit, Network, Recon, Exploitation)
 ├── sysadmin/           # Platform automation and monitoring
 ├── CHANGELOG.md        # Project history
 ├── CODE_OF_CONDUCT.md  # Community standards
