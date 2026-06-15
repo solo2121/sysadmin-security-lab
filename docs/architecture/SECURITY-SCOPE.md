@@ -96,7 +96,7 @@ Before running any lab, ensure:
 
 ---
 
-## Content Warnings
+## Security Warnings
 
 ### Active Directory Attacks Lab
 ```
