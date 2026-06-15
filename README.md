@@ -247,6 +247,5 @@ Unauthorized testing against third-party systems is strictly prohibited.
 ## License
 
 MIT License
-Author: Miguel A. Carlo
 
-```
+Author: Miguel A. Carlo
