@@ -2,7 +2,7 @@
 
 This directory contains standalone security scripts and experiments for authorized lab use. The tools support reconnaissance, network analysis, detection engineering, wireless lab practice, and intentionally vulnerable security-testing workflows.
 
-Use these tools only in systems and lab networks you own or are explicitly authorized to test. For project-wide boundaries, read [`../docs/SECURITY-SCOPE.md`](../docs/SECURITY-SCOPE.md).
+Use these tools only in systems and lab networks you own or are explicitly authorized to test. For project-wide boundaries, read [`../docs/architecture/SECURITY-SCOPE.md`](../docs/architecture/SECURITY-SCOPE.md).
 
 ---
 
@@ -10,11 +10,11 @@ Use these tools only in systems and lab networks you own or are explicitly autho
 
 | Directory | Contents |
 |-----------|----------|
-| [`detection-engineering/`](detection-engineering/) | LLM security scanner, validator, and Cisco switch audit tooling |
-| [`network-security-analysis/`](network-security-analysis/) | Firewall scan wrapper, Scapy port scanner, tcpdump wrapper, Ettercap menu |
-| [`security-testing-lab/`](security-testing-lab/) | Educational exploit, SQL injection, and hashcat assistant scripts |
-| [`threat-reconnaissance/`](threat-reconnaissance/) | Amass, nmap, and port-scanning helpers |
-| [`wireless-security-lab/`](wireless-security-lab/) | Wireless lab tooling, including evil-twin experimentation |
+| [`audit/`](audit/) | LLM security scanner, validator, and Cisco switch audit tooling |
+| [`network/`](network/) | Firewall scan wrapper, Scapy port scanner, tcpdump wrapper, Ettercap menu |
+| [`exploitation/`](exploitation/) | Educational exploit, SQL injection, and hashcat assistant scripts |
+| [`reconnaissance/`](reconnaissance/) | Amass, nmap, and port-scanning helpers |
+| [`wireless/`](wireless/) | Wireless lab tooling including evil-twin experimentation |
 
 ---
 
@@ -37,8 +37,8 @@ python3 port-scanner.py
 ```
 
 ```bash
-cd security/network-security-analysis
-./firewall_scan.sh
+cd security/network
+./firewall-scan.sh
 ```
 
 Check each script before execution and confirm the target is within your authorized lab scope.
@@ -59,4 +59,4 @@ Check each script before execution and confirm the target is within your authori
 
 - [`../labs/security/ad-pentest/`](../labs/security/ad-pentest/)
 - [`../labs/security/ad-pentest-vlan/`](../labs/security/ad-pentest-vlan/)
-- [`../docs/SECURITY-SCOPE.md`](../docs/SECURITY-SCOPE.md)
+- [`../docs/architecture/SECURITY-SCOPE.md`](../docs/architecture/SECURITY-SCOPE.md)
