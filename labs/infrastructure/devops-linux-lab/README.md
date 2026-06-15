@@ -84,12 +84,12 @@ Optional VM manager:
 
 ## Access
 
-| Service    | URL                   |
-| ---------- | --------------------- |
-| Jenkins    | http://localhost:8080 |
-| Grafana    | http://localhost:3000 |
-| Prometheus | http://localhost:9090 |
-| ArgoCD     | http://localhost:8081 |
+| Service    | URL                   | Credentials (User/Pass) |
+| ---------- | --------------------- | ----------------------- |
+| Jenkins    | http://localhost:8080 | admin / admin123        |
+| Grafana    | http://localhost:3000 | admin / admin           |
+| Prometheus | http://localhost:9090 | N/A (Public Read)       |
+| ArgoCD     | http://localhost:8081 | admin / (See `argocd initial-admin-secret`) |
 
 ---
 
@@ -132,6 +132,14 @@ kubectl get nodes
 
 ---
 
+## Monitoring Access
+
+To verify the monitoring stack is receiving data from nodes:
+
+```bash
+curl http://localhost:9090/api/v1/targets
+```
+
 ## DevOps Workflow
 
 1. Terraform provisions infrastructure
@@ -141,6 +149,31 @@ kubectl get nodes
 5. Helm deploys applications
 6. ArgoCD manages GitOps
 7. Monitoring stack observes system
+
+---
+
+## Troubleshooting
+
+| Symptom | Probable Cause | Resolution |
+|---------|----------------|------------|
+| `vagrant up` fails | Libvirt bridge conflict | `virsh net-destroy default && virsh net-start default` |
+| Nodes not joining K3s | Token mismatch | Check `/var/lib/rancher/k3s/server/node-token` on cp node |
+| Storage errors | Host disk space | Ensure 50GB+ free space on host |
+| Ansible fails | SSH key not shared | Run `vagrant ssh-config` to verify connectivity |
+
+---
+
+## Cleanup and Teardown
+
+To stop the lab and save resources:
+```bash
+vagrant halt
+```
+
+To completely remove the lab and associated disks:
+```bash
+vagrant destroy -f
+```
 
 ---
 

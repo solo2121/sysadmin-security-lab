@@ -1,7 +1,5 @@
 # Portfolio Index
 
-> Click map for engineers and recruiters. Each section links to the relevant lab, tooling, or documentation.
-
 **Status:** Active &nbsp;|&nbsp; **Last Updated:** 2026-05-29
 
 ---
@@ -20,10 +18,21 @@
 
 | Component | Path | Purpose |
 |---|---|---|
-| Threat Reconnaissance | `security/threat-reconnaissance/` | Nmap automation, surface enumeration |
-| Network Security Analysis | `security/network-security-analysis/` | Traffic analysis, topology mapping |
-| Detection Engineering | `security/detection-engineering/` | MITRE-aligned detection rules, log pipelines |
-| Security Testing Lab | `security/security-testing-lab/` | Offensive tooling and post-exploitation workflows |
+| Reconnaissance | `security/reconnaissance/` | Nmap automation, surface enumeration |
+| Network Analysis | `security/network/` | Traffic analysis, topology mapping |
+| Detection Engineering | `security/detection/` | MITRE-aligned detection rules, log pipelines |
+| Security Testing | `security/testing/` | Offensive tooling and post-exploitation workflows |
+
+---
+
+## Certification Mapping
+
+| Certification | Covered Techniques | Lab Environment |
+|---|---|---|
+| **OSCP** | Initial Access, Enumeration, Buffer Overflows | `labs/security/ad-pentest` |
+| **OSEP / CRTO** | AD CS (ESC1-8), Kerberos Delegation, Lateral Movement | `labs/security/ad-pentest-vlan` |
+| **PNPT** | External Recon, OSINT, AD Attack Chains | `labs/security/ad-pentest` |
+| **CKA / CKS** | Kubernetes Hardening, RBAC, Network Policies | `labs/infrastructure/devops-linux-lab` |
 
 ---
 
@@ -50,6 +59,12 @@
 - Automated Nmap scanning with structured output parsing
 - Multi-subnet VLAN segmentation and inter-VLAN traffic inspection
 - Enterprise network topology mapping and service fingerprinting
+
+### AI / LLM Security
+- Prompt injection testing against instrumented LLM integrations
+- Context manipulation and data leakage scenario modeling
+- Misconfigured AI deployment attack surface analysis
+- RAG poisoning and training data extraction simulations
 
 ### AI / LLM Security
 - Prompt injection testing against instrumented LLM integrations
