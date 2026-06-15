@@ -1,4 +1,3 @@
-````md
 # Sysadmin Security Lab
 
 A reproducible DevSecOps and security engineering lab for simulating Active Directory attacks, building detection pipelines, and automating infrastructure using virtualization and infrastructure-as-code tools.
