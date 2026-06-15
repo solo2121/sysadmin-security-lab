@@ -234,7 +234,7 @@ cd sysadmin-security-lab
 pip install -r requirements-dev.txt
 ```
 
-> If `requirements.txt` does not exist, dependencies are managed through Vagrant provisioning.
+> If `requirements-dev.txt` does not exist, dependencies are managed through Vagrant provisioning.
 
 ---
 
