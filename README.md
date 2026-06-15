@@ -1,8 +1,3 @@
-Here is your **fully cleaned, professional, copy-paste ready README.md** using the best structure, consistent formatting, and proper GitHub-native links (Option A style). I also removed redundancy and tightened language so it reads like a serious DevSecOps / Security Engineering portfolio.
-
----
-
-````md
 # Sysadmin Security Lab
 
 A modular Sysadmin, Security, DevOps, and DevSecOps laboratory environment for building, testing, automating, and securing enterprise infrastructure.
