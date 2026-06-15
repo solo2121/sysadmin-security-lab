@@ -6,19 +6,33 @@ A reproducible DevSecOps and security engineering lab for simulating Active Dire
 
 ## Overview
 
-This project is a modular security lab environment designed to replicate enterprise infrastructure for:
+This project is a modular security lab environment designed to replicate enterprise infrastructure for hands-on security engineering.
+
+It enables:
 
 - Active Directory attack simulation and defense
 - Detection engineering aligned with MITRE ATT&CK
-- Infrastructure automation and reproducible lab deployment
-- Security monitoring and observability
-- DevSecOps pipeline experimentation
+- Infrastructure automation using reproducible environments
+- Security monitoring and observability pipelines
+- DevSecOps workflow experimentation
 
-It is built for hands-on security research, blue team detection engineering, and offensive security validation in a controlled environment.
+This lab is designed for security research, blue team detection engineering, and offensive security validation in isolated environments.
 
 **Maintained by:** solo2121  
 **Status:** Active  
 **Last Updated:** 2026-06-15  
+
+---
+
+## Quick Navigation
+
+### Core Documentation
+
+- [Portfolio Index](docs/PORTFOLIO.md)
+- [Architecture Design](docs/architecture/ARCHITECTURE.md)
+- [Security Scope](docs/architecture/SECURITY-SCOPE.md)
+- [Installation Guide](INSTALLATION.md)
+- [Project Changelog](CHANGELOG.md)
 
 ---
 
@@ -34,7 +48,7 @@ It is built for hands-on security research, blue team detection engineering, and
 
 ---
 
-## Architecture
+## Architecture Overview
 
 ```text
 [ Attacker VM ]
@@ -114,23 +128,23 @@ vagrant status
 
 ```text
 docs/               Technical documentation and architecture
-labs/               Lab environments (attack & defense scenarios)
-security/           Offensive & defensive security tooling
-sysadmin/           Infrastructure automation scripts
-assets/             Supporting resources and documentation
+labs/               Security and infrastructure lab environments
+security/           Offensive and defensive security tooling
+sysadmin/           System administration and automation tools
+assets/             Supporting resources and branding
 ```
 
 ---
 
-## Documentation
+## Documentation Hub
 
-| Resource          | Description                       |
-| ----------------- | --------------------------------- |
-| PORTFOLIO.md      | Lab index and technical breakdown |
-| ARCHITECTURE.md   | Infrastructure design model       |
-| SECURITY-SCOPE.md | Security boundaries and rules     |
-| INSTALLATION.md   | Setup and deployment guide        |
-| CHANGELOG.md      | Project history                   |
+| Document                                                 | Description                                 |
+| -------------------------------------------------------- | ------------------------------------------- |
+| [Portfolio Index](docs/PORTFOLIO.md)                     | Full lab index and technical breakdown      |
+| [Architecture Design](docs/architecture/ARCHITECTURE.md) | Infrastructure design model                 |
+| [Security Scope](docs/architecture/SECURITY-SCOPE.md)    | Security boundaries and rules of engagement |
+| [Installation Guide](INSTALLATION.md)                    | Setup and deployment guide                  |
+| [Project Changelog](CHANGELOG.md)                        | Project history and updates                 |
 
 ---
 
@@ -149,5 +163,3 @@ Unauthorized access or testing against real systems is strictly prohibited.
 MIT License
 
 ```
-
----
