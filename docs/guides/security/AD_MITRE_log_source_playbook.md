@@ -16,7 +16,7 @@ Each phase contains:
 
 Students cannot advance without explaining what a defender would see.
 
-# MITRE ATT&CK LOG SOURCE DETECTION MATRIX (ACTIVE DIRECTORY)
+# MITRE ATT&CK LOG SOURCE DETECTION MATRIX
 
 ## Purpose
 
