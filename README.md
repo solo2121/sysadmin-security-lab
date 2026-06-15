@@ -63,7 +63,7 @@ vagrant status
 ├── sysadmin/           # Platform automation and monitoring
 ├── CHANGELOG.md        # Project history
 ├── CODE_OF_CONDUCT.md  # Community standards
-└── requirements.txt    # Dev environment dependencies (linting, docs)
+└── requirements-dev.txt # Dev environment dependencies (linting, docs)
 ```
 
 ## Documentation Index

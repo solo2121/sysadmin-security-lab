@@ -35,7 +35,7 @@ cd sysadmin/monitoring
 
 ```bash
 cd sysadmin/system-hardening
-./network_audit.sh
+./network-audit.sh
 ```
 
 Some scripts may require elevated privileges because they inspect logs, packages, firewall state, users, or system services.
