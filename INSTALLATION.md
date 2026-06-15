@@ -231,7 +231,7 @@ cd sysadmin-security-lab
 ### Install Python Dependencies (If Applicable)
 
 ```bash
-pip install -r requirements.txt
+pip install -r requirements-dev.txt
 ```
 
 > If `requirements.txt` does not exist, dependencies are managed through Vagrant provisioning.

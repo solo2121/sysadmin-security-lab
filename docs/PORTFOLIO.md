@@ -60,17 +60,6 @@
 - Multi-subnet VLAN segmentation and inter-VLAN traffic inspection
 - Enterprise network topology mapping and service fingerprinting
 
-### AI / LLM Security
-- Prompt injection testing against instrumented LLM integrations
-- Context manipulation and data leakage scenario modeling
-- Misconfigured AI deployment attack surface analysis
-- RAG poisoning and training data extraction simulations
-
-### AI / LLM Security
-- Prompt injection testing against instrumented LLM integrations
-- Context manipulation and data leakage scenario modeling
-- Misconfigured AI deployment attack surface analysis
-
 ---
 
 ## Documentation
