@@ -140,6 +140,13 @@ push_changes() {
     local current_branch
     current_branch=$(git branch --show-current)
     
+    # Safety check for protected branches
+    if [[ "$current_branch" == "main" || "$current_branch" == "master" ]]; then
+        printf "Warning: You are attempting to push directly to the protected branch '%s'.\\n" "$current_branch"
+        read -rp "Are you sure you want to continue? (y/n): " proceed
+        [[ "$proceed" =~ ^[yY] ]] || return 1
+    fi
+
     printf "\\nPushing changes to remote repository...\\n"
     read -rp "Push to branch '$current_branch'? (y/n): " confirm
     

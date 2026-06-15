@@ -1,6 +1,6 @@
 # Security & Authorized Use Scope
 
-## ⚖️ Legal & Ethical Framework
+## Legal & Ethical Framework
 
 This repository contains **educational security content** — offensive and defensive techniques for learning purposes only.
 
@@ -8,7 +8,7 @@ This repository contains **educational security content** — offensive and defe
 
 ---
 
-## ✅ Authorized Uses
+## Authorized Uses
 
 ### Personal Learning
 - Running labs on your own hardware or VMs
@@ -30,73 +30,73 @@ This repository contains **educational security content** — offensive and defe
 
 ---
 
-## ❌ Prohibited Uses
+## Prohibited Uses
 
 ### Illegal Activity
-- ❌ Unauthorized access to any system or network
-- ❌ Credential theft or privilege escalation on systems you don't own
-- ❌ Denial of service attacks
-- ❌ Data exfiltration or privacy violations
-- ❌ Creating ransomware or destructive payloads
+ - Unauthorized access to any system or network
+ - Credential theft or privilege escalation on systems you don't own
+ - Denial of service attacks
+ - Data exfiltration or privacy violations
+ - Creating ransomware or destructive payloads
 
 ### Unethical Testing
-- ❌ Testing third-party systems without explicit written permission
-- ❌ Social engineering individuals without authorization
-- ❌ Exposing vulnerabilities publicly (without coordinated disclosure)
-- ❌ Circumventing access controls on shared infrastructure
+ - Testing third-party systems without explicit written permission
+ - Social engineering individuals without authorization
+ - Exposing vulnerabilities publicly (without coordinated disclosure)
+ - Circumventing access controls on shared infrastructure
 
 ---
 
-## 🔐 Lab Environment Boundaries
+## Lab Environment Boundaries
 
 ### Content Included
 
 | Category | Included | Notes |
 |----------|----------|-------|
-| **AD Attacks** | ✅ Yes | Kerberos, SMB relay, lateral movement — lab environment only |
-| **Network Exploitation** | ✅ Yes | VLAN hopping, ARP spoofing — isolated network labs only |
-| **Credential Attacks** | ✅ Yes | Brute force, hash cracking — dictionary attacks, not rainbow tables |
-| **Web Exploitation** | ✅ Yes | SQL injection, XSS — vulnerable test apps only |
-| **Post-Exploitation** | ✅ Yes | Persistence, privilege escalation — lab VMs only |
-| **Wireless Testing** | ⚠️ Limited | WPA2 cracking in controlled labs only; never on public networks |
+| **AD Attacks** | Yes | Kerberos, SMB relay, lateral movement — lab environment only |
+| **Network Exploitation** | Yes | VLAN hopping, ARP spoofing — isolated network labs only |
+| **Credential Attacks** | Yes | Brute force, hash cracking — dictionary attacks, not rainbow tables |
+| **Web Exploitation** | Yes | SQL injection, XSS — vulnerable test apps only |
+| **Post-Exploitation** | Yes | Persistence, privilege escalation — lab VMs only |
+| **Wireless Testing** | Limited | WPA2 cracking in controlled labs only; never on public networks |
 
 ### Content NOT Included
 
 | Category | Excluded | Reason |
 |----------|----------|--------|
-| Malware samples | ❌ No | Dangerous; use VirusTotal or malware sandboxes instead |
-| Zero-day exploits | ❌ No | Unpatched vulnerabilities are out of scope |
-| Worms / self-replicating code | ❌ No | Too dangerous for educational distribution |
-| Backdoored applications | ❌ No | Supply chain attacks require responsible disclosure |
-| Keyloggers / spyware | ❌ No | Surveillance tools forbidden |
+| Malware samples | No | Dangerous; use VirusTotal or malware sandboxes instead |
+| Zero-day exploits | No | Unpatched vulnerabilities are out of scope |
+| Worms / self-replicating code | No | Too dangerous for educational distribution |
+| Backdoored applications | No | Supply chain attacks require responsible disclosure |
+| Keyloggers / spyware | No | Surveillance tools forbidden |
 
 ---
 
-## 🛡️ Lab Isolation Requirements
+## Lab Isolation Requirements
 
 Before running any lab, ensure:
 
 ### Network Isolation
-- ✅ Lab VMs are on isolated virtual networks (Libvirt / Vagrant networks only)
-- ✅ No connection to corporate or shared networks
-- ✅ Lab network is NOT bridged to production infrastructure
-- ✅ Host system is protected by firewall when labs are running
+ - Lab VMs are on isolated virtual networks (Libvirt / Vagrant networks only)
+ - No connection to corporate or shared networks
+ - Lab network is NOT bridged to production infrastructure
+ - Host system is protected by firewall when labs are running
 
 ### Credential Management
-- ✅ No production credentials stored in lab files
-- ✅ Lab credentials are weak/throwaway (only for lab VMs)
-- ✅ `.env` files are in `.gitignore` (never commit secrets)
-- ✅ Use `ansible-vault` for sensitive playbook data
+ - No production credentials stored in lab files
+ - Lab credentials are weak/throwaway (only for lab VMs)
+ - `.env` files are in `.gitignore` (never commit secrets)
+ - Use `ansible-vault` for sensitive playbook data
 
 ### Access Control
-- ✅ Only authorized users (you) can access lab VMs
-- ✅ Lab VMs cannot be exposed to the internet
-- ✅ SSH keys for labs are local to your machine only
-- ✅ Lab data is encrypted at rest if stored on encrypted volumes
+ - Only authorized users (you) can access lab VMs
+ - Lab VMs cannot be exposed to the internet
+ - SSH keys for labs are local to your machine only
+ - Lab data is encrypted at rest if stored on encrypted volumes
 
 ---
 
-## 🚨 Content Warnings
+## Content Warnings
 
 ### Active Directory Attacks Lab
 ```
@@ -232,4 +232,3 @@ By using this repository, you acknowledge:
 - You will use this content ethically and legally
 - You take responsibility for your actions
 - You will report security issues responsibly
-
