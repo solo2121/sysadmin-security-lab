@@ -24,18 +24,6 @@ This lab is designed for security research, blue team detection engineering, and
 
 ---
 
-## Quick Navigation
-
-### Core Documentation
-
-- [Portfolio Index](docs/PORTFOLIO.md)
-- [Architecture Design](docs/architecture/ARCHITECTURE.md)
-- [Security Scope](docs/architecture/SECURITY-SCOPE.md)
-- [Installation Guide](INSTALLATION.md)
-- [Project Changelog](CHANGELOG.md)
-
----
-
 ## Core Domains
 
 - Active Directory security (Kerberos, LDAP, AD CS attack paths)
@@ -161,5 +149,3 @@ Unauthorized access or testing against real systems is strictly prohibited.
 ## License
 
 MIT License
-
-```
