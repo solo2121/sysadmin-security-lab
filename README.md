@@ -7,6 +7,7 @@
 ![Top Language](https://img.shields.io/github/languages/top/solo2121/sysadmin-security-lab)
 ![Repo Size](https://img.shields.io/github/repo-size/solo2121/sysadmin-security-lab)
 ![Stars](https://img.shields.io/github/stars/solo2121/sysadmin-security-lab?style=social)
+![Issues](https://img.shields.io/github/issues/solo2121/sysadmin-security-lab)
 
 </p>
 
@@ -14,58 +15,81 @@
 
 ## Overview
 
-A modular DevSecOps and security engineering lab simulating enterprise-grade infrastructure for offensive security, detection engineering, and infrastructure automation practice.
+A modular **DevSecOps, DevOps, and security engineering lab** designed to simulate enterprise-grade infrastructure for penetration testing, detection engineering, and infrastructure automation.
 
-Maintained by: **solo2121**  
-Status: Active  
-Last Updated: 2026-06-15
+This repository demonstrates real-world engineering capability across offensive and defensive security domains.
+
+**Maintained by:** solo2121  
+**Status:** Active  
+**Last Updated:** 2026-06-15  
 
 ---
 
 ## What This Project Is
 
-This repository is a hands-on, reproducible security lab designed to simulate real enterprise environments for learning and research.
+This is a production-style security lab environment that replicates real enterprise infrastructure for hands-on security engineering practice.
 
-It focuses on:
+It is designed to demonstrate:
 
-- Infrastructure automation and provisioning
-- Active Directory attack and defense simulation
+- Realistic Active Directory attack and defense scenarios
+- Infrastructure automation and reproducible environments
 - Detection engineering aligned with MITRE ATT&CK
 - Network segmentation and traffic analysis
-- DevSecOps pipelines and observability
-- AI / LLM security research
+- DevSecOps pipelines and infrastructure provisioning
+- Observability and security monitoring systems
 
 ---
 
 ## Core Domains
 
 - Active Directory security (Kerberos, LDAP, AD CS attack paths)
-- DevSecOps infrastructure (Vagrant, KVM/QEMU, Ansible, Terraform)
-- Detection engineering and security telemetry
-- Network security and VLAN-based segmentation
-- Monitoring stacks (Prometheus, Grafana, Loki)
-- AI / LLM security experimentation
+- Penetration testing and attack simulation
+- DevOps / DevSecOps automation (Vagrant, KVM/QEMU, Ansible, Terraform)
+- Detection engineering and log analysis (MITRE ATT&CK mapping)
+- Network security and segmentation (VLANs, isolated lab environments)
+- Monitoring and observability (Prometheus, Grafana, Loki)
 
 ---
 
 ## Key Highlights
 
-- Full attack chain simulation: ESC8 → NTLM relay → domain compromise
-- Multi-VM enterprise environments using Vagrant + KVM/QEMU
+- Full enterprise attack chain simulation (ESC8 → NTLM relay → domain compromise)
+- Multi-node reproducible lab environments using Vagrant + KVM/QEMU
 - Detection rules mapped to MITRE ATT&CK techniques
-- Isolated network segmentation with traffic inspection
-- Kubernetes-based observability stack (Prometheus, Grafana, Loki)
+- Isolated network architecture with full traffic visibility
+- Infrastructure monitoring stack with Prometheus, Grafana, and Loki
+- Designed for repeatable security research and training
+
+---
+
+## Architecture Overview
+
+```text
+                 [ Attacker VM ]
+                        |
+                        v
+        -----------------------------------
+        |        Isolated Lab Network     |
+        -----------------------------------
+             |                  |
+     [ Domain Controller ]  [ Member Servers ]
+             |                  |
+             ------ Logging / Monitoring ------
+                        |
+        [ Grafana / Prometheus / Loki Stack ]
+```
 
 ---
 
 ## Quick Start
 
-**Requirements:** Linux host with KVM support, 16 GB+ RAM recommended
 ### Requirements
 
-- Linux host with KVM support
-- 16GB+ RAM (32GB recommended)
-- Vagrant + libvirt
+* Linux host with KVM support
+* 16 GB RAM minimum (32 GB recommended)
+* Vagrant + libvirt
+
+---
 
 ### Installation
 
@@ -78,10 +102,11 @@ sudo apt update && sudo apt install -y qemu-kvm libvirt-daemon-system virt-manag
 vagrant plugin install vagrant-libvirt vagrant-reload vagrant-winrm
 ```
 
-# Start a specific lab
+---
+
 ### Run a Lab
 
-```bash
+```bash id="run"
 cd labs/security/ad-pentest
 vagrant up dc01
 vagrant status
@@ -89,63 +114,46 @@ vagrant status
 
 ---
 
-## Navigate This Repo
-
-→ **[PORTFOLIO.md](docs/PORTFOLIO.md)** — full lab index, techniques, and documentation map.
-
 ## Repository Structure
 
-```text
+```text id="structure"
 .
-├── docs/               # Architecture, workflows, and detailed guides
-├── labs/               # Enterprise-grade lab environments
-├── security/           # Phase-based security tooling (Audit, Network, Recon, Exploitation)
-├── sysadmin/           # Platform automation and monitoring
-├── docs/               # Architecture, workflows, and technical guides
-├── labs/               # Enterprise security lab environments
-├── security/           # Offensive, defensive, and audit tooling
+├── docs/               # Architecture and technical documentation
+├── labs/               # Security lab environments
+├── security/           # Offensive and defensive tooling
 ├── sysadmin/           # Automation and infrastructure tools
-├── assets/             # Supporting documentation and references
-├── CHANGELOG.md        # Project history
-├── CODE_OF_CONDUCT.md  # Community standards
-└── requirements-dev.txt # Dev environment dependencies (linting, docs)
-├── CONTRIBUTING.md     # Contribution workflow rules
+├── assets/             # Supporting documentation and resources
+├── CHANGELOG.md        # Project history and updates
+├── CONTRIBUTING.md     # Contribution workflow and standards
 └── requirements-dev.txt# Development dependencies
 ```
 
-## Documentation Index
 ---
 
-| Resource | Description |
-|----------|-------------|
-| [ARCHITECTURE.md](docs/architecture/ARCHITECTURE.md) | High-level system design and directory map |
-| [SECURITY-SCOPE.md](docs/architecture/SECURITY-SCOPE.md) | Critical safety boundaries and authorized use policy |
-| [INSTALLATION.md](INSTALLATION.md) | Full environment setup (KVM, Vagrant, Libvirt) |
-| [CHANGELOG.md](CHANGELOG.md) | Version history and latest updates |
 ## Documentation
 
 | Resource                                                 | Description                                 |
 | -------------------------------------------------------- | ------------------------------------------- |
 | [PORTFOLIO.md](docs/PORTFOLIO.md)                        | Full lab index and technical breakdown      |
-| [ARCHITECTURE.md](docs/architecture/ARCHITECTURE.md)     | System architecture and design              |
+| [ARCHITECTURE.md](docs/architecture/ARCHITECTURE.md)     | System design and infrastructure model      |
 | [SECURITY-SCOPE.md](docs/architecture/SECURITY-SCOPE.md) | Security boundaries and rules of engagement |
-| [INSTALLATION.md](INSTALLATION.md)                       | Full environment setup guide                |
-| [CHANGELOG.md](CHANGELOG.md)                             | Project updates and history                 |
+| [INSTALLATION.md](INSTALLATION.md)                       | Full setup guide                            |
+| [CHANGELOG.md](CHANGELOG.md)                             | Project history and updates                 |
 
 ---
 
-## License & Disclaimer
 ## Security & Ethics
 
-Licensed under the [MIT License](LICENSE). All testing must be performed in isolated environments you own and control. Do not use any tooling from this project against systems without explicit written authorization.
 This project is strictly for educational and authorized security research purposes.
 
-All testing must be performed in isolated environments that you own or have explicit permission to use.
+All testing must be performed only in environments you own or have explicit permission to use.
 
-Unauthorized use against real systems is strictly prohibited.
+Unauthorized access or testing against real systems is strictly prohibited.
 
 ---
 
 ## License
 
 Licensed under the MIT License.
+
+```
