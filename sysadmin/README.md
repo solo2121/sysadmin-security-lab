@@ -9,7 +9,6 @@ This directory contains Linux administration scripts for maintenance, monitoring
 | Directory | Contents |
 |-----------|----------|
 | [`automation/`](automation/) | System update, Rhino Linux, and Pacstall maintenance helpers |
-| [`git/`](git/) | Git management helper script |
 | [`monitoring/`](monitoring/) | System monitor, security monitor, and log analyzer scripts |
 | [`system-hardening/`](system-hardening/) | Linux audit, user audit, network audit, ClamAV, and rootkit scan helpers |
 | [`utilities/`](utilities/) | Timeshift, UFW, BIND, memory cleanup, and subtitle-removal utilities |
@@ -31,7 +30,7 @@ Review scripts before running them, then execute from the repository root or the
 
 ```bash
 cd sysadmin/monitoring
-./system_monitor.sh
+./system-monitor.sh
 ```
 
 ```bash
