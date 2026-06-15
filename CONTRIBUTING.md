@@ -31,14 +31,17 @@ We appreciate your interest in helping improve this project.
 
 ### Code Contributions
 
-1. Fork the repository
-2. Create a descriptive branch name:
-   - `feat/` for new features
-   - `fix/` for bug fixes
-   - `docs/` for documentation updates
-3. Commit your changes
-4. Push to your fork
-5. Open a pull request
+Professional contributions must follow the Feature Branch Workflow. Direct pushes to the `main` branch are discouraged to ensure repository stability.
+
+1.  **Branch:** Create a descriptive branch from `main`:
+    - `feat/feature-name` (New functionality)
+    - `fix/issue-description` (Bug fixes)
+    - `docs/update-description` (Documentation improvements)
+2.  **Develop:** Apply changes and verify locally.
+3.  **Commit:** Use conventional commit messages (`type(scope): description`).
+4.  **Push:** Push the branch to your remote.
+5.  **Review:** Open a Pull Request (PR) against the `main` branch.
+6.  **Merge:** Once validated, merge the PR and delete the feature branch.
 
 ---
 
