@@ -3,7 +3,7 @@
 A modular DevSecOps and security engineering lab simulating enterprise-grade infrastructure
 for offensive security, detection engineering, and infrastructure automation practice.
 
-Maintained by: solo2121 | Status: Active | Last Updated: 2026-05-29
+Maintained by: solo2121 | Status: Active | Last Updated: 2026-06-15
 
 ---
 
