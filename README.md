@@ -1,80 +1,142 @@
 # Sysadmin Security Lab
 
-A reproducible DevSecOps and security engineering lab for simulating Active Directory attacks, building detection pipelines, and automating infrastructure using virtualization and infrastructure-as-code tools.
+A modular Sysadmin, Security, DevOps, and DevSecOps laboratory environment for building, testing, automating, and securing enterprise infrastructure.
+
+This repository contains independent but complementary lab environments for Active Directory security research, detection engineering, infrastructure automation, monitoring, observability, and DevSecOps experimentation.
 
 ---
 
 ## Overview
 
-This project is a modular security lab environment designed to replicate enterprise infrastructure for hands-on security engineering.
+The Sysadmin Security Lab is a collection of reproducible environments designed for hands-on learning, research, and portfolio development across multiple disciplines.
 
 It enables:
 
-- Active Directory attack simulation and defense
-- Detection engineering aligned with MITRE ATT&CK
-- Infrastructure automation using reproducible environments
-- Security monitoring and observability pipelines
-- DevSecOps workflow experimentation
+* Active Directory attack simulation and defense
+* Detection engineering aligned with MITRE ATT&CK
+* Infrastructure automation using Infrastructure as Code (IaC)
+* DevOps and DevSecOps workflow experimentation
+* Security monitoring and observability
+* Virtualized enterprise infrastructure deployment
+* Security validation in isolated environments
 
-This lab is designed for security research, blue team detection engineering, and offensive security validation in isolated environments.
-
-**Maintained by:** solo2121  
-**Status:** Active  
-**Last Updated:** 2026-06-15  
+**Maintained by:** solo2121
+**Status:** Active
+**Last Updated:** 2026-06-15
 
 ---
 
 ## Core Domains
 
-- Active Directory security (Kerberos, LDAP, AD CS attack paths)
-- Attack simulation (NTLM relay, ESC techniques, domain compromise chains)
-- Detection engineering (MITRE ATT&CK mapping, log analysis)
-- Infrastructure as Code (Vagrant, Ansible, Terraform)
-- Virtualization (KVM/QEMU, libvirt)
-- Security monitoring (Prometheus, Grafana, Loki)
-- Network segmentation and isolated lab design
+### Security Engineering
+
+* Active Directory security
+* Kerberos and LDAP fundamentals
+* Attack path simulation
+* Detection engineering
+* Threat research and analysis
+* MITRE ATT&CK mapping
+
+### DevOps & DevSecOps
+
+* CI/CD concepts
+* Infrastructure as Code
+* Automation workflows
+* Security automation
+* Configuration management
+* Secure deployment practices
+
+### Sysadmin & Infrastructure
+
+* Linux administration
+* Virtualization with KVM/QEMU
+* Vagrant and libvirt
+* Network segmentation
+* System hardening
+* Enterprise lab design
+
+### Monitoring & Observability
+
+* Grafana
+* Prometheus
+* Loki
+* Log aggregation
+* Telemetry collection
+* Infrastructure monitoring
 
 ---
 
 ## Architecture Overview
 
 ```text
-[ Attacker VM ]
-       |
-       v
--------------------------------------
-|     Isolated Lab Network          |
--------------------------------------
-     |                  |
-[ Domain Controller ] [ Member Servers ]
-     |                  |
------- Logging & Monitoring ---------
-               |
- [ Grafana | Prometheus | Loki ]
+                         Sysadmin Security Lab
+
+┌──────────────────────────────────────────────────────────────┐
+│                                                              │
+│                   Virtualized Lab Ecosystem                  │
+│                                                              │
+├──────────────────────────┬───────────────────────────────────┤
+│                          │                                   │
+│     AD / Pentest Lab     │      DevOps / DevSecOps Lab       │
+│                          │                                   │
+│ • Domain Controller      │ • CI/CD Workflows                │
+│ • Member Servers         │ • Infrastructure as Code         │
+│ • Kerberos & LDAP        │ • Automation Pipelines           │
+│ • Attack Simulation      │ • Security Testing               │
+│ • Detection Validation   │ • Monitoring Stack Integration   │
+│                          │                                   │
+└───────────────┬──────────┴───────────────┬───────────────────┘
+                │                          │
+                ▼                          ▼
+
+      Security Engineering      Monitoring & Observability
+
+      • Detection Engineering   • Grafana
+      • MITRE ATT&CK Mapping    • Prometheus
+      • Threat Research         • Loki
+      • Log Analysis            • Centralized Telemetry
 ```
 
 ---
 
 ## Key Capabilities
 
-* End-to-end Active Directory attack chain simulation
-* Reproducible multi-node lab environments using Vagrant + KVM/QEMU
-* Detection engineering mapped to MITRE ATT&CK techniques
-* Centralized logging and observability stack
-* Isolated network design for safe offensive security testing
-* Infrastructure automation for rapid lab deployment
+* End-to-end Active Directory attack simulation
+* Detection engineering and threat validation
+* Reproducible infrastructure deployment using Vagrant and libvirt
+* DevOps and DevSecOps experimentation
+* Infrastructure automation and provisioning
+* Centralized logging and observability
+* Secure, isolated network environments
+* Security research and portfolio development
 
 ---
 
 ## Skills Demonstrated
 
+### Security
+
 * Active Directory exploitation and defense
-* Detection engineering and security analytics
-* Infrastructure as Code (Vagrant, Ansible, Terraform)
-* Linux system administration and virtualization
-* Network security and segmentation
-* Security monitoring and observability systems
-* DevSecOps workflow design
+* Detection engineering
+* Security monitoring
+* Threat analysis
+* Attack simulation
+
+### DevOps & DevSecOps
+
+* Infrastructure as Code
+* Automation workflows
+* CI/CD concepts
+* Secure infrastructure deployment
+* Configuration management
+
+### Systems Administration
+
+* Linux administration
+* Virtualization
+* Network architecture
+* System hardening
+* Infrastructure operations
 
 ---
 
@@ -84,29 +146,52 @@ This lab is designed for security research, blue team detection engineering, and
 
 * Linux host with KVM support
 * 16–32 GB RAM recommended
-* Vagrant + libvirt
-
----
+* Vagrant
+* libvirt
+* QEMU/KVM
 
 ### Installation
 
 ```bash
 git clone https://github.com/solo2121/sysadmin-security-lab.git
+
 cd sysadmin-security-lab
 
-sudo apt update && sudo apt install -y \
-qemu-kvm libvirt-daemon-system virt-manager vagrant
+sudo apt update
 
-vagrant plugin install vagrant-libvirt vagrant-reload vagrant-winrm
+sudo apt install -y \
+qemu-kvm \
+libvirt-daemon-system \
+virt-manager \
+vagrant
+
+vagrant plugin install \
+vagrant-libvirt \
+vagrant-reload \
+vagrant-winrm
 ```
 
 ---
 
-### Launch Lab
+## Launch Lab Environments
+
+### Active Directory / Pentest Lab
 
 ```bash
 cd labs/security/ad-pentest
-vagrant up dc01
+
+vagrant up
+
+vagrant status
+```
+
+### DevOps / DevSecOps Lab
+
+```bash
+cd labs/devops/devsecops-lab
+
+vagrant up
+
 vagrant status
 ```
 
@@ -115,34 +200,52 @@ vagrant status
 ## Repository Structure
 
 ```text
-docs/               Technical documentation and architecture
-labs/               Security and infrastructure lab environments
-security/           Offensive and defensive security tooling
-sysadmin/           System administration and automation tools
-assets/             Supporting resources and branding
+docs/
+├── architecture/
+├── portfolio/
+├── detection-engineering/
+
+labs/
+├── security/
+│   └── ad-pentest/
+│
+├── devops/
+│   └── devsecops-lab/
+
+security/
+├── detections/
+├── attack-simulations/
+├── research/
+
+sysadmin/
+├── automation/
+├── hardening/
+├── scripts/
+
+assets/
 ```
 
 ---
 
 ## Documentation Hub
 
-| Document                                                 | Description                                 |
-| -------------------------------------------------------- | ------------------------------------------- |
-| [Portfolio Index](docs/PORTFOLIO.md)                     | Full lab index and technical breakdown      |
-| [Architecture Design](docs/architecture/ARCHITECTURE.md) | Infrastructure design model                 |
-| [Security Scope](docs/architecture/SECURITY-SCOPE.md)    | Security boundaries and rules of engagement |
-| [Installation Guide](INSTALLATION.md)                    | Setup and deployment guide                  |
-| [Project Changelog](CHANGELOG.md)                        | Project history and updates                 |
+| Document                            | Description                          |
+| ----------------------------------- | ------------------------------------ |
+| docs/PORTFOLIO.md                   | Portfolio index and project overview |
+| docs/architecture/ARCHITECTURE.md   | Infrastructure architecture          |
+| docs/architecture/SECURITY-SCOPE.md | Security boundaries and scope        |
+| INSTALLATION.md                     | Installation and setup guide         |
+| CHANGELOG.md                        | Project history and release notes    |
 
 ---
 
 ## Security & Ethics
 
-This project is strictly for educational and authorized security research purposes.
+This project is intended exclusively for educational purposes, authorized security research, and professional skill development.
 
-All testing must be performed only in environments you own or are explicitly authorized to use.
+All testing must be performed only within environments you own or are explicitly authorized to use.
 
-Unauthorized access or testing against real systems is strictly prohibited.
+Unauthorized testing against third-party systems is strictly prohibited.
 
 ---
 
