@@ -1,48 +1,149 @@
-# Sysadmin Security Lab - Development Environment Requirements
-# These tools are for code quality, linting, and documentation generation.
-# Lab runtime dependencies are found in labs/security/*/requirements.txt.
+# Sysadmin Security Lab - Developer Workstation Requirements
 
-# Sysadmin Security Lab - Development Environment Requirements
-# These tools are for code quality, linting, and documentation generation.
-# Lab runtime dependencies are found in labs/security/*/requirements.txt.
+#
 
-# Core dependencies
+# Purpose
+
+# -------
+
+# This file installs the core dependencies required to develop,
+
+# maintain, test, document, and operate the Sysadmin Security Lab.
+
+#
+
+# Included Categories
+
+# -------------------
+
+# - Infrastructure Automation (Ansible)
+
+# - DevOps & Infrastructure as Code (IaC)
+
+# - Security Engineering & Validation
+
+# - Python Development & Testing
+
+# - Documentation Generation
+
+# - General Utilities
+
+#
+
+# Notes
+
+# -----
+
+# Runtime dependencies for individual lab environments are maintained
+
+# separately within their respective directories:
+
+#
+
+# labs/security/*/requirements.txt
+
+#
+
+# Example Usage
+
+# -------------
+
+# Create and activate a virtual environment:
+
+#
+
+# python3 -m venv .venv
+
+# source .venv/bin/activate
+
+#
+
+# Install dependencies:
+
+#
+
+# pip install --upgrade pip
+
+# pip install -r requirements.txt
+
+###############################################################################
+
+# Infrastructure Automation
+
+###############################################################################
+
 ansible>=2.9.0
 ansible-lint>=6.0.0
+
+###############################################################################
+
+# Configuration Management & Data Processing
+
+###############################################################################
+
 jinja2>=3.0.0
 pyyaml>=6.0
 netaddr>=0.9.0
+python-dotenv>=0.20.0
 
-# Python development tools
-pylint>=2.15.0
+###############################################################################
+
+# DevOps / Infrastructure as Code (IaC)
+
+###############################################################################
+
+python-hcl2>=3.0.0
+
+###############################################################################
+
+# Remote Administration & Automation
+
+###############################################################################
+
+paramiko>=2.11.0
+pexpect>=4.8.0
+
+###############################################################################
+
+# Python Development & Testing
+
+###############################################################################
+
 black>=22.0.0
 flake8>=4.0.0
 isort>=5.10.0
+pylint>=2.15.0
+
 pytest>=7.0.0
 pytest-cov>=3.0.0
 
-# Terraform/IaC
-python-hcl2>=3.0.0
+###############################################################################
 
-# Vagrant/VM management
-pexpect>=4.8.0
+# Security Testing & Validation
+
+###############################################################################
+
+bandit>=1.7.0
+safety>=2.0.0
+cryptography>=38.0.0
+
+###############################################################################
 
 # Utilities
+
+###############################################################################
+
 requests>=2.28.0
-paramiko>=2.11.0
-python-dotenv>=0.20.0
 click>=8.0.0
 pydantic>=1.9.0
 rich>=12.0.0
 
+###############################################################################
+
 # Documentation
+
+###############################################################################
+
 sphinx>=4.5.0
 sphinx-rtd-theme>=1.0.0
 sphinx-markdown-tables>=0.0.15
-
-# Security
-bandit>=1.7.0
-safety>=2.0.0
-
-# Optional: For advanced scenarios
-cryptography>=38.0.0
