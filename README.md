@@ -51,7 +51,7 @@ This lab is designed for security research, blue team detection engineering, and
 ------ Logging & Monitoring ---------
                |
  [ Grafana | Prometheus | Loki ]
-````
+```
 
 ---
 

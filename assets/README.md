@@ -6,7 +6,7 @@ This directory contains visual and supplementary assets for the project document
 
 | Filename | Description |
 |----------|-------------|
-| `banner.png` | Repository main banner used in root README.md |
+| `sysadmin-security-lab-banner.png` | Repository main banner used in root README.md |
 
 ### Adding New Assets
 

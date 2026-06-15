@@ -56,5 +56,5 @@ Some scripts may require elevated privileges because they inspect logs, packages
 
 - [`../INSTALLATION.md`](../INSTALLATION.md)
 - [`../TROUBLESHOOTING.md`](../TROUBLESHOOTING.md)
-- [`../docs/WORKFLOWS.md`](../docs/WORKFLOWS.md)
-- [`../docs/SECURITY-SCOPE.md`](../docs/SECURITY-SCOPE.md)
+- [`../docs/workflows/WORKFLOWS.md`](../docs/workflows/WORKFLOWS.md)
+- [`../docs/architecture/SECURITY-SCOPE.md`](../docs/architecture/SECURITY-SCOPE.md)
