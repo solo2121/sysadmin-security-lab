@@ -31,19 +31,19 @@ from datetime import datetime
 from typing import Dict, List, Any, Optional
 
 try:
-import jsonschema
-JSONSCHEMA_AVAILABLE = True
+    import jsonschema
+    JSONSCHEMA_AVAILABLE = True
 except ImportError:
-JSONSCHEMA_AVAILABLE = False
+    JSONSCHEMA_AVAILABLE = False
 
 VERSION = "3.0"
 
 logging.basicConfig(
-level=logging.INFO,
-format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
-logger = logging.getLogger(**name**)
+logger = logging.getLogger(__name__)
 
 @dataclass
 class ValidationResult:
