@@ -239,6 +239,6 @@ All testing must be performed only in environments that you own or are explicitl
 
 ## License
 
-[MIT License](LICENSE)
+[MIT License](https://github.com/solo2121/sysadmin-security-lab/blob/main/LICENSE)
 
-Copyright (c) Miguel A. Carlo
+Copyright (c) 2025 Miguel A. Carlo
