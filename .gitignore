@@ -215,7 +215,4 @@ temp/
 # =========================
 
 .gitconfig
-.gitconfig.local.*
-.gitconfig
-.gitconfig
 .gitconfig.local

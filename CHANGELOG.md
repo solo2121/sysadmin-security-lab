@@ -9,85 +9,106 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-- GitHub Actions CI/CD workflows
-- Code of Conduct
-- CHANGELOG tracking
-- Python requirements.txt
-- Comprehensive .gitignore
-- GitHub issue and PR templates
-- Shell script linting automation
-- Pre-commit hooks setup
-- Lab-specific comprehensive READMEs
-- Architecture documentation improvements
+### Planned
+- GitHub Actions CI/CD pipeline
+- Pre-commit hook automation
+- Additional AD CS attack scenarios
+- Ansible role automation for DevOps lab
 
-### Changed
-- Enhanced documentation structure
-- Improved troubleshooting guides
-- Better contribution guidelines
+---
+
+## [2.1.0] - 2026-06-16 — AD Pentest VLAN Lab
+
+### Added
+- Enterprise VLAN segmentation across 5 subnets (Management, Workstations, Servers, DMZ, Attacker)
+- 14-VM enterprise topology with Windows Server 2022 DC, CA, Exchange, SharePoint, SQL Server, Print Server
+- LocalStack AWS attack simulation (S3, IAM, EC2)
+- 15 LLM security research endpoints (prompt injection, RAG poisoning, token abuse)
+- OWASP Juice Shop and Metasploitable2 legacy targets
+- VLAN setup and validation scripts (`setup-vlans.sh`, `test-vlans.sh`)
+- Network architecture diagram (Mermaid)
+- Vagrant plugin check with automatic install on first run
 
 ### Fixed
-- Documentation reference issues
-- Missing development setup scripts
-
-### Security
-- Enhanced security policy documentation
-- Updated authorization scope guidelines
+- DC readiness detection before domain join
+- Worker node join sequencing
+- Shell variable expansion in Python heredoc blocks
 
 ---
 
-## [1.0.0] - 2026-06-13
+## [1.7.0] - 2026-06-15 — AD Pentest Lab (Flat Network)
 
 ### Added
-- Initial public release
-- DevOps Linux Lab (Kubernetes with kubeadm)
-- Active Directory Pentest Lab
-- VLAN Enterprise Lab
-- Infrastructure as Code templates (Terraform, Ansible)
-- Observability stack (Prometheus, Grafana, Loki)
-- Security tooling workflows
-- AI/LLM security research scenarios
-- Comprehensive installation guide
-- Troubleshooting documentation
-- Contributing guidelines
-- MIT License
+- Windows Server 2022 Domain Controller with full AD CS (ESC1–ESC9 attack paths)
+- Kali Linux attacker VM with automated tooling
+- Dynamic domain DN construction from `DOMAIN_NAME` constant
+- Memory warning banner at `vagrant up` time
+- Plugin auto-install for `vagrant-reload` and `vagrant-libvirt`
+- Service accounts, delegation paths, and intentional ACL misconfigurations
+- `LAB_CREDENTIALS.md` with full account inventory
+- `ATTACK_CHAIN.md` documenting ESC8 → NTLM relay → domain compromise path
 
-### Features
-- Local enterprise infrastructure simulation
-- Multi-node Linux environments
-- Kubernetes cluster deployment
-- Network segmentation and isolation
-- Active Directory attack chain simulation
-- Offensive security workflows
-- Support for KVM/QEMU, Vagrant, Libvirt
-- Cross-platform support (Ubuntu, Debian, Rocky Linux, Fedora)
+### Fixed
+- Improved DC provisioning reliability with retry logic
+- Domain join sequencing with proper readiness checks
 
 ---
 
-## Release Schedule
+## [7.1.1] - 2026-06-16 — DevOps / DevSecOps Lab
 
-### Version 1.1.0 (Planned)
-- Enhanced lab automation
-- Additional security scenarios
-- Performance optimizations
+### Fixed
+- Python heredoc quoting to prevent shell variable expansion (`<<'PYEOF'`)
+- Pass variables as environment variables into Python generation blocks
+- registries.yaml generation syntax errors
 
-### Version 1.2.0 (Planned)
-- Windows Server lab additions
-- Cloud provider integration
-- Container security labs
+---
 
-### Version 2.0.0 (Planned)
-- Major refactor with improved modularity
-- New threat modeling labs
-- Supply chain security scenarios
+## [7.1.0] - 2026-06-15 — DevOps / DevSecOps Lab
+
+### Changed
+- Use Python to generate `registries.yaml` for Harbor registry configuration
+
+---
+
+## [7.0.0] - 2026-05-29 — DevOps / DevSecOps Lab
+
+### Added
+- k3s Kubernetes cluster (control plane + 2 workers)
+- Harbor container registry with airgap image seeding (40+ images)
+- ArgoCD GitOps platform (v7.7.5)
+- Prometheus + Grafana + Loki observability stack
+- Falco runtime security
+- Kyverno policy enforcement
+- Cert-Manager TLS automation
+- Terraform (v1.9.8) with bash completion
+- Multi-profile deployment: `minimal`, `dev`, `full`
+- Zero-cache Harbor mode (`CACHE_MODE=zero`)
+- Dynamic libvirt network auto-detection
+- Linux practice nodes: Ubuntu 24.04, Rocky Linux 10, AlmaLinux 10, openSUSE Leap 15.6
+- Ansible management nodes
+- Day-2 tools: k9s, kubectx, kubens, stern
+- Idempotency markers for all provisioners (safe re-run)
+- Per-tool installation markers for granular retry
+
+---
+
+## [1.0.0] - 2026-06-13 — Initial Public Release
+
+### Added
+- Repository structure with `labs/`, `security/`, `sysadmin/`, `docs/` layout
+- Security tooling: audit, exploitation, network, reconnaissance, wireless
+- Sysadmin scripts: automation, monitoring, system-hardening, utilities
+- Documentation: architecture, guides, workflows, archive
+- `requirements-dev.txt` for contributor Python dependencies
+- MIT License, Code of Conduct, Security Policy, Contributing guidelines
 
 ---
 
 ## Versioning Policy
 
-- **MAJOR** version for incompatible API/workflow changes
-- **MINOR** version for new functionality in a backwards-compatible manner
-- **PATCH** version for backwards-compatible bug fixes
+- **MAJOR** — Incompatible changes to lab architecture or workflow
+- **MINOR** — New VMs, tools, or features added
+- **PATCH** — Bug fixes, provisioning reliability improvements
 
 ---
 
@@ -96,8 +117,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 To report a bug, request a feature, or suggest improvements:
 
 1. Check [GitHub Issues](https://github.com/solo2121/sysadmin-security-lab/issues)
-2. If not already reported, create a new issue
-3. Include reproduction steps and environment details
+2. If not already reported, create a new issue with reproduction steps and environment details
 
 ---
 
@@ -109,4 +129,6 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on contributing changes.
 
 ## License
 
-This changelog is licensed under the MIT License. See [LICENSE](LICENSE) for details.
+[MIT License](https://github.com/solo2121/sysadmin-security-lab/blob/main/LICENSE)
+
+Copyright (c) 2025 Miguel A. Carlo

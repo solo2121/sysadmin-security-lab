@@ -224,6 +224,7 @@ This repository is intended for:
 | [Architecture Design](docs/architecture/ARCHITECTURE.md) | Infrastructure design and system overview |
 | [Security Scope](docs/architecture/SECURITY-SCOPE.md) | Security boundaries and rules of engagement |
 | [Installation Guide](INSTALLATION.md) | Full host setup and dependency installation |
+| [Setup with Examples](docs/SETUP-WITH-EXAMPLES.md) | Step-by-step setup examples and walkthroughs |
 | [Troubleshooting](TROUBLESHOOTING.md) | Common issues and fixes |
 | [Changelog](CHANGELOG.md) | Project history and version notes |
 
