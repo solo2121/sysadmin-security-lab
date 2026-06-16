@@ -6,9 +6,9 @@
 # =============================================================================
 #
 # Author        : Miguel Carlo (solo2121)
-# Version       : 7.0.0
+# Version       : 7.1.1
 # Created       : 2025
-# Last Updated  : 2026-05-29
+# Last Updated  : 2026-06-16
 # Status        : Active & Maintained
 # License       : Personal / Educational Use
 #
@@ -51,23 +51,28 @@
 #   Miguel Carlo (solo2121)
 #
 # Changelog:
+#   v7.1.1 - Fix Python heredoc quoting to prevent shell variable expansion
+#            - Use quoted heredoc <<'PYEOF' to prevent $1 expansion
+#            - Pass variables as environment variables
+#   v7.1.0 - Use Python to generate registries.yaml
+#   v7.0.9 - Fixed registries.yaml generation syntax error
+#   v7.0.8 - Use echo per line for registries.yaml generation
+#   v7.0.7 - Clean registries.yaml generation with placeholder substitution
+#   v7.0.6 - Fix registries.yaml YAML syntax and control character issues
+#   v7.0.5 - Add specific rewrite rule for Kyverno images and retry logic
+#   v7.0.4 - Add comprehensive rewrite rules for all registries
+#   v7.0.3 - Fix registries.yaml regex capture groups
+#   v7.0.2 - Docker daemon fix for Harbor image pulls
+#   v7.0.1 - Critical fixes
 #   v7.0.0 - Enterprise Release
-#            - K3s v1.31.4+k3s1
-#            - Harbor Integration
-#            - Argo CD GitOps
-#            - Prometheus/Grafana Stack
-#            - Falco Runtime Security
-#            - Kyverno Policy Engine
-#            - Air-Gap Registry Support
-#            - Terraform IaC Integration
 #
 # =============================================================================
 
 LAB_NAME        = "Enterprise Cloud-Native DevSecOps Lab"
-LAB_VERSION     = "7.0.0"
+LAB_VERSION     = "7.1.1"
 LAB_AUTHOR      = "Miguel Carlo (solo2121)"
 LAB_CREATED     = "2025"
-LAB_UPDATED     = "2026-05-29"
+LAB_UPDATED     = "2026-06-16"
 LAB_STATUS      = "Active & Maintained"
 
 puts "=================================================="
@@ -547,42 +552,6 @@ EOF
           systemctl start k3s || true
           transition_state "k3s_installed"
 
-          # ============================================================
-          # K3s CONTAINERD REGISTRY CONFIGURATION (CRITICAL FOR HARBOR PULLS)
-          # ============================================================
-          echo "Configuring K3s containerd for Harbor registry (all public registries mirrored)..."
-          mkdir -p /etc/rancher/k3s
-          cat > /etc/rancher/k3s/registries.yaml <<EOF
-mirrors:
-  "docker.io":
-    endpoint:
-      - "https://${MASTER_IP}:30001"
-  "quay.io":
-    endpoint:
-      - "https://${MASTER_IP}:30001"
-  "ghcr.io":
-    endpoint:
-      - "https://${MASTER_IP}:30001"
-  "registry.k8s.io":
-    endpoint:
-      - "https://${MASTER_IP}:30001"
-  "${MASTER_IP}:30001":
-    endpoint:
-      - "https://${MASTER_IP}:30001"
-
-configs:
-  "${MASTER_IP}:30001":
-    tls:
-      insecure_skip_verify: true
-    auth:
-      username: admin
-      password: ${HARBOR_PASS}
-EOF
-
-          systemctl restart k3s
-          sleep 10
-          echo "K3s registry configuration applied"
-
           echo "Allowing flannel to stabilize..."
           sleep 40
           wait_for check_k3s_service "k3s service" 120
@@ -710,6 +679,23 @@ EOF
               exit 1
             fi
 
+            # ============================================================
+            # FIX: Reconfigure Docker daemon to trust Harbor registry
+            # This MUST happen BEFORE image seeding starts
+            # ============================================================
+            echo "Reconfiguring Docker daemon to trust Harbor registry..."
+            cat > /etc/docker/daemon.json <<EOF
+{
+  "storage-driver": "overlay2",
+  "log-driver": "json-file",
+  "log-opts": {"max-size": "10m", "max-file": "3"},
+  "insecure-registries": ["${MASTER_IP}:30001"]
+}
+EOF
+            systemctl restart docker
+            sleep 10
+            echo "Docker daemon reconfigured with Harbor registry"
+
             echo "=========================================="
             echo "Seeding ${HARBOR_PROJECT} project with airgap images"
             echo "=========================================="
@@ -809,6 +795,88 @@ EOF
             echo "=========================================="
 
             # ============================================================
+            # FIX 9: Write registries.yaml via Python with quoted heredoc
+            # Uses <<'PYEOF' to prevent shell variable expansion
+            # Variables passed as environment variables
+            # ============================================================
+            echo "Configuring K3s containerd registry via Python writer..."
+            mkdir -p /etc/rancher/k3s
+
+            export MASTER_IP_VAL="${MASTER_IP}"
+            export HARBOR_PROJECT_VAL="${HARBOR_PROJECT}"
+            export HARBOR_PASS_VAL="${HARBOR_PASS}"
+
+            python3 <<'PYEOF'
+import os
+import sys
+import yaml
+
+master_ip   = os.environ.get('MASTER_IP_VAL', '192.168.121.114')
+harbor_proj = os.environ.get('HARBOR_PROJECT_VAL', 'airgap')
+harbor_pass = os.environ.get('HARBOR_PASS_VAL', 'Harbor12345')
+
+content = f'''mirrors:
+  "docker.io":
+    endpoint:
+      - "https://{master_ip}:30001"
+    rewrite:
+      "^rancher/(.*)": "{harbor_proj}/rancher/$1"
+      "^library/(.*)": "{harbor_proj}/library/$1"
+      "^(.*)": "{harbor_proj}/$1"
+  "quay.io":
+    endpoint:
+      - "https://{master_ip}:30001"
+    rewrite:
+      "^(.*)": "{harbor_proj}/$1"
+  "ghcr.io":
+    endpoint:
+      - "https://{master_ip}:30001"
+    rewrite:
+      "^kyverno/(.*)": "{harbor_proj}/kyverno/$1"
+      "^(.*)": "{harbor_proj}/$1"
+  "registry.k8s.io":
+    endpoint:
+      - "https://{master_ip}:30001"
+    rewrite:
+      "^(.*)": "{harbor_proj}/$1"
+  "{master_ip}:30001":
+    endpoint:
+      - "https://{master_ip}:30001"
+
+configs:
+  "{master_ip}:30001":
+    tls:
+      insecure_skip_verify: true
+    auth:
+      username: admin
+      password: {harbor_pass}
+'''
+
+with open('/etc/rancher/k3s/registries.yaml', 'w') as f:
+    f.write(content)
+
+# Validate YAML
+data = yaml.safe_load(content)
+print('VALID YAML - mirrors:', list(data.get('mirrors', {}).keys()))
+sys.exit(0)
+PYEOF
+
+            if [ $? -eq 0 ]; then
+              echo "Registries.yaml generated and validated successfully"
+            else
+              echo "ERROR: Failed to generate valid registries.yaml"
+              exit 1
+            fi
+
+            echo "=== Final registries.yaml ==="
+            cat /etc/rancher/k3s/registries.yaml
+            echo "============================="
+
+            systemctl restart k3s
+            sleep 10
+            echo "K3s registry configuration applied with clean YAML"
+
+            # ============================================================
             # STRICT ZERO CACHE CLEANUP - NO LOCAL IMAGES AT ALL
             # ============================================================
             echo "=========================================="
@@ -855,7 +923,7 @@ EOF
             echo "Running final test: Can K3s pull directly from Harbor?"
             kubectl delete pod test-busybox --ignore-not-found=true --grace-period=1 2>/dev/null || true
             sleep 2
-            kubectl run test-busybox --image=192.168.121.114:30001/airgap/busybox:1.36 --command -- sleep 10
+            kubectl run test-busybox --image=${MASTER_IP}:30001/${HARBOR_PROJECT}/busybox:1.36 --command -- sleep 10
 
             if kubectl wait --for=condition=Ready pod/test-busybox --timeout=60s 2>/dev/null; then
                 echo "SUCCESS: K3s successfully pulled image from Harbor!"
@@ -924,8 +992,12 @@ EOF
             TEMP_DIR=$(mktemp -d)
             cd "$TEMP_DIR"
             
-            echo "Downloading Terraform ${TERRAFORM_VERSION}..."
-            curl -fsSL "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip" -o terraform.zip
+            # FIX 4: Dynamic architecture detection
+            ARCH=$(uname -m | sed 's/x86_64/amd64/' | sed 's/aarch64/arm64/')
+            echo "Detected architecture: ${ARCH}"
+            
+            echo "Downloading Terraform ${TERRAFORM_VERSION} for ${ARCH}..."
+            curl -fsSL "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_${ARCH}.zip" -o terraform.zip
             
             echo "Extracting Terraform..."
             apt-get install -y unzip 2>/dev/null || dnf install -y unzip 2>/dev/null || zypper install -y unzip 2>/dev/null || true
@@ -938,7 +1010,7 @@ EOF
             # Verify installation
             if command -v terraform >/dev/null 2>&1; then
               TERRAFORM_INSTALLED_VERSION=$(terraform version -json 2>/dev/null | grep -o '"terraform_version":"[^"]*"' | cut -d'"' -f4 || terraform version | head -1)
-              echo "✅ Terraform installed successfully: ${TERRAFORM_INSTALLED_VERSION}"
+              echo "Terraform installed successfully: ${TERRAFORM_INSTALLED_VERSION}"
               
               # Enable bash completion
               terraform -install-autocomplete 2>/dev/null || true
@@ -946,7 +1018,7 @@ EOF
               # Create marker file
               touch "$TERRAFORM_MARKER"
             else
-              echo "❌ ERROR: Terraform installation failed"
+              echo "ERROR: Terraform installation failed"
               exit 1
             fi
             
@@ -1007,27 +1079,60 @@ EOF
             fi
 
             # ============================================================
-            # 2. KYVERNO (Policy Enforcement)
+            # 2. KYVERNO (Policy Enforcement) - Added retry logic
             # ============================================================
             if [ ! -f "$KYVERNO_MARKER" ]; then
               echo "Installing Kyverno ${KYVERNO_VERSION}..."
+              
+              # Clean up any existing Kyverno resources
+              helm uninstall kyverno -n kyverno 2>/dev/null || true
+              kubectl delete namespace kyverno --ignore-not-found=true
+              sleep 10
+              
               helm repo add kyverno https://kyverno.github.io/kyverno/ --force-update
               helm repo update
-              helm upgrade --install kyverno kyverno/kyverno \
-                --namespace kyverno \
-                --create-namespace \
-                --version ${KYVERNO_VERSION} \
-                --wait \
-                --timeout 10m || echo "WARNING: Kyverno install had issues"
+              
+              # Install with retry logic for image pull issues
+              INSTALL_SUCCESS=false
+              for attempt in 1 2 3; do
+                echo "Kyverno install attempt $attempt/3..."
+                if helm upgrade --install kyverno kyverno/kyverno \
+                  --namespace kyverno \
+                  --create-namespace \
+                  --version ${KYVERNO_VERSION} \
+                  --set installCRDs=true \
+                  --wait \
+                  --timeout 10m 2>/dev/null; then
+                  INSTALL_SUCCESS=true
+                  echo "Kyverno installed successfully on attempt $attempt"
+                  break
+                else
+                  echo "Kyverno attempt $attempt failed, waiting 30s before retry..."
+                  kubectl delete namespace kyverno --ignore-not-found=true 2>/dev/null || true
+                  sleep 30
+                fi
+              done
+              
+              if [ "$INSTALL_SUCCESS" = "false" ]; then
+                echo "WARNING: Kyverno install had issues - continuing anyway"
+                # Try one more time without waiting
+                helm upgrade --install kyverno kyverno/kyverno \
+                  --namespace kyverno \
+                  --create-namespace \
+                  --version ${KYVERNO_VERSION} \
+                  --set installCRDs=true || true
+              fi
 
               echo "Waiting for Kyverno pods..."
-              for i in $(seq 1 60); do
-                if kubectl get pods -n kyverno --no-headers 2>/dev/null | grep -q Running; then
-                  echo "Kyverno is ready"
+              for i in $(seq 1 120); do
+                RUNNING_COUNT=$(kubectl get pods -n kyverno --no-headers 2>/dev/null | grep -c Running || echo "0")
+                TOTAL_COUNT=$(kubectl get pods -n kyverno --no-headers 2>/dev/null | wc -l || echo "0")
+                if [ "$TOTAL_COUNT" -gt 0 ] && [ "$RUNNING_COUNT" -eq "$TOTAL_COUNT" ]; then
+                  echo "All Kyverno pods are ready ($RUNNING_COUNT/$TOTAL_COUNT)"
                   break
                 fi
-                echo " Waiting for Kyverno... ($i/60)"
-                sleep 5
+                echo " Waiting for Kyverno... ($i/120) - $RUNNING_COUNT/$TOTAL_COUNT running"
+                sleep 10
               done
               touch "$KYVERNO_MARKER"
             else
@@ -1077,7 +1182,6 @@ grafana:
   adminPassword: admin
   service:
     type: NodePort
-    # nodePort omitted - Kubernetes will auto-assign (no port conflicts)
   persistence:
     enabled: true
     size: 1Gi
@@ -1132,29 +1236,32 @@ EOF
 
               kubectl delete namespace argocd --ignore-not-found=true
 
-              # Delete CRDs
-              kubectl delete crd applications.argoproj.io --ignore-not-found=true
-              kubectl delete crd appprojects.argoproj.io --ignore-not-found=true
-              kubectl delete crd applicationsets.argoproj.io --ignore-not-found=true
-              kubectl delete crd argocdextensions.argoproj.io --ignore-not-found=true
+              # Delete applications first then CRDs with --wait=false to prevent hangs
+              kubectl delete applications --all -n argocd --ignore-not-found=true --wait=false 2>/dev/null || true
+              
+              # Delete CRDs with --wait=false to prevent finalizer hangs
+              kubectl delete crd applications.argoproj.io --ignore-not-found=true --wait=false 2>/dev/null || true
+              kubectl delete crd appprojects.argoproj.io --ignore-not-found=true --wait=false 2>/dev/null || true
+              kubectl delete crd applicationsets.argoproj.io --ignore-not-found=true --wait=false 2>/dev/null || true
+              kubectl delete crd argocdextensions.argoproj.io --ignore-not-found=true --wait=false 2>/dev/null || true
 
               # Delete cluster roles
-              kubectl delete clusterrole argocd-application-controller --ignore-not-found=true
-              kubectl delete clusterrole argocd-server --ignore-not-found=true
-              kubectl delete clusterrole argocd-dex-server --ignore-not-found=true
-              kubectl delete clusterrole argocd-notifications-controller --ignore-not-found=true
-              kubectl delete clusterrole argocd-redis-ha-haproxy --ignore-not-found=true
-              kubectl delete clusterrole argocd-redis-ha-server --ignore-not-found=true
+              kubectl delete clusterrole argocd-application-controller --ignore-not-found=true 2>/dev/null || true
+              kubectl delete clusterrole argocd-server --ignore-not-found=true 2>/dev/null || true
+              kubectl delete clusterrole argocd-dex-server --ignore-not-found=true 2>/dev/null || true
+              kubectl delete clusterrole argocd-notifications-controller --ignore-not-found=true 2>/dev/null || true
+              kubectl delete clusterrole argocd-redis-ha-haproxy --ignore-not-found=true 2>/dev/null || true
+              kubectl delete clusterrole argocd-redis-ha-server --ignore-not-found=true 2>/dev/null || true
 
               # Delete cluster role bindings
-              kubectl delete clusterrolebinding argocd-application-controller --ignore-not-found=true
-              kubectl delete clusterrolebinding argocd-server --ignore-not-found=true
-              kubectl delete clusterrolebinding argocd-dex-server --ignore-not-found=true
-              kubectl delete clusterrolebinding argocd-notifications-controller --ignore-not-found=true
+              kubectl delete clusterrolebinding argocd-application-controller --ignore-not-found=true 2>/dev/null || true
+              kubectl delete clusterrolebinding argocd-server --ignore-not-found=true 2>/dev/null || true
+              kubectl delete clusterrolebinding argocd-dex-server --ignore-not-found=true 2>/dev/null || true
+              kubectl delete clusterrolebinding argocd-notifications-controller --ignore-not-found=true 2>/dev/null || true
 
               # Delete webhook configs
-              kubectl delete validatingwebhookconfiguration argocd-application-controller --ignore-not-found=true
-              kubectl delete mutatingwebhookconfiguration argocd-application-controller --ignore-not-found=true
+              kubectl delete validatingwebhookconfiguration argocd-application-controller --ignore-not-found=true 2>/dev/null || true
+              kubectl delete mutatingwebhookconfiguration argocd-application-controller --ignore-not-found=true 2>/dev/null || true
 
               # Give Kubernetes time to fully clean up
               sleep 30
@@ -1344,12 +1451,12 @@ EOF
           IFACE=$(get_iface "${WORKER_IP}")
           echo "Detected interface for worker: ${IFACE}"
 
+          # FIX 3: Remove invalid --flannel-backend flag (only valid for server)
           curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="agent \
             --node-name ${WORKER_NAME} \
             --server https://$MASTER:6443 \
             --token $TOKEN \
-            --node-ip $WORKER_IP \
-            --flannel-backend=vxlan" sh -
+            --node-ip $WORKER_IP" sh -
 
           systemctl enable --now k3s-agent || true
           echo "Worker ${WORKER_NAME} joined successfully"
