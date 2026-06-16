@@ -82,11 +82,14 @@ async def scan_port(
                 result = sock.connect_ex((target, port))
                 is_open = result == 0
                 banner = None
+                
                 if is_open:
                     try:
+                        sock.settimeout(2.0) # Specific timeout for banner
                         banner = sock.recv(1024).decode('utf-8').strip()
-                    except:
-                        pass
+                    except (socket.timeout, UnicodeDecodeError, ConnectionResetError):
+                        banner = "No banner response"
+
                 return ScanResult(
                     port=port,
                     is_open=is_open,
