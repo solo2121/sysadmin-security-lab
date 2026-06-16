@@ -1,6 +1,6 @@
 # Contribution Guidelines
 
-Welcome to the Sysadmin Security Lab contribution guide.  
+Welcome to the Sysadmin Security Lab contribution guide.
 We appreciate your interest in helping improve this project.
 
 ---
@@ -20,28 +20,28 @@ We appreciate your interest in helping improve this project.
 
 ### Issue Reporting
 
-- **Bug Reports**  
+- **Bug Reports**
   Use the [bug report template](https://github.com/solo2121/sysadmin-security-lab/issues/new?template=bug_report.md)
 
-- **Feature Requests**  
+- **Feature Requests**
   Use the [feature request template](https://github.com/solo2121/sysadmin-security-lab/issues/new?template=feature_request.md)
 
-- **Documentation Improvements**  
+- **Documentation Improvements**
   Open a regular issue with the `[Docs]` prefix in the title.
 
 ### Code Contributions
 
 Professional contributions must follow the Feature Branch Workflow. Direct pushes to the `main` branch are discouraged to ensure repository stability.
 
-1.  **Branch:** Create a descriptive branch from `main`:
-    - `feat/feature-name` (New functionality)
-    - `fix/issue-description` (Bug fixes)
-    - `docs/update-description` (Documentation improvements)
-2.  **Develop:** Apply changes and verify locally.
-3.  **Commit:** Use conventional commit messages (`type(scope): description`).
-4.  **Push:** Push the branch to your remote.
-5.  **Review:** Open a Pull Request (PR) against the `main` branch.
-6.  **Merge:** Once validated, merge the PR and delete the feature branch.
+1. **Branch:** Create a descriptive branch from `main`:
+   - `feat/feature-name` — New functionality
+   - `fix/issue-description` — Bug fixes
+   - `docs/update-description` — Documentation improvements
+2. **Develop:** Apply changes and verify locally.
+3. **Commit:** Use conventional commit messages (`type(scope): description`).
+4. **Push:** Push the branch to your remote.
+5. **Review:** Open a Pull Request (PR) against the `main` branch.
+6. **Merge:** Once validated, merge the PR and delete the feature branch.
 
 ---
 
@@ -49,13 +49,20 @@ Professional contributions must follow the Feature Branch Workflow. Direct pushe
 
 ### Pre-Commit Checks
 
-We recommend setting up the pre-commit hook:
+Before committing, run the following linters manually to keep code clean:
 
 ```bash
-ln -sf ../../scripts/pre-commit.sh .git/hooks/pre-commit
+# Shell scripts
+shellcheck path/to/script.sh
+
+# Python scripts
+pylint path/to/script.py
+
+# Vagrant syntax check
+vagrant validate
 ```
 
-This ensures all scripts are automatically linted before committing.
+These checks ensure all scripts are clean before they reach the repository.
 
 ---
 
@@ -65,11 +72,10 @@ This ensures all scripts are automatically linted before committing.
 
 ```bash
 #!/usr/bin/env bash
-# [Optional] For POSIX compliance: #!/usr/bin/env sh
 ```
 
-- Scripts must pass all `shellcheck` validations.
-- Include detailed header comments in each script:
+- Scripts must pass `shellcheck` validation.
+- Include a header comment block in each script:
 
 ```bash
 #!/usr/bin/env bash
@@ -81,10 +87,22 @@ This ensures all scripts are automatically linted before committing.
 #
 ```
 
+### Python Script Guidelines
+
+- Scripts must pass `pylint` with no errors.
+- Use type hints where practical.
+- Include a module-level docstring explaining purpose, usage, and author.
+
+### Naming Conventions
+
+- All filenames use kebab-case: `my-script.sh`, `my-tool.py`
+- No spaces in filenames
+- No uppercase letters in filenames
+
 ### Dependency Management
 
-- Limit external dependencies to ≤3 per script.
-- Document all requirements in script headers.
+- Limit external dependencies to 3 or fewer per script.
+- Document all requirements in script headers and in a `requirements.txt` if the script is part of a lab.
 
 ---
 
@@ -92,11 +110,12 @@ This ensures all scripts are automatically linted before committing.
 
 ### PR Checklist
 
-- [ ] All scripts pass linting (`shellcheck` / `pylint` if Python)
-- [ ] Tested on multiple platforms
-- [ ] Documentation updated
-- [ ] CHANGELOG.md updated
-- [ ] Follows existing code style
+- [ ] All scripts pass linting (`shellcheck` for Bash, `pylint` for Python)
+- [ ] Tested locally in a VM or lab environment
+- [ ] Documentation updated to reflect changes
+- [ ] `CHANGELOG.md` updated under `[Unreleased]`
+- [ ] Follows existing code style and naming conventions
+- [ ] No secrets, credentials, or personal data committed
 
 ### Commit Message Format
 
@@ -106,8 +125,15 @@ type(scope): brief description
 Optional body explaining changes in detail
 ```
 
-**Common Types**:  
+**Common Types:**
 `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
+
+**Examples:**
+```
+feat(ad-pentest): add ESC8 relay automation script
+fix(devops-lab): correct K3s worker join token path
+docs(readme): update repository structure diagram
+```
 
 ---
 
@@ -120,10 +146,25 @@ git clone https://github.com/solo2121/sysadmin-security-lab.git
 cd sysadmin-security-lab
 ```
 
-2. Install development dependencies:
+2. Install development Python dependencies:
 
 ```bash
-./scripts/setup-dev-env.sh
+pip install -r requirements-dev.txt
+```
+
+3. Install shellcheck for shell script linting:
+
+```bash
+sudo apt install shellcheck     # Debian/Ubuntu
+sudo dnf install shellcheck     # Rocky/Fedora
+```
+
+4. Validate Vagrantfiles before submitting changes:
+
+```bash
+cd labs/security/ad-pentest && vagrant validate
+cd labs/security/ad-pentest-vlan && vagrant validate
+cd labs/infrastructure/devops-linux-lab && vagrant validate
 ```
 
 ---
@@ -134,7 +175,7 @@ Please review:
 
 - [Code of Conduct](CODE_OF_CONDUCT.md)
 - [Security Policy](SECURITY.md)
-- [Security Scope](docs/SECURITY-SCOPE.md)
+- [Security Scope](docs/architecture/SECURITY-SCOPE.md)
 
 For questions or discussions, visit our [GitHub Discussions](https://github.com/solo2121/sysadmin-security-lab/discussions).
 

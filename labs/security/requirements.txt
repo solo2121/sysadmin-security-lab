@@ -1,0 +1,8 @@
+# Shared Python dependencies for AD Pentest labs
+# Used by: labs/security/ad-pentest/ and labs/security/ad-pentest-vlan/
+# Install with: pip install -r labs/security/requirements.txt
+
+rich>=13.0.0
+pyyaml>=6.0
+aiofiles>=23.0.0
+requests>=2.31.0
