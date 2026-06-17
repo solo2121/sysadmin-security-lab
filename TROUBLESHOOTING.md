@@ -15,10 +15,9 @@ Solution:
    ```
 2. If not found, reinstall Vagrant:
    ```bash
-   curl https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
-   sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com focal main"
-   sudo apt update
-   sudo apt install vagrant
+   wget -O - https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+   echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+   sudo apt update && sudo apt install vagrant
    ```
 
 Problem: "vagrant command failed with error code 1"
