@@ -81,7 +81,7 @@ A Linux-centric cloud-native lab with enterprise-grade tooling. Designed for Kub
 | Configuration Management | Ansible |
 | Linux Practice Nodes | Ubuntu, Rocky Linux, AlmaLinux, openSUSE |
 
-**Vagrantfile:** `labs/infrastructure/devops-linux-lab/Vagrantfile` (v7.0.0 Enterprise Release)
+**Vagrantfile:** `labs/infrastructure/devops-linux-lab/Vagrantfile` (v7.1.1 Enterprise Release)
 
 ---
 
