@@ -18,6 +18,8 @@ This repository contains two independent lab environments and a collection of su
 
 The repository contains two fully independent environments that can be deployed separately and do not depend on each other.
 
+![Architecture overview](assets/architecture-overview.svg)
+
 ### Active Directory Pentest Lab
 
 - Enterprise Active Directory attack simulation
