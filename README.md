@@ -51,7 +51,7 @@ A Windows-centric enterprise attack simulation environment consisting of Windows
 | What it runs | Details |
 |---|---|
 | Domain Controller | Windows Server 2022, `lab.local` |
-| Certificate Authority | AD CS with ESC1–ESC9 attack paths |
+| Certificate Authority | AD CS with ESC1, ESC3, ESC4, ESC7, ESC9 attack paths |
 | Member Servers | Exchange, SharePoint, SQL Server, Print Server |
 | Workstations | Windows 10 domain-joined systems |
 | Attacker Platform | Kali Linux |
@@ -59,9 +59,11 @@ A Windows-centric enterprise attack simulation environment consisting of Windows
 | Cloud Simulation | LocalStack (AWS S3, IAM, EC2) |
 | Legacy Targets | Metasploitable2, OWASP Juice Shop |
 
-**Vagrantfile:** `labs/security/ad-pentest/Vagrantfile` (v1.6 Enterprise Edition)
+**Modern attack vectors (v1.8):** NoPac (CVE-2021-42287), Resource-Based Constrained Delegation (RBCD), AD CS ESC9 (no security extension), LLMNR/NBNS poisoning, additional Kerberoastable service accounts.
 
-**Network:** `172.28.128.0/24` isolated corporate network (or VLAN-segmented in the VLAN edition)
+**Vagrantfile:** `labs/security/ad-pentest/Vagrantfile` (v1.8 Enterprise Edition with Cloud & LLM Modern Attacks)
+
+**Network:** `172.28.128.0/24` isolated corporate network (or VLAN-segmented across 5 subnets in `ad-pentest-vlan/`, v2.1.1, which adds ZeroLogon, PetitPotam, NoPac, RBCD, PrintNightmare, and AD CS ESC9)
 
 ---
 
@@ -192,7 +194,7 @@ vagrant up
 
 | Domain | Lab |
 |---|---|
-| Active Directory Attack and Defense (Kerberos, AD CS, NTLM Relay) | Lab 1 |
+| Active Directory Attack and Defense (Kerberos, AD CS, NTLM Relay, ZeroLogon, PetitPotam, NoPac, RBCD) | Lab 1 |
 | Cloud Attack Simulation (AWS IAM, S3, EC2 via LocalStack) | Lab 1 |
 | AI / LLM Security (Prompt Injection, RAG Poisoning, Token Abuse) | Lab 1 |
 | Kubernetes and Cloud-Native Operations (k3s, ArgoCD, Harbor) | Lab 2 |
