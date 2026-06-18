@@ -17,6 +17,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.1.1] - 2026-06-18 — AD Pentest VLAN Lab
+
+### Added
+- ZeroLogon (CVE-2020-1472) attack path
+- PetitPotam (CVE-2021-36942) NTLM relay coercion
+- NoPac (CVE-2021-42287) SAM account name spoofing
+- Resource-Based Constrained Delegation (RBCD) misconfiguration
+- Enhanced PrintNightmare (CVE-2021-1675 / CVE-2021-34527)
+- AD CS ESC9 — No Security Extension
+- Shadow Credentials attack path
+- Auto-generated attack cheatsheet on the Kali VM at `/root/attacks/README.txt`
+
+---
+
+## [1.8.0] - 2026-06-17 — AD Pentest Lab (Flat Network)
+
+### Added
+- NoPac (CVE-2021-42287) — SAM account name spoofing attack path
+- Resource-Based Constrained Delegation (RBCD) misconfiguration
+- AD CS ESC9 — No Security Extension certificate template
+- LLMNR/NBNS poisoning enabled by default for Responder practice
+- Additional Kerberoastable service accounts
+- Automated plugin check and install for `vagrant-reload` and `vagrant-libvirt`
+
+---
+
 ## [2.1.0] - 2026-06-16 — AD Pentest VLAN Lab
 
 ### Added

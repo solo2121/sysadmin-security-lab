@@ -48,6 +48,9 @@
 - DCSync and credential theft
 - ACL abuse and Group Policy exploitation
 - Token impersonation
+- ZeroLogon (CVE-2020-1472) and PetitPotam (CVE-2021-36942)
+- NoPac (CVE-2021-42287) and Resource-Based Constrained Delegation (RBCD)
+- PrintNightmare (CVE-2021-1675 / CVE-2021-34527)
 
 ### Cloud
 - AWS IAM privilege escalation (LocalStack simulation)
