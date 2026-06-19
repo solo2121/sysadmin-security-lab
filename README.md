@@ -8,7 +8,7 @@
 
 A modular Sysadmin, Security, DevOps, and DevSecOps laboratory environment for building, testing, automating, and securing enterprise infrastructure.
 
-This repository contains two independent lab environments and a collection of supporting security and sysadmin tooling — all designed for hands-on learning, enterprise infrastructure simulation, security research, certification preparation, and professional portfolio development.
+This repository contains two independent lab environments and a collection of supporting security and sysadmin tooling — all designed for hands-on learning, enterprise infrastructure simulation, security research, skill development, and professional portfolio development.
 
 **Maintained by:** Miguel A. Carlo (solo2121) &nbsp;|&nbsp; **Status:** Active Development &nbsp;|&nbsp; **Last Updated:** 2026-06-15
 
@@ -219,7 +219,7 @@ This repository is intended for:
 - DevOps Engineers
 - DevSecOps Engineers
 - Cloud Engineers
-- Students preparing for certifications and technical interviews
+- Security and DevOps practitioners at any level
 
 ---
 
@@ -227,7 +227,7 @@ This repository is intended for:
 
 | Document | Description |
 |---|---|
-| [Portfolio Index](docs/PORTFOLIO.md) | Full lab index, techniques, and certification map |
+| [Portfolio Index](docs/PORTFOLIO.md) | Full lab index, techniques, and role-based skills mapping |
 | [Architecture Design](docs/architecture/ARCHITECTURE.md) | Infrastructure design and system overview |
 | [Security Scope](docs/architecture/SECURITY-SCOPE.md) | Security boundaries and rules of engagement |
 | [Installation Guide](INSTALLATION.md) | Full host setup and dependency installation |
