@@ -75,17 +75,19 @@ A Linux-centric cloud-native lab with enterprise-grade tooling. Designed for Kub
 
 | What it runs | Details |
 |---|---|
-| Kubernetes | k3s cluster (control plane + workers) |
-| Container Registry | Harbor |
-| GitOps | ArgoCD |
-| Observability | Prometheus, Grafana, Loki |
+| Kubernetes | k3s cluster (control plane + 2 workers) |
+| Modern K8s Labs | Kind (Kubernetes in Docker) + K3d (K3s in Docker) |
+| Container Registry | Harbor with airgap image seeding (40+ images) |
+| GitOps | Argo CD |
+| Observability | Prometheus, Grafana, Loki, Promtail |
 | Runtime Security | Falco |
 | Policy Enforcement | Kyverno |
 | TLS Automation | Cert-Manager |
+| Infrastructure as Code | Terraform + OpenTofu |
 | Configuration Management | Ansible |
-| Linux Practice Nodes | Ubuntu, Rocky Linux, AlmaLinux, openSUSE |
+| Linux Practice Nodes | Ubuntu 24.04, Rocky Linux 10, AlmaLinux 10, openSUSE Leap 15.6 |
 
-**Vagrantfile:** `labs/infrastructure/devops-linux-lab/Vagrantfile` (v7.1.1 Enterprise Release)
+**Vagrantfile:** `labs/infrastructure/devops-linux-lab/Vagrantfile` (v8.0.0 Enterprise Release)
 
 ---
 
@@ -180,8 +182,9 @@ vagrant up
 | AD CS Security | ESC1–ESC9, Certificate Abuse |
 | Cloud | AWS Concepts, LocalStack |
 | Containers | Docker, Harbor |
-| Kubernetes | k3s, ArgoCD |
+| Kubernetes | k3s, Kind, K3d, ArgoCD |
 | DevOps | Git, CI/CD, Ansible |
+| Infrastructure as Code | Terraform, OpenTofu |
 | DevSecOps | Falco, Kyverno, Security Automation |
 | Monitoring | Prometheus, Grafana, Loki |
 | Security Testing | Nmap, Metasploit, BloodHound, Hashcat |
@@ -197,8 +200,8 @@ vagrant up
 | Active Directory Attack and Defense (Kerberos, AD CS, NTLM Relay, ZeroLogon, PetitPotam, NoPac, RBCD) | Lab 1 |
 | Cloud Attack Simulation (AWS IAM, S3, EC2 via LocalStack) | Lab 1 |
 | AI / LLM Security (Prompt Injection, RAG Poisoning, Token Abuse) | Lab 1 |
-| Kubernetes and Cloud-Native Operations (k3s, ArgoCD, Harbor) | Lab 2 |
-| Infrastructure as Code (Vagrant, Ansible, Terraform) | Lab 2 |
+| Kubernetes and Cloud-Native Operations (k3s, Kind, K3d, ArgoCD, Harbor) | Lab 2 |
+| Infrastructure as Code (Vagrant, Ansible, Terraform, OpenTofu) | Lab 2 |
 | Security Monitoring and Observability (Prometheus, Grafana, Loki) | Lab 2 |
 | Detection Engineering (MITRE ATT&CK Mapping, Log Analysis) | Both |
 | Linux System Administration and Hardening | Both |

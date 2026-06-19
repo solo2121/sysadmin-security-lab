@@ -80,6 +80,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [8.0.0] - 2026-06-19 — DevOps / DevSecOps Lab
+
+### Added
+- OpenTofu v1.8.0 (open-source Terraform fork) installed alongside Terraform
+- Kind lab VM — fully automated multi-node Kubernetes in Docker cluster (1 control + 2 workers)
+- K3d lab VM — fully automated K3s in Docker cluster (1 server + 2 agents)
+- Interactive Harbor password prompt using `io/console` (no more hardcoded credentials)
+- ENV-based password handling: set `HARBOR_PASS` to skip the prompt
+- Dynamic architecture detection for binary downloads (`amd64` / `arm64`)
+- `scripts/vagrant-manager.sh` — interactive TUI for managing all VMs by group
+- `scripts/validate-lab.sh` — automated health checks across all lab services
+- `kubectl` aliases pre-configured on Kind and K3d VMs
+
+### Fixed
+- Argo CD CRD deletion now uses `--wait=false` to prevent finalizer hangs
+- Kyverno: 3 retries with full namespace cleanup between attempts
+- Docker daemon reconfigured after Harbor install to trust the registry before seeding
+- Worker provisioner: removed invalid `--flannel-backend` flag (server-only flag)
+- Terraform download: dynamic arch detection replaces hardcoded `amd64`
+
+---
+
 ## [7.1.1] - 2026-06-16 — DevOps / DevSecOps Lab
 
 ### Fixed
