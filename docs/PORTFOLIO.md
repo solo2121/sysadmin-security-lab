@@ -1,7 +1,5 @@
 # Portfolio Index
 
-> Navigation map for engineers and recruiters. Each section links to the relevant lab, tooling, or documentation.
-
 **Status:** Active &nbsp;|&nbsp; **Last Updated:** 2026-06-15
 
 ---
