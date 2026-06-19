@@ -102,12 +102,14 @@
 
 ---
 
-## Certifications This Lab Supports
+## Skills and Role Mapping
 
-| Certification | Focus Area | Lab Environment |
-|---------------|------------|-----------------|
-| OSCP | Initial access, enumeration, exploitation | `labs/security/ad-pentest/` |
-| CRTP / CRTO | AD CS chains, Kerberos, lateral movement | `labs/security/ad-pentest-vlan/` |
-| PJPT | External recon, OSINT, AD attack chains | `labs/security/ad-pentest/` |
-| CKA / CKS | Kubernetes hardening, RBAC, network policies | `labs/infrastructure/devops-linux-lab/` |
-| AWS Security Specialty | Cloud attack simulation (LocalStack) | `labs/security/ad-pentest-vlan/` |
+| Role | Relevant Lab | Skills Practiced |
+|------|-------------|-----------------|
+| Penetration Tester | `labs/security/ad-pentest/` | AD enumeration, exploitation, privilege escalation |
+| Red Team Operator | `labs/security/ad-pentest-vlan/` | Adversary emulation, lateral movement, C2 concepts |
+| Security Engineer | `security/audit/` | LLM security, detection engineering, log analysis |
+| Cloud Security Engineer | `labs/security/ad-pentest-vlan/` | AWS IAM abuse, S3 enumeration, EC2 metadata attacks |
+| DevSecOps Engineer | `labs/infrastructure/devops-linux-lab/` | Falco, Kyverno, Cert-Manager, ArgoCD, Harbor |
+| Kubernetes Engineer | `labs/infrastructure/devops-linux-lab/` | k3s, Kind, K3d, Helm, GitOps workflows |
+| Linux Systems Administrator | `sysadmin/` + Linux lab nodes | Hardening, monitoring, automation, troubleshooting |
