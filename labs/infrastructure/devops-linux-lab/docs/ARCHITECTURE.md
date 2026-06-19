@@ -1,336 +1,209 @@
 # DevOps Lab Architecture
 
+**Version 8.0.0**
+
+---
+
 ## System Overview
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                     Developer Workstation                        │
+│                     Linux Host (KVM/libvirt)                     │
 │                                                                  │
 │  ┌──────────────────────────────────────────────────────────┐  │
-│  │           Vagrant + Libvirt/KVM (Host)                   │  │
+│  │                  K3s Kubernetes Cluster                   │  │
 │  │                                                           │  │
 │  │  ┌─────────────┐  ┌──────────────┐  ┌───────────────┐  │  │
-│  │  │  DevOps VM  │  │ Control Plane│  │ Worker Nodes  │  │  │
-│  │  │             │  │ (k8s-cp)     │  │ (k8s-w1, w2)  │  │  │
-│  │  │ Terraform   │  │              │  │               │  │  │
-│  │  │ Ansible     │  │ kubeadm init │  │ kubeadm join  │  │  │
-│  │  │ Helm        │  │ API Server   │  │ Kubelet       │  │  │
-│  │  │             │  │ etcd         │  │ Container RT  │  │  │
-│  │  │ Jenkins     │  │              │  │               │  │  │
-│  │  │ Registry    │  │              │  │               │  │  │
+│  │  │  devops-1   │  │   worker-1   │  │   worker-2    │  │  │
+│  │  │ Control     │  │ K3s Agent    │  │ K3s Agent     │  │  │
+│  │  │ Plane       │  │              │  │               │  │  │
+│  │  │ Harbor      │  │              │  │               │  │  │
+│  │  │ Argo CD     │  │              │  │               │  │  │
+│  │  │ Prometheus  │  │              │  │               │  │  │
+│  │  │ Grafana     │  │              │  │               │  │  │
+│  │  │ Falco       │  │              │  │               │  │  │
+│  │  │ Kyverno     │  │              │  │               │  │  │
 │  │  └─────────────┘  └──────────────┘  └───────────────┘  │  │
-│  │         │                  │                  │            │  │
-│  │  ┌──────┴──────────────────┴──────────────────┴──────┐   │  │
-│  │  │         Libvirt Network (192.168.121.0/24)       │   │  │
-│  │  └───────────────────────────────────────────────────┘   │  │
-│  │                                                           │  │
-│  │  ┌──────────┐  ┌─��────────┐  ┌──────────┐               │  │
-│  │  │ Ubuntu   │  │ Rocky    │  │ AlmaLinux│               │  │
-│  │  │ Lab      │  │ Lab      │  │ Lab      │               │  │
-│  │  └──────────┘  └──────────┘  └──────────┘               │  │
-│  │                                                           │  │
 │  └──────────────────────────────────────────────────────────┘  │
 │                                                                  │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │              Modern Kubernetes Labs                       │   │
+│  │                                                           │   │
+│  │  ┌─────────────────────┐  ┌─────────────────────────┐  │   │
+│  │  │      kind-lab        │  │       k3d-lab            │  │   │
+│  │  │ Kind cluster         │  │ K3d cluster              │  │   │
+│  │  │ 1 control + 2 workers│  │ 1 server + 2 agents      │  │   │
+│  │  └─────────────────────┘  └─────────────────────────┘  │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│                                                                  │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │                  Linux Practice Nodes                     │   │
+│  │                                                           │   │
+│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌────────┐  │   │
+│  │  │ubuntu-lab│  │rocky-lab │  │alma-lab  │  │suse-lab│  │   │
+│  │  └──────────┘  └──────────┘  └──────────┘  └────────┘  │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│                                                                  │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │                 Ansible Managed Nodes                     │   │
+│  │           ┌──────────┐  ┌──────────┐                    │   │
+│  │           │  node1   │  │  node2   │                    │   │
+│  │           └──────────┘  └──────────┘                    │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│                                                                  │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │       Libvirt Network (auto-detected, dynamic base IP)   │   │
+│  └─────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-## Network Topology
+---
 
-### IP Address Allocation
-```
-Network: 192.168.121.0/24 (auto-detected)
+## IP Address Allocation
 
-Kubernetes Cluster:
-  k8s-cp (Control Plane)    192.168.121.114
-  k8s-w1 (Worker 1)         192.168.121.115
-  k8s-w2 (Worker 2)         192.168.121.116
+IPs are auto-detected from the libvirt network at runtime. The base is
+derived from `virsh net-dumpxml vagrant-libvirt` (fallback: `default`
+network, final fallback: `192.168.121.0/24`).
 
-DevOps Infrastructure:
-  devops-1 (Primary)        192.168.121.101
+| VM | Octet | Typical IP |
+|---|---|---|
+| devops-1 | .114 | 192.168.121.114 |
+| worker-1 | .11 | 192.168.121.11 |
+| worker-2 | .12 | 192.168.121.12 |
+| kind-lab | .200 | 192.168.121.200 |
+| k3d-lab | .201 | 192.168.121.201 |
+| ubuntu-lab | .20 | 192.168.121.20 |
+| rocky-lab | .21 | 192.168.121.21 |
+| alma-lab | .22 | 192.168.121.22 |
+| suse-lab | .23 | 192.168.121.23 |
+| node1 | .30 | 192.168.121.30 |
+| node2 | .31 | 192.168.121.31 |
 
-Linux Labs:
-  ubuntu-lab                192.168.121.200
-  rocky-lab                 192.168.121.201
-  alma-lab                  192.168.121.202
-  opensuse-lab              192.168.121.203
-```
-
-### Network Policies
-```
-┌────────────────┐
-│  K8s Cluster   │
-├────────────────┤
-│ Default Deny   │  ← All ingress/egress blocked by default
-└────────────────┘
-       │
-       ├── Allow intra-namespace communication
-       ├── Allow DNS (CoreDNS)
-       ├── Allow API server access
-       └── Allow external ingress (via Ingress controller)
-```
-
-## Component Architecture
-
-### Infrastructure as Code (Terraform)
-```
-terraform/
-├── main.tf           # Provider + resource definitions
-├── variables.tf      # Input variables
-├── outputs.tf        # Output values
-└── network.tf        # Network resources
-
-Flow:
-1. Define provider (libvirt)
-2. Create networks
-3. Define VM resources with disk, memory, CPU
-4. Configure provisioners (scripts/cloud-init)
-```
-
-### Configuration Management (Ansible)
-```
-ansible/
-├── playbooks/
-│   ├── setup-devops.yml      # Install DevOps tools
-│   ├── setup-k8s-master.yml  # Prepare control plane
-│   ├── setup-k8s-worker.yml  # Prepare workers
-│   └── setup-monitoring.yml  # Prometheus/Grafana
-├── roles/
-│   ├── kubernetes/
-│   ├── docker/
-│   ├── prometheus/
-│   └── ...
-└── inventory/
-    ├── hosts.ini             # Target nodes
-    └── group_vars/           # Per-group variables
-
-Execution Order:
-1. Provision base OS
-2. Install container runtime (Docker/containerd)
-3. Install kubeadm, kubelet, kubectl
-4. Configure networking
-5. Deploy monitoring stack
-```
-
-### Kubernetes Cluster
-```
-k8s-cp (Control Plane)
-├── kube-apiserver         (Port 6443)
-│   ├── Authentication
-│   ├── Authorization (RBAC)
-│   └── API validation
-├── etcd                   (Port 2379)
-│   └── Cluster state storage
-├── kube-controller-manager
-│   ├── Node controller
-│   ├── Replication controller
-│   └── Service account controller
-├── kube-scheduler
-│   └── Pod placement logic
-└── kubelet               (Port 10250)
-
-k8s-w1, k8s-w2 (Workers)
-├── kubelet               (Port 10250)
-│   ├── Pod management
-│   └── Volume management
-├── Container Runtime     (Docker/containerd)
-│   └── Container execution
-└── kube-proxy           (Port 10249)
-    └── Service networking
-
-Pod Network:
-├── CNI Plugin (Calico)
-├── Pod CIDR: 10.244.0.0/16
-└── Service CIDR: 10.96.0.0/12
-```
-
-### DevOps Toolchain
-```
-DevOps Node (devops-1)
-
-┌──────────────────────────────────────┐
-│  Git Repository (Local)              │
-│  ↓                                   │
-│  Jenkins CI/CD Pipeline              │
-│  ├── Build: Docker image             │
-│  ├── Test: Unit/Integration tests    │
-│  ├── Push: Registry (Harbor)         │
-│  └── Deploy: Helm → K8s              │
-│                                      │
-│  ArgoCD (GitOps Controller)          │
-│  ├── Watch Git repo for changes      │
-│  ├── Sync with Kubernetes cluster    │
-│  └── Continuous deployment           │
-│                                      │
-│  Helm Package Manager                │
-│  ├── Manage Kubernetes charts        │
-│  └── Release versioning              │
-└──────────────────────────────────────┘
-```
-
-## Data Flow
-
-### Deployment Pipeline
-```
-1. Developer pushes code → Git
-2. Git webhook triggers → Jenkins
-3. Jenkins builds Docker image
-4. Jenkins pushes image → Harbor Registry
-5. Jenkins creates/updates Helm chart
-6. ArgoCD detects changes
-7. ArgoCD syncs with K8s cluster
-8. Kubernetes deploys pods
-9. Prometheus scrapes metrics
-10. Grafana displays dashboards
-```
-
-### Networking Flow
-```
-External Request
-    ↓
-Ingress Controller (nginx)
-    ↓
-Service (ClusterIP)
-    ↓
-Endpoint (Pod IP)
-    ↓
-Container (Port mapping)
-
-DNS Resolution:
-kubernetes.default.svc.cluster.local
-    ↓
-Service IP (10.96.x.x)
-    ↓
-Pod IP (10.244.x.x)
-```
-
-## Storage Architecture
-
-### Kubernetes Storage
-```
-Volumes:
-├── emptyDir         (Temp pod data)
-├── hostPath         (Node filesystem)
-├── configMap        (Configuration)
-├── secret           (Sensitive data)
-└── persistentVolume (Persistent data)
-
-PersistentVolume Claims:
-└── Requested by pods
-    └── Bound to PV by controller
-        └── Mounted in container
-
-Storage Classes:
-└── Define provisioner behavior
-    └── Dynamic provisioning
-```
-
-## Security Boundaries
-
-```
-Layer 1: Host Security
-├── SSH key authentication (no password)
-├── SELinux/AppArmor policies
-├── Host firewall rules
-└── Regular patching
-
-Layer 2: Container Security
-├── Non-root container users
-├── Read-only root filesystem
-├── Resource limits (CPU/memory)
-└── Image scanning
-
-Layer 3: Kubernetes Security
-├── Network policies (default deny)
-├── RBAC (least privilege)
-├── Pod security policies
-├── Secret encryption at rest
-└── API server audit logging
-
-Layer 4: Application Security
-├── TLS/SSL for communication
-├── Secrets injection
-├── Dependency scanning
-└── Code analysis
-```
-
-## High Availability Considerations
-
-### Current Setup (Development)
-```
-Single point of failures:
-├── One control plane
-├── One etcd database
-└── Local storage
-
-Production Improvements:
-├── Multiple control planes (HA)
-├── etcd cluster (3+ nodes)
-├── Persistent storage backends
-├── Load balancer for API
-└── Backup/restore procedures
-```
-
-## Disaster Recovery
-
-### Backup Strategy
-```
-Backup Components:
-1. etcd snapshots (Kubernetes state)
-   └── via Velero
-2. PersistentVolumes (Data)
-   └── via cloud provider snapshots
-3. Application configs (Helm charts, Git)
-   └── via Git repository
-
-Restore Procedure:
-1. Provision new cluster
-2. Restore etcd snapshot
-3. Restore PV snapshots
-4. Sync from Git (ArgoCD)
-```
-
-## Monitoring & Observability
-
-```
-Prometheus
-├── Scrapes metrics from:
-│   ├── Kubernetes API
-│   ├── Kubelet endpoints
-│   ├── Node exporters
-│   └── Application endpoints
-├── 15-second scrape interval
-└── 15-day retention
-
-Grafana
-├── Queries Prometheus
-├── Visualizes metrics
-├── Creates dashboards
-└── Alerts on thresholds
-
-Log Aggregation:
-├── Loki (log storage)
-├── Promtail (log shipper)
-└── Explored via Grafana
-
-Alerts:
-├── PrometheusRules define conditions
-├── AlertManager routes alerts
-└── Webhooks to external systems
-```
-
-## Version Matrix
-
-| Component | Version | Purpose |
-|-----------|---------|---------|
-| Kubernetes | 1.28+ | Container orchestration |
-| Docker | 27.3.1 | Container runtime |
-| Terraform | 1.0+ | Infrastructure provisioning |
-| Ansible | 2.9+ | Configuration management |
-| Helm | 3.0+ | Kubernetes package manager |
-| Prometheus | 2.40+ | Metrics collection |
-| Grafana | 9.0+ | Metrics visualization |
-| ArgoCD | 2.0+ | GitOps controller |
+Actual IPs depend on your libvirt configuration. Check `MASTER_IP` in
+the Vagrant startup output for the real address.
 
 ---
 
-**Last Updated**: May 2026
+## Service Port Map
+
+| Service | Protocol | Port | Access |
+|---|---|---|---|
+| Harbor registry | HTTPS | 30001 | NodePort |
+| Argo CD HTTP | HTTP | 30003 | NodePort |
+| Argo CD HTTPS | HTTPS | 30004 | NodePort |
+| K3s API | HTTPS | 16443 | Port forward |
+| Grafana | HTTP | auto | NodePort (auto-assigned) |
+| Prometheus | HTTP | 9090 | Port forward |
+| Ingress HTTP | HTTP | 8080 | Host port forward |
+| Ingress HTTPS | HTTPS | 8443 | Host port forward |
+
+---
+
+## Image Flow (Airgap)
+
+```
+External Registries          Harbor                     K3s Nodes
+(docker.io, quay.io,    →   (devops-1:30001)      →   (devops-1,
+ ghcr.io, registry.k8s.io)  airgap project             worker-1, worker-2)
+
+40+ images seeded at        registries.yaml             All pulls go
+provisioning time           rewrites all registry       through Harbor
+                            pulls to Harbor
+```
+
+---
+
+## Kubernetes Architecture
+
+### K3s Cluster
+
+```
+devops-1 (Server)
+│
+├── kube-apiserver
+├── kube-scheduler
+├── kube-controller-manager
+├── etcd (embedded SQLite via k3s)
+├── CoreDNS
+├── Flannel (vxlan backend)
+├── Local Path Provisioner
+│
+└── Namespaces
+    ├── harbor          → Container registry
+    ├── argocd          → GitOps platform
+    ├── monitoring      → Prometheus, Grafana, Alertmanager
+    ├── falco           → Runtime security
+    ├── kyverno         → Policy enforcement
+    ├── cert-manager    → TLS certificates
+    └── ingress-nginx   → Ingress controller
+```
+
+### Kind Lab Cluster
+
+```
+kind-lab VM (Docker host)
+│
+└── Kind cluster: lab
+    ├── control-plane (Docker container)
+    ├── worker (Docker container)
+    └── worker (Docker container)
+```
+
+### K3d Lab Cluster
+
+```
+k3d-lab VM (Docker host)
+│
+└── K3d cluster
+    ├── k3s-server (Docker container)
+    ├── k3s-agent (Docker container)
+    └── k3s-agent (Docker container)
+```
+
+---
+
+## Deployment Sequence
+
+```
+1. Vagrant reads libvirt network → sets MASTER_IP
+2. Harbor password: ENV['HARBOR_PASS'] or interactive prompt
+3. devops-1 provisions:
+   a. Base packages
+   b. Docker install (version-pinned, with fallback)
+   c. K3s server install (3 retries)
+   d. Harbor install + airgap image seeding
+   e. registries.yaml written via Python (no shell expansion)
+   f. K3s restart with Harbor registry config
+   g. Kyverno (3 retries with cleanup), Falco, Cert-Manager
+   h. Prometheus + Grafana + Loki
+   i. Argo CD (full CRD cleanup before install)
+   j. Terraform + OpenTofu
+   k. Day-2 tools: k9s, kubectx, kubens, stern
+4. worker-1, worker-2 wait for .cluster_state.json → join k3s
+5. kind-lab: Docker install → Kind install → cluster create
+6. k3d-lab: Docker install → K3d install → cluster create
+7. Linux labs: base packages + extra lab disks
+8. Ansible nodes: base packages + SSH key distribution
+```
+
+---
+
+## Security Architecture
+
+| Layer | Control |
+|---|---|
+| Registry | Harbor with Trivy vulnerability scanning |
+| Runtime | Falco — syscall-level threat detection |
+| Policy | Kyverno — admission control and policy enforcement |
+| TLS | Cert-Manager — automated certificate management |
+| Images | Airgap seeding — all images go through Harbor |
+| Passwords | No hardcoded credentials — ENV or interactive prompt |
+
+---
+
+## Related Documentation
+
+- [`README.md`](../README.md) — Quick start and access guide
+- [`SETUP-GUIDE.md`](SETUP-GUIDE.md) — Detailed setup instructions
+- [`SECURITY-HARDENING.md`](SECURITY-HARDENING.md) — Security configuration guide
+- [`k8s-setup.md`](k8s-setup.md) — Kubernetes configuration details

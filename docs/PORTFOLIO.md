@@ -12,7 +12,7 @@
 |-----|------|-------|
 | AD Pentest Lab | [`labs/security/ad-pentest/`](../labs/security/ad-pentest/) | Kerberos attacks, ESC1–ESC9 chains, privilege escalation, NTLM relay |
 | VLAN Enterprise Lab | [`labs/security/ad-pentest-vlan/`](../labs/security/ad-pentest-vlan/) | Network segmentation, VLAN isolation, enterprise routing, traffic analysis |
-| DevOps Linux Lab | [`labs/infrastructure/devops-linux-lab/`](../labs/infrastructure/devops-linux-lab/) | Kubernetes (k3s), Ansible, Terraform, Prometheus/Grafana/Loki monitoring stack |
+| DevOps Linux Lab | [`labs/infrastructure/devops-linux-lab/`](../labs/infrastructure/devops-linux-lab/) | Kubernetes (k3s, Kind, K3d), Argo CD, Harbor, Terraform, OpenTofu, Prometheus/Grafana/Loki monitoring stack |
 
 ---
 
@@ -72,9 +72,10 @@
 
 ### Infrastructure & DevSecOps
 - Multi-VM enterprise lab provisioning with Vagrant and KVM/QEMU
-- Kubernetes cluster deployment with k3s
-- GitOps with ArgoCD
-- Infrastructure as Code with Terraform and Ansible
+- Kubernetes cluster deployment with k3s, Kind, and K3d
+- GitOps with Argo CD
+- Infrastructure as Code with Terraform and OpenTofu
+- Container registry with Harbor and airgap image seeding
 
 ---
 

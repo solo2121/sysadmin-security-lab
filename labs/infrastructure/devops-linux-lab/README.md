@@ -1,211 +1,331 @@
-# DevOps Linux Lab
+# DevOps / DevSecOps Lab
 
-A complete **local DevOps + SysAdmin + Kubernetes lab** designed for:
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Platform](https://img.shields.io/badge/platform-KVM%2Flibvirt-blue)](https://www.linux-kvm.org/)
+[![Version](https://img.shields.io/badge/version-8.0.0-green)](https://github.com/solo2121/sysadmin-security-lab)
+[![Vagrant](https://img.shields.io/badge/Vagrant-%3E%3D2.4-1563FF)](https://www.vagrantup.com/)
 
-* LFCS / RHCSA / Linux+ practice
-* Kubernetes (k3s) hands-on learning
-* DevOps tooling (Terraform, Ansible, Helm)
-* GitOps workflows (ArgoCD)
-* Monitoring (Prometheus, Grafana, Loki)
+**Version 8.0.0 — Enterprise DevSecOps Lab with OpenTofu, Kind, and K3d**
 
----
-
-## Overview
-
-This lab simulates a **real production-like environment** entirely locally using:
-
-* Vagrant + Libvirt (KVM)
-* Multi-node architecture
-* Infrastructure as Code principles
-* k3s lightweight Kubernetes distribution
+A full enterprise-grade cloud-native lab built with Vagrant and KVM/libvirt. Designed for hands-on learning, certification practice, and portfolio development across Kubernetes, GitOps, IaC, observability, and runtime security.
 
 ---
 
-## Architecture
+## What Changed in v8.0.0
 
-```text
-DevOps Node (Control)
-│
-├── Terraform
-├── Ansible
-├── Helm
-│
-└── k3s Kubernetes Cluster
-    ├── k3s-cp (Control Plane + Server)
-    ├── k3s-w1 (Worker Agent)
-    └── k3s-w2 (Worker Agent)
+- Added **OpenTofu** (open-source Terraform fork) alongside Terraform
+- Added **Kind lab** — Kubernetes in Docker with a fully automated multi-node cluster
+- Added **K3d lab** — K3s in Docker with automatic cluster creation
+- **No hardcoded Harbor password** — interactive prompt or `HARBOR_PASS` env var
+- Dynamic architecture detection for binary downloads (`amd64` / `arm64`)
+- `vagrant-manager.sh` — interactive TUI for managing all VMs by group
+- `validate-lab.sh` — automated health checks for the full lab stack
+- `--wait=false` on CRD deletion to prevent Argo CD finalizer hangs
+- Kyverno retry logic with namespace cleanup between attempts
 
-Linux Study Nodes
-├── Ubuntu
-├── Rocky Linux
-├── AlmaLinux
-└── openSUSE
+---
+
+## Lab Architecture
+
+```
+Host (Linux, KVM/libvirt)
+│
+├── K3s Kubernetes Cluster
+│   ├── devops-1 (control plane + Harbor + ArgoCD + monitoring)
+│   ├── worker-1 (k3s agent)
+│   └── worker-2 (k3s agent)
+│
+├── Modern Kubernetes Labs
+│   ├── kind-lab  (Kind: Kubernetes in Docker, 1 control + 2 workers)
+│   └── k3d-lab   (K3d: K3s in Docker, 1 server + 2 agents)
+│
+├── Linux Practice Nodes
+│   ├── ubuntu-lab  (Ubuntu 24.04)
+│   ├── rocky-lab   (Rocky Linux 10)
+│   ├── alma-lab    (AlmaLinux 10)
+│   └── suse-lab    (openSUSE Leap 15.6)
+│
+└── Ansible Management Nodes
+    ├── node1 (Ubuntu 24.04)
+    └── node2 (Ubuntu 24.04)
 ```
 
 ---
 
-## Project Structure
+## VM Inventory
 
-```text
-devops-linux-lab/
-├── Vagrantfile                 # Vagrant configuration for multi-node lab setup
-├── scripts/                    # Lab management and utility scripts
-├── docs/                       # Documentation and guides
-├── terraform/                  # Infrastructure as Code (IaC)
-├── ansible/                    # Configuration Management
-├── k8s/                        # Kubernetes manifests
-├── helm/                       # Helm charts
-└── monitoring/                 # Prometheus, Grafana, Loki stack
-```
+| VM | IP | Role | Memory | CPUs |
+|---|---|---|---|---|
+| devops-1 | auto-detected .114 | K3s control plane + all services | 8192 MB | 4 |
+| worker-1 | auto-detected .11 | K3s worker agent | 2048 MB | 2 |
+| worker-2 | auto-detected .12 | K3s worker agent | 2048 MB | 2 |
+| kind-lab | auto-detected .200 | Kind cluster (Docker) | 4096 MB | 2 |
+| k3d-lab | auto-detected .201 | K3d cluster (Docker) | 4096 MB | 2 |
+| ubuntu-lab | auto-detected .20 | Linux practice | 1024 MB | 1 |
+| rocky-lab | auto-detected .21 | Linux practice | 1024 MB | 1 |
+| alma-lab | auto-detected .22 | Linux practice | 1024 MB | 1 |
+| suse-lab | auto-detected .23 | Linux practice | 1024 MB | 1 |
+| node1 | auto-detected .30 | Ansible managed node | 1024 MB | 1 |
+| node2 | auto-detected .31 | Ansible managed node | 1024 MB | 1 |
+
+IPs are auto-detected from your libvirt network at runtime.
+
+---
+
+## Enterprise Stack
+
+| Tool | Version | Purpose |
+|---|---|---|
+| k3s | v1.31.4+k3s1 | Production Kubernetes distribution |
+| Harbor | Chart 1.14.0 | Container registry with Trivy scanning |
+| Argo CD | 7.7.5 | GitOps continuous delivery |
+| Prometheus + Grafana | 68.3.0 | Metrics and dashboards |
+| Loki + Promtail | 3.2.1 | Log aggregation |
+| Falco | 2.3.0 | Runtime security |
+| Kyverno | 3.3.7 | Policy enforcement |
+| Cert-Manager | 1.16.2 | TLS automation |
+| Terraform | 1.9.8 | Infrastructure as Code |
+| OpenTofu | 1.8.0 | Open-source Terraform fork |
+| Kind | v0.24.0 | Kubernetes in Docker |
+| K3d | v5.7.5 | K3s in Docker |
+| Ingress NGINX | v1.11.3 | Kubernetes ingress controller |
 
 ---
 
 ## Requirements
 
-* Vagrant
-* Libvirt / KVM
-* 16GB RAM recommended (minimum 8GB)
+- Linux host with KVM/QEMU and hardware virtualization enabled
+- Vagrant >= 2.4 with `vagrant-libvirt` plugin
+- 32 GB RAM recommended (16 GB minimum for core cluster only)
+- 200 GB free disk space
+- Ruby >= 2.5 (for interactive password prompt)
+
+```bash
+sudo apt update
+sudo apt install -y qemu-kvm libvirt-daemon-system libvirt-clients \
+  bridge-utils virt-manager vagrant ruby
+
+sudo usermod -aG libvirt $USER
+newgrp libvirt
+
+vagrant plugin install vagrant-libvirt
+```
 
 ---
 
 ## Quick Start
 
+### Set Harbor password before starting
+
 ```bash
-vagrant up
+# Recommended: set before vagrant up
+export HARBOR_PASS='YourStrongPassword'
 ```
 
-Optional VM manager:
+If you do not set it, Vagrant will prompt you interactively when provisioning begins.
+
+### Deploy the minimal cluster (control plane + 1 worker)
 
 ```bash
-../../scripts/lab-manager.sh
+cd labs/infrastructure/devops-linux-lab
+
+LAB_PROFILE=minimal vagrant up
+```
+
+### Deploy the full lab
+
+```bash
+LAB_PROFILE=full vagrant up
+```
+
+### Deployment profiles
+
+| Profile | VMs Started |
+|---|---|
+| `minimal` | devops-1, worker-1 |
+| `dev` | devops-1, worker-1, node1, node2 |
+| `full` | All 11 VMs |
+
+### Start specific VMs
+
+```bash
+START_VMS=kind-lab,k3d-lab vagrant up
 ```
 
 ---
 
-## Access
+## Lab Manager (Interactive TUI)
 
-| Service    | URL                   | Credentials (User/Pass) |
-| ---------- | --------------------- | ----------------------- |
-| Jenkins    | http://localhost:8080 | admin / admin123        |
-| Grafana    | http://localhost:3000 | admin / admin           |
-| Prometheus | http://localhost:9090 | N/A (Public Read)       |
-| ArgoCD     | http://localhost:8081 | admin / (See `argocd initial-admin-secret`) |
-
----
-
-## Linux Practice
-
-Use lab nodes for certification training:
+Use the included manager script instead of typing raw vagrant commands:
 
 ```bash
-vagrant ssh rocky-lab
-vagrant ssh alma-lab
-vagrant ssh opensuse-lab
+./scripts/vagrant-manager.sh
 ```
 
-Topics:
-
-* LVM
-* SELinux
-* Networking
-* systemd
-* users & permissions
+Groups available from the menu:
+- DevOps (requires Harbor password once per session)
+- Workers
+- Ansible nodes
+- Linux labs
+- Modern labs (Kind + K3d)
 
 ---
 
-## Kubernetes Setup (k3s)
+## Accessing Services
+
+| Service | URL | Credentials |
+|---|---|---|
+| Harbor | https://MASTER_IP:30001 | admin / (your HARBOR_PASS) |
+| Argo CD | https://MASTER_IP:30003 | admin / (see argocd-initial-admin-secret) |
+| Grafana | https://MASTER_IP:auto-port | admin / admin |
+| Prometheus | kubectl port-forward | — |
+| K3s API | https://MASTER_IP:16443 | kubeconfig at /vagrant/kubeconfig.yaml |
+
+`MASTER_IP` is auto-detected at boot and printed to the console.
+
+Argo CD initial password:
+```bash
+kubectl -n argocd get secret argocd-initial-admin-secret \
+  -o jsonpath="{.data.password}" | base64 -d
+```
+
+Port-forward alternatives:
+```bash
+kubectl port-forward -n monitoring svc/prometheus-stack-grafana 3000:80
+kubectl port-forward -n argocd svc/argocd-server 8080:443
+```
+
+---
+
+## Kind Lab
+
+SSH into the Kind VM and use a fully automated multi-node cluster:
 
 ```bash
-vagrant ssh k3s-cp
-# k3s server is automatically started
+vagrant ssh kind-lab
+
+# Cluster is ready automatically
 kubectl get nodes
-```
-
-Workers automatically join the cluster via agent token.
-
-Verify cluster:
-
-```bash
 kubectl cluster-info
+
+# Practice workloads
+kubectl apply -f /opt/kind/examples/
+```
+
+---
+
+## K3d Lab
+
+```bash
+vagrant ssh k3d-lab
+
+# Cluster is ready automatically
 kubectl get nodes
+
+# Create additional clusters for practice
+k3d cluster create test-cluster --servers 1 --agents 2
+k3d cluster list
 ```
 
 ---
 
-## Monitoring Access
-
-To verify the monitoring stack is receiving data from nodes:
+## Linux Certification Practice
 
 ```bash
-curl http://localhost:9090/api/v1/targets
+vagrant ssh rocky-lab    # RHCSA / RHCE
+vagrant ssh alma-lab     # Enterprise Linux
+vagrant ssh ubuntu-lab   # LFCS / Ubuntu
+vagrant ssh suse-lab     # openSUSE / SLES
 ```
 
-## DevOps Workflow
-
-1. Terraform provisions infrastructure
-2. Vagrant bootstraps VMs with k3s
-3. Ansible configures nodes
-4. Kubernetes cluster initialized
-5. Helm deploys applications
-6. ArgoCD manages GitOps
-7. Monitoring stack observes system
+Practice topics: LVM, SELinux, networking, systemd, users and permissions, package management, cron, firewalls.
 
 ---
 
-## Troubleshooting
+## Ansible Practice
 
-| Symptom | Probable Cause | Resolution |
-|---------|----------------|------------|
-| `vagrant up` fails | Libvirt bridge conflict | `virsh net-destroy default && virsh net-start default` |
-| Nodes not joining K3s | Token mismatch | Check `/var/lib/rancher/k3s/server/node-token` on cp node |
-| Storage errors | Host disk space | Ensure 50GB+ free space on host |
-| Ansible fails | SSH key not shared | Run `vagrant ssh-config` to verify connectivity |
-
----
-
-## Cleanup and Teardown
-
-To stop the lab and save resources:
 ```bash
+vagrant ssh devops-1
+
+# SSH keys are automatically shared to node1 and node2
+ansible all -i 'node1,node2,' -m ping
+ansible-playbook your-playbook.yml -i inventory/
+```
+
+---
+
+## Validate the Lab
+
+Run the automated health check after deployment:
+
+```bash
+./scripts/validate-lab.sh
+```
+
+Checks: RAM, CPU, disk, installed tools, VM states, Kubernetes cluster health, network connectivity, service availability.
+
+---
+
+## Deployment Workflow
+
+1. Terraform / OpenTofu provisions infrastructure definitions
+2. Vagrant bootstraps VMs with k3s and Docker
+3. Harbor installs with airgap image seeding (40+ images)
+4. K3s `registries.yaml` configured to pull from Harbor
+5. Kyverno, Falco, Cert-Manager deploy via Helm
+6. Prometheus + Grafana + Loki observability stack deploys
+7. Argo CD installs with clean CRD removal and NodePort access
+8. Kind and K3d clusters bootstrap automatically
+9. Ansible SSH keys distributed to managed nodes
+
+---
+
+## FAST_BOOT Mode
+
+Skip Harbor, Helm installs, and enterprise tooling for rapid iteration:
+
+```bash
+FAST_BOOT=true vagrant up devops-1
+```
+
+---
+
+## Cleanup
+
+```bash
+# Stop all VMs (preserves state)
 vagrant halt
-```
 
-To completely remove the lab and associated disks:
-```bash
+# Destroy all VMs (clean slate)
 vagrant destroy -f
 ```
 
 ---
 
-## Security Concepts
+## Troubleshooting
 
-* RBAC
-* Secrets management
-* Network segmentation
-* Audit tooling
-
----
-
-## Learning Goals
-
-* Understand Kubernetes with k3s lightweight distribution
-* Understand Infrastructure as Code
-* Practice real sysadmin tasks
-* Implement GitOps workflows
-* Monitor distributed systems
+| Issue | Solution |
+|---|---|
+| VM fails to start | Confirm KVM is enabled in BIOS and user is in `libvirt` group |
+| Workers not joining k3s | Wait for devops-1 to fully initialize; check `/vagrant/.cluster_state.json` |
+| Harbor API never healthy | Increase memory for devops-1; check `kubectl get pods -n harbor` |
+| Kyverno install fails | Script retries 3 times with namespace cleanup; check `kubectl get pods -n kyverno` |
+| Argo CD pods stuck | CRD finalizers sometimes hang; script uses `--wait=false` to prevent this |
+| Kind cluster not created | SSH into kind-lab and run `kind create cluster --config /opt/kind/config.yaml --name lab` |
+| K3d cluster not ready | SSH into k3d-lab and check `k3d cluster list` |
+| Harbor password prompt | Set `export HARBOR_PASS='yourpassword'` before `vagrant up` |
+| Out of memory | Use `LAB_PROFILE=minimal` or `START_VMS=` to deploy only needed VMs |
 
 ---
 
-## Future Enhancements
+## Related Labs
 
-* Full Ansible automation
-* ArgoCD auto-bootstrap
-* Service Mesh (Istio)
-* Chaos engineering labs
-* Multi-cluster federation
+- [`../../../labs/security/ad-pentest/`](../../../labs/security/ad-pentest/) — Active Directory pentest lab
+- [`../../../labs/security/ad-pentest-vlan/`](../../../labs/security/ad-pentest-vlan/) — VLAN edition
+- [`../../../sysadmin/`](../../../sysadmin/) — Linux administration scripts
 
 ---
 
 ## License
 
-MIT
+[MIT License](../../../LICENSE) — Author: Miguel A. Carlo
