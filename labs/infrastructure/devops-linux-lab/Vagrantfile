@@ -6,9 +6,9 @@
 # =============================================================================
 #
 # Author        : Miguel Carlo (solo2121)
-# Version       : 7.1.1
+# Version       : 8.0.0
 # Created       : 2025
-# Last Updated  : 2026-06-16
+# Last Updated  : 2026-06-19
 # Status        : Active & Maintained
 # License       : Personal / Educational Use
 #
@@ -20,40 +20,52 @@
 # Engineering, and Cloud-Native technologies.
 #
 # Components:
-#   • K3s Kubernetes Cluster
-#   • Harbor Container Registry
-#   • Argo CD GitOps Platform
-#   • Prometheus & Grafana Monitoring
-#   • Falco Runtime Security
-#   • Kyverno Policy Enforcement
-#   • Cert-Manager TLS Automation
-#   • Terraform Infrastructure as Code
-#   • Linux Training Nodes
-#   • Ansible Management Nodes
+#   - K3s Kubernetes Cluster (Production)
+#   - Harbor Container Registry
+#   - Argo CD GitOps Platform
+#   - Prometheus & Grafana Monitoring
+#   - Falco Runtime Security
+#   - Kyverno Policy Enforcement
+#   - Cert-Manager TLS Automation
+#   - Terraform Infrastructure as Code
+#   - OpenTofu (Terraform Fork)
+#   - Kind (Kubernetes in Docker)
+#   - K3d (K3s in Docker)
+#   - Linux Training Nodes
+#   - Ansible Management Nodes
 #
 # Features:
-#   • Multi-Profile Deployment (minimal/dev/full)
-#   • Air-Gap Image Management
-#   • Automated Cluster Bootstrap
-#   • Enterprise Security Tooling
-#   • Infrastructure as Code (IaC)
-#   • Zero-Cache Harbor Mode
-#   • Dynamic Network Discovery
-#   • Automated Node Provisioning
+#   - Multi-Profile Deployment (minimal/dev/full)
+#   - Air-Gap Image Management
+#   - Automated Cluster Bootstrap
+#   - Enterprise Security Tooling
+#   - Infrastructure as Code (IaC)
+#   - Zero-Cache Harbor Mode
+#   - Dynamic Network Discovery
+#   - Automated Node Provisioning
+#   - Interactive Password Prompt (No Hardcoded Credentials)
 #
 # Requirements:
-#   • Vagrant >= 2.4
-#   • Libvirt Provider
-#   • KVM/QEMU Virtualization
-#   • Linux Host (Ubuntu Recommended)
+#   - Vagrant >= 2.4
+#   - Libvirt Provider
+#   - KVM/QEMU Virtualization
+#   - Linux Host (Ubuntu Recommended)
+#   - Ruby >= 2.5 (for io/console)
 #
 # Maintainer:
 #   Miguel Carlo (solo2121)
 #
 # Changelog:
+#   v8.0.0 - Added OpenTofu, Kind Lab, K3d Lab
+#          - Fully automated cluster creation for learning VMs
+#          - ENV-based Harbor password handling (no Ruby command detection)
+#          - Interactive password prompt only for provisioning
+#          - Removed all hardcoded passwords
+#          - Added kubectl aliases for learning VMs
+#          - Updated documentation
 #   v7.1.1 - Fix Python heredoc quoting to prevent shell variable expansion
-#            - Use quoted heredoc <<'PYEOF' to prevent $1 expansion
-#            - Pass variables as environment variables
+#          - Use quoted heredoc <<'PYEOF' to prevent $1 expansion
+#          - Pass variables as environment variables
 #   v7.1.0 - Use Python to generate registries.yaml
 #   v7.0.9 - Fixed registries.yaml generation syntax error
 #   v7.0.8 - Use echo per line for registries.yaml generation
@@ -69,10 +81,10 @@
 # =============================================================================
 
 LAB_NAME        = "Enterprise Cloud-Native DevSecOps Lab"
-LAB_VERSION     = "7.1.1"
+LAB_VERSION     = "8.0.0"
 LAB_AUTHOR      = "Miguel Carlo (solo2121)"
 LAB_CREATED     = "2025"
-LAB_UPDATED     = "2026-06-16"
+LAB_UPDATED     = "2026-06-18"
 LAB_STATUS      = "Active & Maintained"
 
 puts "=================================================="
@@ -85,6 +97,8 @@ puts "=================================================="
 
 require 'ipaddr'
 require 'rexml/document'
+require 'io/console'
+
 ENV['LIBVIRT_DEFAULT_URI'] ||= 'qemu:///system'
 Vagrant.require_version ">= 2.2.0"
 
@@ -113,8 +127,11 @@ KYVERNO_VERSION = "3.3.7"
 CERT_MANAGER_VERSION = "1.16.2"
 TERRAFORM_VERSION = "1.9.8"
 
-# Harbor Password Configuration (can be overridden via env var)
-HARBOR_PASS = ENV['HARBOR_PASS'] || 'Harbor12345'
+# Modern Tools Versions
+OPENTOFU_VERSION = "1.8.0"           # OpenTofu (Terraform fork)
+KIND_VERSION = "v0.24.0"             # Kind (Kubernetes in Docker)
+K3D_VERSION = "v5.7.5"               # K3d (K3s in Docker)
+KUBECTL_VERSION = "v1.31.0"          # Kubectl for learning VMs
 
 # Auto-detect libvirt network
 def detect_libvirt_network
@@ -161,6 +178,90 @@ end
 
 MASTER_IP = vm_ip(114)
 File.write("/tmp/lab.env", "MASTER_IP=#{MASTER_IP}\nNETWORK_BASE=#{NETWORK_BASE}\n")
+
+# =============================================================================
+# HARBOR PASSWORD HANDLING - Simple ENV based approach
+# =============================================================================
+#
+# This is the correct way to handle Harbor password in Vagrant.
+# No Ruby command detection - just use the environment variable.
+#
+# The password must be set in the environment before running vagrant:
+#   export HARBOR_PASS='YourStrongPassword'
+#   vagrant up
+#
+# Or use the manager script which handles prompting and passing the variable.
+#
+# =============================================================================
+
+# Get password from environment
+HARBOR_PASS = ENV['HARBOR_PASS']
+
+# Check if we need the password (only if HARBOR_PASS is not set)
+if HARBOR_PASS.nil? || HARBOR_PASS.empty?
+  # Check if we're running interactively and this looks like a provisioning command
+  if $stdin.tty? && ARGV.any? { |arg| arg == 'up' || arg == 'provision' || arg == 'reload' }
+    # Only prompt if this looks like a provisioning command
+    if ARGV.include?('--provision') || ARGV.include?('provision')
+      puts "\n" + "="*60
+      puts "  HARBOR REGISTRY PASSWORD REQUIRED"
+      puts "="*60
+      puts ""
+      puts "Harbor container registry will be available at: https://#{MASTER_IP}:30001"
+      puts "Please set an admin password for Harbor."
+      puts "The password must be at least 8 characters long."
+      puts ""
+      
+      begin
+        # Prompt for password using io/console (no echo)
+        print "Enter Harbor admin password: "
+        password = STDIN.noecho(&:gets).chomp
+        puts ""
+        
+        if password.nil? || password.empty?
+          abort("ERROR: Password cannot be empty.")
+        end
+        
+        if password.length < 8
+          puts "WARNING: Password is less than 8 characters. This is not recommended."
+          print "Continue with weak password? (y/N): "
+          confirm = STDIN.gets.chomp.downcase
+          unless confirm == 'y' || confirm == 'yes'
+            abort("Password creation cancelled.")
+          end
+        end
+        
+        print "Confirm password: "
+        confirm_password = STDIN.noecho(&:gets).chomp
+        puts ""
+        
+        if password != confirm_password
+          abort("ERROR: Passwords do not match.")
+        end
+        
+        ENV['HARBOR_PASS'] = password
+        HARBOR_PASS = password
+        puts "Password configured successfully."
+        puts "="*60
+        puts ""
+        
+      rescue Interrupt
+        puts "\nPassword input cancelled."
+        exit 1
+      end
+    else
+      # Not a provisioning command, just use placeholder
+      ENV['HARBOR_PASS'] = 'PLACEHOLDER_FOR_PARSING'
+      HARBOR_PASS = 'PLACEHOLDER_FOR_PARSING'
+      puts "Note: HARBOR_PASS not set. This is fine for this command."
+      puts "      Password will be required for provisioning."
+    end
+  else
+    # Non-interactive mode - use placeholder
+    ENV['HARBOR_PASS'] = 'PLACEHOLDER_FOR_PARSING'
+    HARBOR_PASS = 'PLACEHOLDER_FOR_PARSING'
+  end
+end
 
 # ============================================================
 # COMPLETE ENTERPRISE AIRGAP IMAGES - ALL ORIGINAL + MISSING ADDED
@@ -266,6 +367,11 @@ Vagrant.configure("2") do |config|
     cat > /vagrant/lab.env << 'EOF'
 MASTER_IP=#{MASTER_IP}
 NETWORK_BASE=#{NETWORK_BASE}
+OPENTOFU_VERSION=#{OPENTOFU_VERSION}
+KIND_VERSION=#{KIND_VERSION}
+K3D_VERSION=#{K3D_VERSION}
+KUBECTL_VERSION=#{KUBECTL_VERSION}
+HARBOR_PASS=#{HARBOR_PASS}
 EOF
   SHELL
 
@@ -287,7 +393,29 @@ EOF
     "node2" => { box: "bento/ubuntu-24.04", ip: vm_ip(31), memory: 1024, cpus: 1, role: "ansible" }
   }
 
-  all_vms = cluster.merge(linux_labs).merge(ansible_nodes)
+  # Modern Learning VMs
+  kind_labs = {
+    "kind-lab" => {
+      box: "bento/ubuntu-24.04",
+      ip: vm_ip(40),
+      memory: 4096,
+      cpus: 2,
+      role: "kind"
+    }
+  }
+
+  k3d_labs = {
+    "k3d-lab" => {
+      box: "bento/ubuntu-24.04",
+      ip: vm_ip(41),
+      memory: 4096,
+      cpus: 2,
+      role: "k3d"
+    }
+  }
+
+  # Merge all VMs
+  all_vms = cluster.merge(linux_labs).merge(ansible_nodes).merge(kind_labs).merge(k3d_labs)
   vms_to_start = all_vms.select { |name, _| should_start?(name, LAB_PROFILE, START_VMS) }
   hosts_entries = all_vms.map { |n, c| "#{c[:ip]} #{n}" }.join("\n")
 
@@ -975,6 +1103,7 @@ PYEOF
           KYVERNO_VERSION="#{KYVERNO_VERSION}"
           CERT_MANAGER_VERSION="#{CERT_MANAGER_VERSION}"
           TERRAFORM_VERSION="#{TERRAFORM_VERSION}"
+          OPENTOFU_VERSION="#{OPENTOFU_VERSION}"
           FAST_BOOT="#{FAST_BOOT}"
 
           # ========== TERRAFORM INSTALLATION ==========
@@ -1034,6 +1163,67 @@ PYEOF
             echo "Terraform already installed, skipping (FAST_BOOT=true)"
           fi
           # ========== END TERRAFORM INSTALLATION ==========
+
+          # ========== OPENTOFU INSTALLATION ==========
+          OPENTOFU_MARKER="/var/lib/opentofu_installed"
+
+          if [ ! -f "$OPENTOFU_MARKER" ] || [ "${FAST_BOOT}" != "true" ]; then
+            echo "=========================================="
+            echo "INSTALLING OPENTOFU ${OPENTOFU_VERSION}"
+            echo "=========================================="
+            
+            # Clean up any previous installations
+            rm -f /usr/local/bin/tofu
+            
+            # Download and install OpenTofu
+            TEMP_DIR=$(mktemp -d)
+            cd "$TEMP_DIR"
+            
+            ARCH=$(uname -m | sed 's/x86_64/amd64/' | sed 's/aarch64/arm64/')
+            echo "Detected architecture: ${ARCH}"
+            
+            echo "Downloading OpenTofu ${OPENTOFU_VERSION} for ${ARCH}..."
+            curl -fsSL "https://github.com/opentofu/opentofu/releases/download/v${OPENTOFU_VERSION}/tofu_${OPENTOFU_VERSION}_linux_${ARCH}.zip" -o tofu.zip
+            
+            echo "Extracting OpenTofu..."
+            apt-get install -y unzip 2>/dev/null || dnf install -y unzip 2>/dev/null || zypper install -y unzip 2>/dev/null || true
+            unzip -q tofu.zip
+            
+            echo "Installing OpenTofu to /usr/local/bin..."
+            mv tofu /usr/local/bin/
+            chmod +x /usr/local/bin/tofu
+            
+            # Verify installation
+            if command -v tofu >/dev/null 2>&1; then
+              TOFU_VERSION=$(tofu version -json 2>/dev/null | grep -o '"version":"[^"]*"' | cut -d'"' -f4 || tofu version | head -1)
+              echo "OpenTofu installed successfully: ${TOFU_VERSION}"
+              
+              # Enable bash completion
+              tofu -install-autocomplete 2>/dev/null || true
+              
+              # Create marker file
+              touch "$OPENTOFU_MARKER"
+            else
+              echo "ERROR: OpenTofu installation failed"
+              exit 1
+            fi
+            
+            # Cleanup
+            cd /
+            rm -rf "$TEMP_DIR"
+            
+            echo "=========================================="
+            echo "OpenTofu is ready to use!"
+            echo "Run 'tofu --version' to verify"
+            echo ""
+            echo "You can now use either:"
+            echo "  terraform init && terraform plan"
+            echo "  tofu init && tofu plan"
+            echo "=========================================="
+          else
+            echo "OpenTofu already installed, skipping (FAST_BOOT=true)"
+          fi
+          # ========== END OPENTOFU INSTALLATION ==========
 
           export PATH=$PATH:/usr/local/bin
           export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
@@ -1365,6 +1555,7 @@ EOF
             echo "Grafana: https://${MASTER_IP}:${GRAFANA_PORT} (admin/admin)"
             echo "Argo CD: https://${MASTER_IP}:30003 (admin / password above)"
             echo "Terraform: $(terraform version | head -1)"
+            echo "OpenTofu: $(tofu version | head -1)"
             echo ""
             echo "To access services:"
             echo " Grafana: https://${MASTER_IP}:${GRAFANA_PORT}"
@@ -1478,6 +1669,237 @@ EOF
             fi
             echo " Waiting for ansible_key.pub... ($i/30)"; sleep 2
           done
+        SHELL
+
+      # ================= KIND LAB PROVISIONING =================
+      when "kind"
+        # Port forward for Kind API
+        vm.vm.network "forwarded_port", guest: 6443, host: 26443, host_ip: "127.0.0.1"
+
+        # Ensure Docker is running
+        vm.vm.provision "shell", inline: <<-SHELL
+          systemctl enable --now docker 2>/dev/null || true
+          usermod -aG docker vagrant 2>/dev/null || true
+        SHELL
+
+        # Install and setup Kind (fully automated)
+        vm.vm.provision "shell", inline: <<-SHELL
+          set -euo pipefail
+
+          KIND_VERSION="${KIND_VERSION:-v0.24.0}"
+          KUBECTL_VERSION="${KUBECTL_VERSION:-v1.31.0}"
+          FAST_BOOT="${FAST_BOOT:-false}"
+          MARKER_FILE="/var/lib/kind_installed"
+
+          if [ -f "$MARKER_FILE" ] && [ "$FAST_BOOT" = "true" ]; then
+            echo "Kind already installed, skipping (FAST_BOOT=true)"
+            exit 0
+          fi
+
+          echo "=========================================="
+          echo "INSTALLING KIND (Kubernetes in Docker)"
+          echo "=========================================="
+
+          # Install kubectl if not present
+          if ! command -v kubectl >/dev/null 2>&1; then
+            echo "Installing kubectl ${KUBECTL_VERSION}..."
+            curl -fsSL "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl" -o /usr/local/bin/kubectl
+            chmod +x /usr/local/bin/kubectl
+            echo 'source <(kubectl completion bash)' >> /home/vagrant/.bashrc
+          fi
+
+          # Install kind
+          echo "Installing kind ${KIND_VERSION}..."
+          curl -fsSL "https://kind.sigs.k8s.io/dl/${KIND_VERSION}/kind-linux-amd64" -o /usr/local/bin/kind
+          chmod +x /usr/local/bin/kind
+
+          # Create kind configuration
+          mkdir -p /opt/kind
+
+          cat > /opt/kind/config.yaml <<'EOF'
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+- role: control-plane
+- role: worker
+- role: worker
+networking:
+  apiServerAddress: "0.0.0.0"
+  apiServerPort: 6443
+EOF
+
+          echo ""
+          echo "Creating Kind cluster automatically..."
+          echo "=========================================="
+
+          # Clean up existing cluster if any
+          kind delete cluster --name lab 2>/dev/null || true
+
+          # Create new cluster
+          if kind create cluster --config /opt/kind/config.yaml --name lab; then
+            echo "Kind cluster 'lab' created successfully!"
+            
+            # Set up kubeconfig
+            mkdir -p /home/vagrant/.kube
+            kind get kubeconfig --name lab > /home/vagrant/.kube/config
+            chown -R vagrant:vagrant /home/vagrant/.kube
+            
+            echo ""
+            echo "Cluster status:"
+            kubectl cluster-info
+            kubectl get nodes
+            
+            # Create convenience aliases
+            cat >> /home/vagrant/.bashrc <<'EOF'
+# Kind aliases
+alias kind-kill='kind delete cluster --name lab'
+alias kind-restart='kind delete cluster --name lab && kind create cluster --config /opt/kind/config.yaml --name lab'
+alias kind-status='kubectl get nodes && kubectl get pods -A'
+EOF
+            
+          else
+            echo "ERROR: Kind cluster creation failed"
+            exit 1
+          fi
+
+          touch "$MARKER_FILE"
+
+          echo ""
+          echo "=========================================="
+          echo "Kind installed and cluster running!"
+          echo ""
+          echo "Access the Kind cluster:"
+          echo "  kubectl get nodes"
+          echo "  kubectl get pods -A"
+          echo ""
+          echo "Useful commands:"
+          echo "  kind-kill     - Delete the cluster"
+          echo "  kind-restart  - Restart the cluster"
+          echo "  kind-status   - Show cluster status"
+          echo "=========================================="
+        SHELL
+
+      # ================= K3D LAB PROVISIONING =================
+      when "k3d"
+        # Port forward for K3d API and services
+        vm.vm.network "forwarded_port", guest: 6443, host: 26444, host_ip: "127.0.0.1"
+        vm.vm.network "forwarded_port", guest: 8080, host: 28080, host_ip: "127.0.0.1"
+
+        # Ensure Docker is running
+        vm.vm.provision "shell", inline: <<-SHELL
+          systemctl enable --now docker 2>/dev/null || true
+          usermod -aG docker vagrant 2>/dev/null || true
+        SHELL
+
+        # Install and setup K3d (fully automated)
+        vm.vm.provision "shell", inline: <<-SHELL
+          set -euo pipefail
+
+          K3D_VERSION="${K3D_VERSION:-v5.7.5}"
+          KUBECTL_VERSION="${KUBECTL_VERSION:-v1.31.0}"
+          FAST_BOOT="${FAST_BOOT:-false}"
+          MARKER_FILE="/var/lib/k3d_installed"
+
+          if [ -f "$MARKER_FILE" ] && [ "$FAST_BOOT" = "true" ]; then
+            echo "K3d already installed, skipping (FAST_BOOT=true)"
+            exit 0
+          fi
+
+          echo "=========================================="
+          echo "INSTALLING K3D (K3s in Docker)"
+          echo "=========================================="
+
+          # Install kubectl if not present
+          if ! command -v kubectl >/dev/null 2>&1; then
+            echo "Installing kubectl ${KUBECTL_VERSION}..."
+            curl -fsSL "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl" -o /usr/local/bin/kubectl
+            chmod +x /usr/local/bin/kubectl
+            echo 'source <(kubectl completion bash)' >> /home/vagrant/.bashrc
+          fi
+
+          # Install k3d
+          echo "Installing k3d ${K3D_VERSION}..."
+          curl -fsSL https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | TAG=${K3D_VERSION} bash
+
+          # Install helm (optional but useful)
+          if ! command -v helm >/dev/null 2>&1; then
+            echo "Installing helm..."
+            curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+          fi
+
+          # Create k3d configuration
+          mkdir -p /opt/k3d
+
+          cat > /opt/k3d/config.yaml <<'EOF'
+apiVersion: k3d.io/v1alpha5
+kind: Simple
+metadata:
+  name: lab
+servers: 1
+agents: 2
+ports:
+  - port: 8080:80@loadbalancer
+  - port: 8443:443@loadbalancer
+options:
+  k3d:
+    wait: true
+    timeout: 60s
+  k3s:
+    extraArgs:
+      - arg: --disable=traefik
+        nodeFilters:
+          - server:*
+EOF
+
+          echo ""
+          echo "Creating K3d cluster automatically..."
+          echo "=========================================="
+
+          # Clean up existing cluster if any
+          k3d cluster delete lab 2>/dev/null || true
+
+          # Create new cluster
+          if k3d cluster create lab --config /opt/k3d/config.yaml; then
+            echo "K3d cluster 'lab' created successfully!"
+            
+            # Set up kubeconfig
+            mkdir -p /home/vagrant/.kube
+            k3d kubeconfig get lab > /home/vagrant/.kube/config
+            chown -R vagrant:vagrant /home/vagrant/.kube
+            
+            echo ""
+            echo "Cluster status:"
+            kubectl cluster-info
+            kubectl get nodes
+            
+            # Create convenience aliases
+            cat >> /home/vagrant/.bashrc <<'EOF'
+# K3d aliases
+alias k3d-kill='k3d cluster delete lab'
+alias k3d-restart='k3d cluster delete lab && k3d cluster create lab --config /opt/k3d/config.yaml'
+alias k3d-status='kubectl get nodes && kubectl get pods -A'
+EOF
+            
+          else
+            echo "ERROR: K3d cluster creation failed"
+            exit 1
+          fi
+
+          touch "$MARKER_FILE"
+
+          echo ""
+          echo "=========================================="
+          echo "K3d installed and cluster running!"
+          echo ""
+          echo "Access the K3d cluster:"
+          echo "  kubectl get nodes"
+          echo "  kubectl get pods -A"
+          echo ""
+          echo "Useful commands:"
+          echo "  k3d-kill     - Delete the cluster"
+          echo "  k3d-restart  - Restart the cluster"
+          echo "  k3d-status   - Show cluster status"
+          echo "=========================================="
         SHELL
       end
     end

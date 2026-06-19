@@ -1,238 +1,362 @@
 #!/usr/bin/env bash
-set -Eeuo pipefail
+# =============================================================================
+# VAGRANT LAB MANAGER v8.0 (FINAL - HARBOR PASS FIXED)
+# =============================================================================
+#
+# Changes:
+#   - Fixed environment propagation for HARBOR_PASS
+#   - Session cache prevents repeated prompts
+#   - Start (T) no longer requires Harbor password
+#   - Provision actions prompt only once per session
+#
+# =============================================================================
 
+set -Eeuo pipefail
 export VAGRANT_DEFAULT_PROVIDER=libvirt
 
-# ============================================================
-# VAGRANT LAB MANAGER v6.2 (STABLE 2026 EDITION)
-# ============================================================
+# ========================== COLORS ==========================
+readonly RED='\033[0;31m'
+readonly GREEN='\033[0;32m'
+readonly YELLOW='\033[1;33m'
+readonly BLUE='\033[0;34m'
+readonly PURPLE='\033[0;35m'
+readonly CYAN='\033[0;36m'
+readonly WHITE='\033[1;37m'
+readonly GRAY='\033[0;90m'
+readonly BOLD='\033[1m'
+readonly NC='\033[0m'
 
-# ---------- Colors ----------
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-PURPLE='\033[0;35m'
-CYAN='\033[0;36m'
-WHITE='\033[1;37m'
-GRAY='\033[0;90m'
-BOLD='\033[1m'
-NC='\033[0m'
-
-# ---------- Groups ----------
+# ========================== GROUPS ==========================
 readonly DEVOPS=("devops-1")
 readonly WORKERS=("worker-1" "worker-2")
 readonly ANSIBLE_NODES=("node1" "node2")
 readonly LINUX_LABS=("ubuntu-lab" "rocky-lab" "alma-lab" "suse-lab")
+readonly MODERN_LABS=("kind-lab" "k3d-lab")
 
+# ========================== STATE ==========================
 declare -A machine_states=()
 declare -A machine_options=()
-machine_names=()
+IDX=1
 
-# ---------- Cleanup ----------
-cleanup() {
-    printf "\n${YELLOW}Exiting...${NC}\n"
-    exit 0
+# ========================== SESSION CACHE ==========================
+# Prevent repeated password prompts during the same session
+HARBOR_PROMPT_DONE=0
+
+# ========================== HARBOR PASSWORD HANDLING ==========================
+
+ensure_harbor_pass() {
+    if [[ -z "${HARBOR_PASS:-}" ]]; then
+        echo ""
+        echo "============================================================"
+        echo "  HARBOR REGISTRY PASSWORD REQUIRED"
+        echo "============================================================"
+        echo ""
+        echo "Harbor container registry needs an admin password."
+        echo "This is required for provisioning the main cluster."
+        echo ""
+        echo "You can also set it in advance:"
+        echo "  export HARBOR_PASS='YourStrongPassword'"
+        echo ""
+
+        read -r -s -p "Enter Harbor admin password: " HARBOR_PASS
+        echo ""
+
+        if [[ -z "${HARBOR_PASS:-}" ]]; then
+            echo -e "${RED}ERROR: Password cannot be empty.${NC}"
+            exit 1
+        fi
+
+        if [[ ${#HARBOR_PASS} -lt 8 ]]; then
+            echo -e "${YELLOW}WARNING: Password is less than 8 characters.${NC}"
+            read -r -p "Continue? (y/N): " confirm
+            [[ ! "$confirm" =~ ^[Yy]$ ]] && exit 1
+        fi
+
+        read -r -s -p "Confirm password: " HARBOR_PASS_CONFIRM
+        echo ""
+
+        if [[ "$HARBOR_PASS" != "$HARBOR_PASS_CONFIRM" ]]; then
+            echo -e "${RED}ERROR: Passwords do not match.${NC}"
+            exit 1
+        fi
+
+        export HARBOR_PASS
+        echo -e "${GREEN}Password configured successfully.${NC}"
+        echo "============================================================"
+        echo ""
+    else
+        echo -e "${GREEN}Using HARBOR_PASS from environment.${NC}"
+    fi
 }
-trap cleanup INT TERM
 
-# ---------- UI ----------
-clear_screen() {
-    clear || printf "\033[H\033[2J"
+# ========================== LAZY PROMPT (ONCE PER SESSION) ==========================
+
+ensure_harbor_pass_once() {
+    if [[ "${HARBOR_PROMPT_DONE}" -eq 1 ]]; then
+        return 0
+    fi
+
+    ensure_harbor_pass
+    HARBOR_PROMPT_DONE=1
 }
 
-header() {
+# ========================== VAGRANT WRAPPERS ==========================
+
+vagrant_cmd() {
+    # Always ensure Harbor password is exported to child processes
+    if [[ -n "${HARBOR_PASS:-}" ]]; then
+        export HARBOR_PASS
+    fi
+
+    # Redirect stdin to prevent interactive prompts
+    vagrant "$@" </dev/null 2>&1
+}
+
+vagrant_status() {
+    HARBOR_PASS="${HARBOR_PASS:-}" vagrant status --machine-readable </dev/null 2>/dev/null || true
+}
+
+# SSH doesn't need the password wrapper
+vagrant_ssh() {
+    vagrant ssh "$@"
+}
+
+# ========================== UI ==========================
+
+clear_screen(){ printf "\033[H\033[2J"; }
+
+header(){
     printf "${BLUE}┌──────────────────────────────────────────────┐${NC}\n"
-    printf "${BLUE}│ ${WHITE}${BOLD}VAGRANT LAB MANAGER v6.2${NC}           ${BLUE}│${NC}\n"
+    printf "${BLUE}│ ${BOLD}${WHITE}VAGRANT LAB MANAGER v8.5${NC}                  │${NC}\n"
     printf "${BLUE}└──────────────────────────────────────────────┘${NC}\n"
 }
 
-pause() {
-    read -r -p "Press Enter to continue..."
-}
-
-error() {
-    printf "${RED}✗ %s${NC}\n" "$1"
-}
-
-icon() {
+state_icon(){
     case "$1" in
         running) echo -e "${GREEN}▶${NC}" ;;
         poweroff) echo -e "${RED}■${NC}" ;;
         not_created) echo -e "${YELLOW}○${NC}" ;;
-        saved) echo -e "${CYAN}◉${NC}" ;;
         *) echo -e "${GRAY}?${NC}" ;;
     esac
 }
 
-# ---------- Requirements ----------
-check_requirements() {
-    command -v vagrant >/dev/null || { error "vagrant not installed"; exit 1; }
-    vagrant plugin list | grep -qi libvirt || { error "vagrant-libvirt missing"; exit 1; }
-}
+# ========================== REFRESH ==========================
 
-# ---------- Refresh ----------
-refresh() {
+refresh(){
     machine_states=()
-    machine_names=()
+    IDX=1
 
-    while IFS=',' read -r _ name type state; do
+    while IFS=',' read -r _ name type state _; do
         [[ "$type" != "state" ]] && continue
         [[ -z "$name" ]] && continue
         machine_states["$name"]="$state"
-    done < <(vagrant status --machine-readable 2>/dev/null || true)
-
-    if ((${#machine_states[@]} > 0)); then
-        mapfile -t machine_names < <(printf '%s\n' "${!machine_states[@]}" | sort)
-    fi
+    done < <(vagrant_status)
 }
 
-# ---------- VM ACTION ----------
-run_vm() {
-    local action="$1"
-    local vm="$2"
+# ========================== GROUP DISPLAY ==========================
 
-    case "$action" in
-        ssh) vagrant ssh "$vm" ;;
-        up) vagrant up "$vm" --provision ;;
-        start) vagrant up "$vm" ;;
-        halt) vagrant halt "$vm" ;;
-        reload) vagrant reload "$vm" --provision ;;
-        provision) vagrant provision "$vm" ;;
-        destroy) vagrant destroy -f "$vm" ;;
-    esac
-}
-
-# ---------- GROUP DISPLAY ----------
-show_group() {
+show_group(){
     local title="$1"
     shift
+    local vms=("$@")
 
     echo
     echo -e "${PURPLE}${BOLD}${title}${NC}"
     printf "${GRAY}────────────────────────────────────────────${NC}\n"
 
-    for vm in "$@"; do
+    for vm in "${vms[@]}"; do
         local state="${machine_states[$vm]:-not_created}"
 
-        printf " ${CYAN}[%02d]${NC} %-18s %-3s %-12s\n" \
-            "$IDX" \
-            "$vm" \
-            "$(icon "$state")" \
-            "$state"
+        printf " ${CYAN}[%02d]${NC} %-15s %s %-12s\n" \
+            "$IDX" "$vm" "$(state_icon "$state")" "$state"
 
         machine_options["$IDX"]="$vm"
         ((IDX++))
     done
 }
 
-# ---------- VM MENU ----------
-vm_menu() {
+# ========================== VM MENU ==========================
+
+vm_menu(){
     local vm="$1"
+    local sel
 
     while true; do
         refresh
         clear_screen
         header
 
-        echo
-        printf " VM:    ${CYAN}%s${NC}\n" "$vm"
-        printf " State: ${YELLOW}%s${NC}\n" "${machine_states[$vm]:-not_created}"
+        local state="${machine_states[$vm]:-not_created}"
 
         echo
-        echo "[S] SSH"
-        echo "[U] Up + Provision"
-        echo "[T] Start"
-        echo "[H] Halt"
-        echo "[R] Reload"
-        echo "[P] Provision"
-        echo "[D] Destroy"
-        echo "[B] Back"
-        echo "[Q] Quit"
+        echo -e "${PURPLE}${BOLD}VM MANAGEMENT${NC}"
+        printf "${GRAY}────────────────────────────────────────────${NC}\n"
+        echo -e "VM:    ${CYAN}$vm${NC}"
+        echo -e "State: $state"
+
+        # Show Harbor status
+        if [[ -n "${HARBOR_PASS:-}" ]] && [[ "${HARBOR_PROMPT_DONE}" -eq 1 ]]; then
+            echo -e "Harbor: ${GREEN}configured (session)${NC}"
+        elif [[ -n "${HARBOR_PASS:-}" ]]; then
+            echo -e "Harbor: ${GREEN}configured${NC}"
+        else
+            echo -e "Harbor: ${YELLOW}not set (only needed for provision)${NC}"
+        fi
 
         echo
-        read -r -p "Selection › " sel
+        echo -e "${CYAN}[S] SSH (no password needed)"
+        echo -e "[U] Up with Provision (password needed once)"
+        echo -e "[T] Start (no provision, no password)"
+        echo -e "[H] Halt (no password)"
+        echo -e "[R] Reload with Provision (password needed once)"
+        echo -e "[P] Provision only (password needed once)"
+        echo -e "[D] Destroy (no password)"
+        echo -e "[B] Back"
+        echo -e "[Q] Quit${NC}"
+        echo
+
+        printf "${BOLD}Action › ${NC}"
+        read -r sel
 
         case "${sel^^}" in
-            S) run_vm ssh "$vm"; pause ;;
-            U) run_vm up "$vm"; pause ;;
-            T) run_vm start "$vm"; pause ;;
-            H) run_vm halt "$vm"; pause ;;
-            R) run_vm reload "$vm"; pause ;;
-            P) run_vm provision "$vm"; pause ;;
-            D) run_vm destroy "$vm"; pause ;;
-            B) return ;;
-            Q) exit 0 ;;
-            *) error "Invalid selection"; pause ;;
+            S)
+                vagrant_ssh "$vm"
+                ;;
+
+            U)
+                ensure_harbor_pass_once
+                vagrant_cmd up "$vm" --provision
+                ;;
+
+            T)
+                vagrant_cmd up "$vm"
+                ;;
+
+            H)
+                vagrant_cmd halt "$vm"
+                ;;
+
+            R)
+                ensure_harbor_pass_once
+                vagrant_cmd reload "$vm" --provision
+                ;;
+
+            P)
+                ensure_harbor_pass_once
+                vagrant_cmd provision "$vm"
+                ;;
+
+            D)
+                vagrant_cmd destroy -f "$vm"
+                ;;
+
+            B)
+                return
+                ;;
+
+            Q)
+                exit 0
+                ;;
+
+            *)
+                echo -e "${RED}Invalid option${NC}"
+                ;;
         esac
+
+        read -r -p "Press Enter to continue..."
     done
 }
 
-# ---------- GROUP ACTIONS ----------
-start_group() {
-    case "$1" in
-        devops)   for vm in "${DEVOPS[@]}"; do vagrant up "$vm" --provision; done ;;
-        worker)   for vm in "${WORKERS[@]}"; do vagrant up "$vm" --provision; done ;;
-        ansible)  for vm in "${ANSIBLE_NODES[@]}"; do vagrant up "$vm" --provision; done ;;
-        labs)     for vm in "${LINUX_LABS[@]}"; do vagrant up "$vm" --provision; done ;;
-        all)      vagrant up --provision ;;
+# ========================== GROUP ACTIONS ==========================
+
+start_group(){
+    local group="$1"
+    local vms=()
+
+    case "$group" in
+        devops)
+            ensure_harbor_pass_once
+            vms=("${DEVOPS[@]}")
+            ;;
+        worker)
+            vms=("${WORKERS[@]}")
+            ;;
+        ansible)
+            vms=("${ANSIBLE_NODES[@]}")
+            ;;
+        labs)
+            vms=("${LINUX_LABS[@]}")
+            ;;
+        modern)
+            vms=("${MODERN_LABS[@]}")
+            ;;
+        all)
+            ensure_harbor_pass_once
+            vagrant_cmd up --provision
+            return
+            ;;
+        *)
+            return
+            ;;
     esac
+
+    for vm in "${vms[@]}"; do
+        echo -e "${YELLOW}Starting $vm...${NC}"
+        vagrant_cmd up "$vm"
+    done
 }
 
-halt_all() {
-    vagrant halt -f || true
+halt_all(){
+    echo -e "${YELLOW}Halting all VMs...${NC}"
+    vagrant_cmd halt -f || true
 }
 
-# ---------- MAIN ----------
-check_requirements
+# ========================== MAIN ==========================
+
+# NO automatic password prompt here!
+# Password is only requested when provisioning is needed
 
 while true; do
     refresh
     clear_screen
+    header
 
     IDX=1
     machine_options=()
-
-    header
 
     show_group "DEVOPS" "${DEVOPS[@]}"
     show_group "WORKERS" "${WORKERS[@]}"
     show_group "ANSIBLE NODES" "${ANSIBLE_NODES[@]}"
     show_group "LINUX LABS" "${LINUX_LABS[@]}"
+    show_group "MODERN LABS" "${MODERN_LABS[@]}"
 
     echo
-    echo "[A] Start All"
-    echo "[V] Start DevOps"
-    echo "[W] Start Workers"
-    echo "[N] Start Ansible"
-    echo "[L] Start Linux Labs"
-    echo "[B] Halt All"
-    echo "[R] Refresh"
-    echo "[Q] Quit"
-
+    echo -e "${CYAN}[A] Start All (provision)  [V] DevOps (provision)"
+    echo -e "[W] Workers (no provision)   [N] Ansible (no provision)"
+    echo -e "[L] Linux Labs (no provision) [M] Modern (no provision)"
+    echo -e "[B] Halt All  [R] Refresh  [Q] Quit${NC}"
     echo
-    read -r -p "Selection › " sel
+    echo -e "${GRAY}Note: Harbor password only required once per session for provisioning${NC}"
+    echo
+
+    printf "${BOLD}Selection › ${NC}"
+    read -r sel
 
     if [[ "$sel" =~ ^[0-9]+$ ]]; then
-        if [[ -n "${machine_options[$sel]:-}" ]]; then
-            vm_menu "${machine_options[$sel]}"
-        else
-            error "Invalid VM selection"
-            pause
-        fi
+        vm_menu "${machine_options[$sel]}"
         continue
     fi
 
     case "${sel^^}" in
-        A) start_group all; pause ;;
-        V) start_group devops; pause ;;
-        W) start_group worker; pause ;;
-        N) start_group ansible; pause ;;
-        L) start_group labs; pause ;;
-        B) halt_all; pause ;;
-        R) ;;
+        A) start_group all ;;
+        V) start_group devops ;;
+        W) start_group worker ;;
+        N) start_group ansible ;;
+        L) start_group labs ;;
+        M) start_group modern ;;
+        B) halt_all ;;
+        R) continue ;;
         Q) exit 0 ;;
-        *) error "Invalid selection"; pause ;;
+        *) echo -e "${RED}Invalid option${NC}" ;;
     esac
-
 done
