@@ -17,6 +17,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.1.2] - 2026-06-20 — AD Pentest VLAN Lab
+
+### Fixed
+- Dynamic Linux interface detection (no more hardcoded `eth1`)
+- Production-grade Windows static IP configuration (no provisioning hang)
+- Domain join with hostname rename check to prevent duplicate joins
+- Improved DC readiness detection with ping check before domain join
+- Windows Defender disabled via dedicated function
+- Domain name defined as literal in PowerShell blocks to prevent
+  Ruby interpolation issues
+- Correct RAM calculation banner accounting for all VMs
+- Vagrant plugin check (`vagrant-reload`) with clear error message
+- Libvirt default prefix cleared to prevent VM name collisions
+
+---
+
 ## [2.1.1] - 2026-06-18 — AD Pentest VLAN Lab
 
 ### Added
