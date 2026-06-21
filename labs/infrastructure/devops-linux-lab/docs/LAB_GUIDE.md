@@ -3,8 +3,6 @@
 **Lab version:** 8.0.0
 **Author:** Miguel A. Carlo
 
-> This guide covers hands-on usage of every component in the lab. All commands run from inside the lab VMs via `vagrant ssh` unless noted otherwise.
-
 ---
 
 ## Table of Contents
