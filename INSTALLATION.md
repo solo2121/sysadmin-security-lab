@@ -2,6 +2,28 @@
 
 This guide provides detailed instructions for installing and setting up the Sysadmin Security Lab environment.
 
+---
+
+## Quick Start (Ubuntu 24.04)
+
+This section is for experienced users who want to get the lab running quickly on a fresh Ubuntu 24.04 system.
+
+```bash
+# Install all prerequisites
+sudo apt update && sudo apt install -y \
+  qemu-system-x86 libvirt-daemon-system virtinst libvirt-clients bridge-utils \
+  virt-manager git software-properties-common ansible python3-pip
+
+# Configure user and services
+sudo usermod -aG libvirt,kvm $USER && sudo systemctl enable --now libvirtd
+
+# Clone the repo and start the primary lab
+git clone https://github.com/solo2121/sysadmin-security-lab.git
+cd sysadmin-security-lab/labs/infrastructure/devops-linux-lab && vagrant up
+```
+
+---
+
 ## System Requirements
 
 ### Minimum Requirements
