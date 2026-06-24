@@ -6,3 +6,11 @@ rich>=13.0.0
 pyyaml>=6.0
 aiofiles>=23.0.0
 requests>=2.31.0
+
+# lab_attack_automation.py dependencies
+# Used by: labs/security/ad-pentest/scripts/lab_attack_automation.py
+# Install with: pip install -r labs/security/requirements.txt
+
+aiohttp>=3.9.0
+colorama>=0.4.6
+urllib3>=2.0.0
