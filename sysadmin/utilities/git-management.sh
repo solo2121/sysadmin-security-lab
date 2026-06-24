@@ -78,27 +78,20 @@ add_files() {
     printf "\\n"
     
     read -rp "Add all files? (y/n) or specify files: " choice
-    
+
     case "$choice" in
         [yY]|[yY][eE][sS])
             git add .
             printf "All files added to staging area.\\n"
             ;;
-        [nN]|[nN][oO])
-            read -rp "Enter file names (space separated): " -a files_array
-            if (( ${#files_array[@]} == 0 )); then
-                printf "No files specified.\\n" >&2
-                return 1
-            fi
-            git add "${files_array[@]}"
-            printf "Selected files added to staging area.\\n"
-            ;;
         *)
-            if [[ -n "$choice" ]]; then
-                git add "$choice"
-                printf "Files added to staging area.\\n"
+            # Handles both 'n' and direct file input
+            read -rp "Enter file names to add (space-separated), or press Enter to cancel: " -a files_array
+            if (( ${#files_array[@]} > 0 )); then
+                git add "${files_array[@]}"
+                printf "Selected files added to staging area.\\n"
             else
-                printf "No input provided.\\n" >&2
+                printf "No files added.\\n"
                 return 1
             fi
             ;;
