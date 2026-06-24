@@ -231,9 +231,17 @@ add_record_interactive() {
     read -r -p "Enter record value: " RECORD_VALUE
 
     # Increment serial number
-    CURRENT_SERIAL=$(grep -Po '\d+' "$ZONE_FILE" | head -1)
-    NEW_SERIAL=$((CURRENT_SERIAL + 1))
-    sed -i "s/$CURRENT_SERIAL/$NEW_SERIAL/" "$ZONE_FILE"
+    # Using YYYYMMDDNN format for serial
+    CURRENT_SERIAL=$(awk '/Serial/{print $1}' "$ZONE_FILE")
+    TODAY_SERIAL=$(date +%Y%m%d01)
+
+    if [[ "$CURRENT_SERIAL" -ge "$TODAY_SERIAL" ]]; then
+        NEW_SERIAL=$((CURRENT_SERIAL + 1))
+    else
+        NEW_SERIAL="$TODAY_SERIAL"
+    fi
+    
+    sed -i "s/$CURRENT_SERIAL ; Serial/$NEW_SERIAL ; Serial/" "$ZONE_FILE"
 
     # Add new record
     echo "$RECORD_NAME    IN      $RECORD_TYPE      $RECORD_VALUE" >> "$ZONE_FILE"
