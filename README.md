@@ -59,6 +59,7 @@ A Windows-centric enterprise attack simulation environment consisting of Windows
 | Cloud Simulation | LocalStack (AWS S3, IAM, EC2) |
 | Legacy Targets | Metasploitable2, OWASP Juice Shop |
 
+**Attack Automation (v1.8+):** Includes `lab_attack_automation.py`, a plugin-based framework for orchestrating modern AD, AD CS, and cloud attack chains.
 **Modern attack vectors (v1.8):** NoPac (CVE-2021-42287), Resource-Based Constrained Delegation (RBCD), AD CS ESC9 (no security extension), LLMNR/NBNS poisoning, additional Kerberoastable service accounts.
 
 **Vagrantfile:** `labs/security/ad-pentest/Vagrantfile` (v1.8 Enterprise Edition with Cloud & LLM Modern Attacks)
