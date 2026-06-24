@@ -37,6 +37,7 @@ import socket
 import time
 from enum import Enum, auto
 from typing import Dict, List, NamedTuple, Optional
+import argparse
 
 
 class ScanType(Enum):
@@ -98,12 +99,19 @@ async def scan_port(
                     banner=banner
                 )
         # Other scan types would be implemented here
+        # For now, return an error for unimplemented types
+        if scan_type in (ScanType.TCP_SYN, ScanType.UDP):
+            return ScanResult(
+                port=port, is_open=False, scan_type=scan_type,
+                error=f"Scan type {scan_type.name} not yet implemented."
+            )
+    except socket.timeout:
         return ScanResult(
-            port=port,
-            is_open=False,
-            scan_type=scan_type,
-            error=f"Scan type {scan_type.name} not implemented"
+            port=port, is_open=False, scan_type=scan_type,
+            error="filtered (timeout)"
         )
+    except ConnectionRefusedError:
+        return ScanResult(port=port, is_open=False, scan_type=scan_type)
     except Exception as e:
         return ScanResult(
             port=port,
@@ -156,7 +164,12 @@ def display_menu() -> Dict:
     for i, scan_type in enumerate(ScanType, 1):
         print(f"{i}. {scan_type.name.replace('_', ' ').title()}")
     scan_choice = int(input("Select scan type (1-3): ")) - 1
-    scan_type = list(ScanType)[scan_choice]
+    selected_scan_type = list(ScanType)[scan_choice]
+
+    if selected_scan_type in (ScanType.TCP_SYN, ScanType.UDP) and not check_privileges():
+        print("\n[!] Warning: This scan type requires root/admin privileges.")
+        if input("Continue anyway? (y/n): ").lower() != 'y':
+            exit("Exiting.")
 
     # Get advanced options
     print("\nAdvanced Options:")
@@ -167,7 +180,7 @@ def display_menu() -> Dict:
     return {
         'target': target,
         'ports': ports,
-        'scan_type': scan_type,
+        'scan_type': selected_scan_type,
         'timeout': timeout,
         'rate_limit': rate_limit,
         'randomize': randomize
@@ -177,10 +190,10 @@ def display_menu() -> Dict:
 def display_results(results: List[ScanResult]):
     """Display scan results in a readable format."""
     open_ports = [r for r in results if r.is_open]
-    filtered_ports = [r for r in results if not r.is_open
-                     and "filtered" in str(r.error)]
-    closed_ports = [r for r in results if not r.is_open and not r.error]
-    error_ports = [r for r in results if r.error and "filtered" not in str(r.error)]
+    filtered_ports = [r for r in results if "filtered" in str(r.error)]
+    closed_ports = [r for r in results if not r.is_open and not r.error and "filtered" not in str(r.error)]
+    error_ports = [r for r in results if r.error and "filtered" not in str(r.error)
+                   and "not yet implemented" not in str(r.error)]
 
     print("\n" + "=" * 50)
     print("SCAN RESULTS".center(50))
@@ -205,19 +218,62 @@ def display_results(results: List[ScanResult]):
         for result in sorted(filtered_ports, key=lambda x: x.port):
             print(f"  - Port {result.port}/tcp")
 
+    unimplemented_scans = [r for r in results if r.error and "not yet implemented" in str(r.error)]
+    if unimplemented_scans:
+        print("\n[!] SKIPPED SCANS (not implemented):")
+        ports_str = ", ".join(str(r.port) for r in sorted(unimplemented_scans, key=lambda x: x.port))
+        print(f"  - Ports: {ports_str}")
+
     if error_ports:
         print("\n[!] PORTS WITH ERRORS:")
         for result in sorted(error_ports, key=lambda x: x.port):
             print(f"  - Port {result.port}/tcp: {result.error}")
 
 
-async def main():
-    """Main scanning workflow."""
+def parse_args():
+    """Parse command-line arguments for non-interactive mode."""
+    parser = argparse.ArgumentParser(
+        description="Advanced Python Port Scanner.",
+        epilog="If no arguments are provided, the script runs in interactive mode."
+    )
+    parser.add_argument("target", nargs="?", help="Target hostname or IP address.")
+    parser.add_argument("-p", "--ports", help="Port range (e.g., 1-100 or 22,80,443).")
+    parser.add_argument("--syn", action="store_const", const=ScanType.TCP_SYN, dest="scan_type", help="Use TCP SYN scan.")
+    parser.add_argument("--udp", action="store_const", const=ScanType.UDP, dest="scan_type", help="Use UDP scan.")
+    parser.add_argument("--timeout", type=float, default=1.0, help="Timeout in seconds.")
+    parser.add_argument("--rate", type=int, default=100, help="Max packets per second.")
+    parser.add_argument("--randomize", action="store_true", help="Randomize port scan order.")
+    return parser.parse_args()
+
+
+async def main(args):
+    """Main scanning workflow, supports both interactive and non-interactive modes."""
     if not check_privileges():
         print("\n[!] Warning: Running without admin/root privileges. "
               "Some scan types may not work properly.")
 
-    options = display_menu()
+    if args.target and args.ports:
+        # Non-interactive mode
+        print("[~] Running in non-interactive mode...")
+        port_range = args.ports
+        if '-' in port_range:
+            start, end = map(int, port_range.split('-'))
+            ports = list(range(start, end + 1))
+        else:
+            ports = [int(p) for p in port_range.split(',') if p.isdigit()]
+
+        options = {
+            'target': args.target,
+            'ports': ports,
+            'scan_type': args.scan_type or ScanType.TCP_CONNECT,
+            'timeout': args.timeout,
+            'rate_limit': args.rate,
+            'randomize': args.randomize
+        }
+    else:
+        # Interactive mode
+        options = display_menu()
+
     print(f"\n[~] Scanning {len(options['ports'])} ports on {options['target']}...")
 
     results = await scan_ports(
@@ -233,6 +289,7 @@ async def main():
 
 
 if __name__ == "__main__":
+    args = parse_args()
     if platform.system() == "Windows":
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-    asyncio.run(main())
+    asyncio.run(main(args))
