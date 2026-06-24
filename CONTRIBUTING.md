@@ -149,7 +149,7 @@ cd sysadmin-security-lab
 2. Install development Python dependencies:
 
 ```bash
-pip install -r requirements-dev.txt
+pip install -r requirements-dev.txt  # (e.g., pylint)
 ```
 
 3. Install shellcheck for shell script linting:
