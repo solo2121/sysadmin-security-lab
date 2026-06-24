@@ -17,7 +17,8 @@ handle_error() {
     local exit_code=$?
     local line_number=$1
     local command_name=${2:-"unknown"}
-    echo "Error occurred at line $line_number: command '$command_name' exited with status $exit_code" >&2
+    printf "Error occurred in '%s' at line %d: command '%s' exited with status %d\n" \
+        "${FUNCNAME[1]}" "$line_number" "$command_name" "$exit_code" >&2
     exit "$exit_code"
 }
 
@@ -78,12 +79,12 @@ add_files() {
     printf "\\n"
     
     read -rp "Add all files? (y/n) or specify files: " choice
-
     case "$choice" in
         [yY]|[yY][eE][sS])
             git add .
             printf "All files added to staging area.\\n"
             ;;
+<<<<<<< HEAD
         *)
 <<<<<<< HEAD
 =======
@@ -96,10 +97,25 @@ add_files() {
 <<<<<<< HEAD
             else 
 =======
+=======
+        [nN]|[nN][oO])
+            read -rp "Enter file names to add (space-separated), or press Enter to cancel: " -a files_to_add
+            if (( ${#files_to_add[@]} > 0 )); then
+                git add "${files_to_add[@]}"
+                printf "Added: %s\\n" "${files_to_add[*]}"
+>>>>>>> chore/repository-standardization
             else
 >>>>>>> chore/repository-standardization
                 printf "No files added.\\n"
                 return 1
+            fi
+            ;;
+        *)
+            # Handles direct file input
+            files_to_add=($choice)
+            if (( ${#files_to_add[@]} > 0 )); then
+                git add "${files_to_add[@]}"
+                printf "Added: %s\\n" "${files_to_add[*]}"
             fi
             ;;
     esac
@@ -135,7 +151,6 @@ commit_changes() {
     fi
     printf "Changes committed successfully with message: %s\\n" "$commit_msg"
 }
-
 push_changes() {
     local current_branch
     current_branch=$(git branch --show-current)
@@ -143,7 +158,7 @@ push_changes() {
     # Safety check for protected branches
     if [[ "$current_branch" == "main" || "$current_branch" == "master" ]]; then
         printf "Warning: You are attempting to push directly to the protected branch '%s'.\\n" "$current_branch"
-        read -rp "Are you sure you want to continue? (y/n): " proceed
+        read -rp "This is generally not recommended. Continue? (y/n): " proceed
         [[ "$proceed" =~ ^[yY] ]] || return 1
     fi
 
