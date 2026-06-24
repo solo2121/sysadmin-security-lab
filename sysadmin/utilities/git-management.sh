@@ -85,11 +85,19 @@ add_files() {
             printf "All files added to staging area.\\n"
             ;;
         *)
+<<<<<<< HEAD
+=======
+            # Handles both 'n' and direct file input
+>>>>>>> chore/repository-standardization
             read -rp "Enter file names to add (space-separated), or press Enter to cancel: " -a files_array
             if (( ${#files_array[@]} > 0 )); then
                 git add "${files_array[@]}"
                 printf "Selected files added to staging area.\\n"
+<<<<<<< HEAD
             else 
+=======
+            else
+>>>>>>> chore/repository-standardization
                 printf "No files added.\\n"
                 return 1
             fi
