@@ -39,6 +39,12 @@ from enum import Enum, auto
 from typing import Dict, List, NamedTuple, Optional
 import argparse
 
+try:
+    from scapy.all import sr1, IP, TCP, UDP, ICMP
+except ImportError:
+    print("Warning: scapy is not installed. SYN and UDP scans will not be available.")
+    print("Install it with: pip install scapy")
+
 
 class ScanType(Enum):
     """Enumeration of available scan techniques."""
@@ -98,12 +104,33 @@ async def scan_port(
                     response_time=time.time() - start_time,
                     banner=banner
                 )
-        # Other scan types would be implemented here
-        # For now, return an error for unimplemented types
-        if scan_type in (ScanType.TCP_SYN, ScanType.UDP):
+        elif scan_type == ScanType.TCP_SYN:
+            if not check_privileges():
+                return ScanResult(port=port, is_open=False, scan_type=scan_type, error="Root privileges required for SYN scan.")
+            response = sr1(IP(dst=target)/TCP(dport=port, flags="S"), timeout=timeout, verbose=0)
+            if response is None:
+                return ScanResult(port=port, is_open=False, scan_type=scan_type, error="filtered (timeout)")
+            elif response.haslayer(TCP):
+                if response.getlayer(TCP).flags == 0x12: # SYN-ACK
+                    return ScanResult(port=port, is_open=True, scan_type=scan_type, response_time=time.time() - start_time)
+                elif response.getlayer(TCP).flags == 0x14: # RST-ACK
+                    return ScanResult(port=port, is_open=False, scan_type=scan_type, response_time=time.time() - start_time)
+            return ScanResult(port=port, is_open=False, scan_type=scan_type, error="filtered")
+
+        elif scan_type == ScanType.UDP:
+            if not check_privileges():
+                return ScanResult(port=port, is_open=False, scan_type=scan_type, error="Root privileges required for UDP scan.")
+            response = sr1(IP(dst=target)/UDP(dport=port), timeout=timeout, verbose=0)
+            if response is None:
+                return ScanResult(port=port, is_open=True, scan_type=scan_type, response_time=time.time() - start_time, banner="Open|Filtered")
+            elif response.haslayer(ICMP):
+                if int(response.getlayer(ICMP).type) == 3 and int(response.getlayer(ICMP).code) == 3:
+                    return ScanResult(port=port, is_open=False, scan_type=scan_type, response_time=time.time() - start_time)
+            return ScanResult(port=port, is_open=True, scan_type=scan_type, response_time=time.time() - start_time, banner="Open|Filtered")
+        else:
             return ScanResult(
                 port=port, is_open=False, scan_type=scan_type,
-                error=f"Scan type {scan_type.name} not yet implemented."
+                error=f"Scan type {scan_type.name} is not implemented."
             )
     except socket.timeout:
         return ScanResult(
@@ -219,8 +246,7 @@ def display_results(results: List[ScanResult]):
             print(f"  - Port {result.port}/tcp")
 
     unimplemented_scans = [r for r in results if r.error and "not yet implemented" in str(r.error)]
-    if unimplemented_scans:
-        print("\n[!] SKIPPED SCANS (not implemented):")
+    if unimplemented_scans:        print("\n[!] SKIPPED SCANS (not implemented):")
         ports_str = ", ".join(str(r.port) for r in sorted(unimplemented_scans, key=lambda x: x.port))
         print(f"  - Ports: {ports_str}")
 
