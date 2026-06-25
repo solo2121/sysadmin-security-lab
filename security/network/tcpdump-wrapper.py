@@ -176,5 +176,5 @@ def main():
 
     run_tcpdump(interface, save_dir, filename, filter_options, count_options)
 
-if __name_ == "__main__":
+if __name__ == "__main__":
     main()
