@@ -1,19 +1,36 @@
 
 ---
 
-# **KVM/QEMU (CLI) - A Complete Tutorial**
+# **KVM/QEMU from the Command Line: A Complete Tutorial**
 
 KVM (Kernel-based Virtual Machine) combined with QEMU (Quick Emulator) is a powerful virtualization solution for Linux. This tutorial covers how to manage KVM/QEMU virtual machines (VMs) entirely from the command line.
-
+ 
 ---
 
-## **Prerequisites**
+## **1. Prerequisites & Installation**
 
-* A Linux system with KVM support (check with `kvm-ok` or `lsmod | grep kvm`)
-* Required packages installed:
+### **A. Verify Virtualization Support**
+
+First, ensure your processor supports virtualization. A non-zero output from this command confirms support:
+
+```bash
+egrep -c '(vmx|svm)' /proc/cpuinfo
+```
+
+You can also check if the KVM modules are loaded:
+
+```bash
+lsmod | grep kvm
+```
+
+If you see `kvm_intel` or `kvm_amd`, you are ready to proceed.
+
+### **B. Install Required Packages**
+
+Install KVM/QEMU and the necessary management tools:
 
   ```bash
-  sudo apt update && sudo apt install -y qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils virtinst
+  sudo apt update && sudo apt install -y qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils virtinst virt-top libguestfs-tools libosinfo-bin
   ```
 * Root or sudo privileges
 
