@@ -8,9 +8,9 @@ This directory contains reproducible lab environments for infrastructure enginee
 
 | Lab | Path | Focus |
 |-----|------|-------|
-| DevOps Linux Lab | [`infrastructure/devops-linux-lab/`](infrastructure/devops-linux-lab/) | Vagrant/libvirt infrastructure, Linux administration, Kubernetes, DevOps workflows, monitoring |
-| Active Directory Pentest Lab | [`security/ad-pentest/`](security/ad-pentest/) | Active Directory enumeration, Kerberos attacks, lateral movement, privilege escalation, lab remediation thinking |
-| VLAN Enterprise Lab | [`security/ad-pentest-vlan/`](security/ad-pentest-vlan/) | VLAN segmentation, multi-subnet enterprise simulation, topology validation, network isolation testing |
+| DevOps Linux Lab | [`infrastructure/devops-linux-lab/`](infrastructure/devops-linux-lab/) | Vagrant/libvirt infrastructure, Linux administration, Kubernetes, DevOps workflows, and monitoring |
+| Active Directory Pentest Lab | [`security/ad-pentest/`](security/ad-pentest/) | Active Directory enumeration, Kerberos attacks, lateral movement, privilege escalation, and remediation practice |
+| VLAN Enterprise Lab | [`security/ad-pentest-vlan/`](security/ad-pentest-vlan/) | VLAN segmentation, multi-subnet enterprise simulation, topology validation, and network isolation testing |
 
 ---
 
@@ -18,13 +18,13 @@ This directory contains reproducible lab environments for infrastructure enginee
 
 Recommended host setup:
 
-- Linux host with hardware virtualization enabled
-- KVM/QEMU and libvirt
-- Vagrant
-- `vagrant-libvirt` plugin
-- `vagrant-reload` plugin for the Active Directory security labs
-- 8 GB RAM minimum, 16 GB or more recommended
-- 50 GB free disk minimum, 100 GB or more recommended
+- Linux host with hardware virtualization enabled.
+- KVM/QEMU and libvirt.
+- Vagrant.
+- `vagrant-libvirt` plugin.
+- `vagrant-reload` plugin for the Active Directory security labs.
+- 8 GB RAM minimum, 16 GB or more recommended.
+- 50 GB free disk minimum, 100 GB or more recommended.
 
 See [`../INSTALLATION.md`](../INSTALLATION.md) for full setup instructions.
 
@@ -39,7 +39,7 @@ git clone https://github.com/solo2121/sysadmin-security-lab.git
 cd sysadmin-security-lab
 ```
 
-Choose a lab and validate its Vagrantfile:
+Change into the lab directory you want to use, then validate the Vagrantfile:
 
 ```bash
 cd labs/infrastructure/devops-linux-lab
@@ -95,11 +95,11 @@ Before launching a security lab, review [`../docs/architecture/SECURITY-SCOPE.md
 
 When adding or improving a lab, include:
 
-- A `README.md` with prerequisites, setup, validation, and cleanup steps
-- A `Vagrantfile` or equivalent provisioning entry point
-- Scripts for repeatable setup and testing where practical
-- Documentation for architecture, credentials, and troubleshooting
-- Clear warnings for offensive or intentionally vulnerable components
+- A `README.md` with prerequisites, setup, validation, and cleanup steps.
+- A `Vagrantfile` or equivalent provisioning entry point.
+- Scripts for repeatable setup and testing where practical.
+- Documentation for architecture, credentials, and troubleshooting.
+- Clear warnings for offensive or intentionally vulnerable components.
 
 ---
 
