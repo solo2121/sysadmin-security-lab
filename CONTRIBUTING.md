@@ -1,6 +1,7 @@
 # Contribution Guidelines
 
 Welcome to the Sysadmin Security Lab contribution guide.
+
 We appreciate your interest in helping improve this project.
 
 ---
@@ -20,28 +21,28 @@ We appreciate your interest in helping improve this project.
 
 ### Issue Reporting
 
-- **Bug Reports**
-  Use the [bug report template](https://github.com/solo2121/sysadmin-security-lab/issues/new?template=bug_report.md)
+- **Bug Reports**  
+  Use the [bug report template](https://github.com/solo2121/sysadmin-security-lab/issues/new?template=bug_report.md).
 
-- **Feature Requests**
-  Use the [feature request template](https://github.com/solo2121/sysadmin-security-lab/issues/new?template=feature_request.md)
+- **Feature Requests**  
+  Use the [feature request template](https://github.com/solo2121/sysadmin-security-lab/issues/new?template=feature_request.md).
 
-- **Documentation Improvements**
+- **Documentation Improvements**  
   Open a regular issue with the `[Docs]` prefix in the title.
 
 ### Code Contributions
 
-Professional contributions must follow the Feature Branch Workflow. Direct pushes to the `main` branch are discouraged to ensure repository stability.
+Professional contributions should follow the feature branch workflow. Direct pushes to the `main` branch are discouraged to help keep the repository stable.
 
-1. **Branch:** Create a descriptive branch from `main`:
-   - `feat/feature-name` — New functionality
-   - `fix/issue-description` — Bug fixes
-   - `docs/update-description` — Documentation improvements
-2. **Develop:** Apply changes and verify locally.
-3. **Commit:** Use conventional commit messages (`type(scope): description`).
-4. **Push:** Push the branch to your remote.
-5. **Review:** Open a Pull Request (PR) against the `main` branch.
-6. **Merge:** Once validated, merge the PR and delete the feature branch.
+1. **Branch:** Create a descriptive branch from `main`.
+   - `feat/feature-name` for new functionality.
+   - `fix/issue-description` for bug fixes.
+   - `docs/update-description` for documentation improvements.
+2. **Develop:** Make your changes and verify them locally.
+3. **Commit:** Use conventional commit messages in the form `type(scope): description`.
+4. **Push:** Push your branch to your remote repository.
+5. **Review:** Open a pull request against `main`.
+6. **Merge:** After review and validation, merge the PR and delete the branch.
 
 ---
 
@@ -49,7 +50,7 @@ Professional contributions must follow the Feature Branch Workflow. Direct pushe
 
 ### Pre-Commit Checks
 
-Before committing, run the following linters manually to keep code clean:
+Before committing, run the following checks manually to keep the codebase clean:
 
 ```bash
 # Shell scripts
@@ -62,7 +63,7 @@ pylint path/to/script.py
 vagrant validate
 ```
 
-These checks ensure all scripts are clean before they reach the repository.
+These checks help catch issues before changes are submitted.
 
 ---
 
@@ -74,12 +75,11 @@ These checks ensure all scripts are clean before they reach the repository.
 #!/usr/bin/env bash
 ```
 
-- Scripts must pass `shellcheck` validation.
+- Scripts must pass `shellcheck`.
 - Include a header comment block in each script:
 
 ```bash
 #!/usr/bin/env bash
-#
 # Script Name: example.sh
 # Description: Brief description of script functionality
 # Author: Your Name
@@ -89,20 +89,20 @@ These checks ensure all scripts are clean before they reach the repository.
 
 ### Python Script Guidelines
 
-- Scripts must pass `pylint` with no errors.
+- Scripts must pass `pylint` without errors.
 - Use type hints where practical.
-- Include a module-level docstring explaining purpose, usage, and author.
+- Include a module-level docstring that explains the purpose, usage, and author.
 
 ### Naming Conventions
 
-- All filenames use kebab-case: `my-script.sh`, `my-tool.py`
-- No spaces in filenames
-- No uppercase letters in filenames
+- Use kebab-case for filenames, such as `my-script.sh` or `my-tool.py`.
+- Do not use spaces in filenames.
+- Do not use uppercase letters in filenames.
 
 ### Dependency Management
 
-- Limit external dependencies to 3 or fewer per script.
-- Document all requirements in script headers and in a `requirements.txt` if the script is part of a lab.
+- Limit external dependencies to three or fewer per script whenever possible.
+- Document all requirements in script headers and in a `requirements.txt` file if the script is part of a lab.
 
 ---
 
@@ -110,26 +110,26 @@ These checks ensure all scripts are clean before they reach the repository.
 
 ### PR Checklist
 
-- [ ] All scripts pass linting (`shellcheck` for Bash, `pylint` for Python)
-- [ ] Tested locally in a VM or lab environment
-- [ ] Documentation updated to reflect changes
-- [ ] `CHANGELOG.md` updated under `[Unreleased]`
-- [ ] Follows existing code style and naming conventions
-- [ ] No secrets, credentials, or personal data committed
+- [ ] All scripts pass linting (`shellcheck` for Bash, `pylint` for Python).
+- [ ] Changes were tested locally in a VM or lab environment.
+- [ ] Documentation was updated to reflect the changes.
+- [ ] `CHANGELOG.md` was updated under `[Unreleased]`.
+- [ ] Code follows existing style and naming conventions.
+- [ ] No secrets, credentials, or personal data were committed.
 
 ### Commit Message Format
 
-```
+```text
 type(scope): brief description
 
-Optional body explaining changes in detail
+Optional body explaining the changes in more detail
 ```
 
-**Common Types:**
+**Common types:**
 `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
 
 **Examples:**
-```
+```text
 feat(ad-pentest): add ESC8 relay automation script
 fix(devops-lab): correct K3s worker join token path
 docs(readme): update repository structure diagram
@@ -149,14 +149,14 @@ cd sysadmin-security-lab
 2. Install development Python dependencies:
 
 ```bash
-pip install -r requirements-dev.txt  # (e.g., pylint)
+pip install -r requirements-dev.txt
 ```
 
-3. Install shellcheck for shell script linting:
+3. Install ShellCheck for shell script linting:
 
 ```bash
-sudo apt install shellcheck     # Debian/Ubuntu
-sudo dnf install shellcheck     # Rocky/Fedora
+sudo apt install shellcheck   # Debian/Ubuntu
+sudo dnf install shellcheck   # Rocky/Fedora
 ```
 
 4. Validate Vagrantfiles before submitting changes:
