@@ -6,123 +6,117 @@
 ![Security](https://img.shields.io/badge/Security-Research-red)
 ![DevSecOps](https://img.shields.io/badge/DevSecOps-Lab-purple)
 
-A modular Sysadmin, Security, DevOps, and DevSecOps laboratory environment for building, testing, automating, and securing enterprise infrastructure.
+A modular hands-on lab for **system administration, cybersecurity, DevOps, and DevSecOps** practice.
 
-This repository contains two independent lab environments and a collection of supporting security and sysadmin tooling — all designed for hands-on learning, enterprise infrastructure simulation, security research, skill development, and professional portfolio development.
+This repository contains two independent lab environments and supporting tooling for enterprise infrastructure simulation, security research, automation, detection engineering, and professional skill development.
 
-**Maintained by:** Miguel A. Carlo (solo2121) &nbsp;|&nbsp; **Status:** Active Development &nbsp;|&nbsp; **Last Updated:** 2026-06-15
-
----
-
-## Architecture Overview
-
-The repository contains two fully independent environments that can be deployed separately and do not depend on each other.
-
-![Architecture overview](assets/architecture-overview.svg)
-
-### Active Directory Pentest Lab
-
-- Enterprise Active Directory attack simulation
-- AD CS exploitation and privilege escalation research
-- Cloud attack simulation using LocalStack
-- AI/LLM security testing and validation
-- Detection engineering and security operations workflows
-
-### DevOps / DevSecOps Lab
-
-- Kubernetes platform engineering
-- GitOps workflows and continuous delivery
-- Infrastructure automation and configuration management
-- Observability and monitoring engineering
-- Runtime security and policy enforcement
+**Maintained by:** Miguel A. Carlo (solo2121) &nbsp;|&nbsp; **Status:** Active Development &nbsp;|&nbsp; **Last Updated:** 2026-06-26
 
 ---
 
-## Two Independent Lab Environments
+## Overview
 
-Each lab has its own Vagrantfile and is deployed separately. They do not share a network and do not depend on each other.
+Sysadmin Security Lab is a modular lab environment for learning and practicing Linux administration, enterprise security, DevOps, and DevSecOps workflows. It is built around isolated virtual lab environments so each system can be deployed independently and studied in a safe, repeatable way.
 
-### Lab 1 — Active Directory Pentest Lab
+The repository is designed for hands-on learning, security research, attack simulation, defensive engineering, automation, and portfolio development. It combines infrastructure, tooling, documentation, and workflows in one place.
 
-**Path:** `labs/security/ad-pentest/` and `labs/security/ad-pentest-vlan/`
+![Lab architecture overview](assets/architecture-overview.svg)
 
-A Windows-centric enterprise attack simulation environment consisting of Windows, Linux, cloud, and security-focused systems. The lab is designed to support Active Directory security research, adversary emulation, detection engineering, cloud attack simulation, and AI/LLM security testing.
+---
 
-| What it runs | Details |
+## Choose Your Lab
+
+Use the lab that matches your goal:
+
+- **Lab 1 — Active Directory Pentest Lab**: Windows enterprise security, AD CS, detection engineering, cloud simulation, and AI/LLM security testing.
+- **Lab 2 — DevOps / DevSecOps Lab**: Kubernetes, GitOps, observability, infrastructure as code, runtime security, and policy enforcement.
+
+Each lab is independent and can be deployed separately.
+
+---
+
+## Lab 1: Active Directory Pentest Lab
+
+**Path:** `labs/security/ad-pentest/`  
+**Alternate edition:** `labs/security/ad-pentest-vlan/`
+
+This is a Windows-centric enterprise attack simulation lab for Active Directory security research, adversary emulation, detection engineering, cloud attack simulation, and AI/LLM security testing.
+
+| Component | Details |
 |---|---|
 | Domain Controller | Windows Server 2022, `lab.local` |
-| Certificate Authority | AD CS with ESC1, ESC3, ESC4, ESC7, ESC9 attack paths |
+| Certificate Authority | AD CS attack paths including ESC1, ESC3, ESC4, ESC7, and ESC9 |
 | Member Servers | Exchange, SharePoint, SQL Server, Print Server |
 | Workstations | Windows 10 domain-joined systems |
 | Attacker Platform | Kali Linux |
 | LLM Security Platform | Prompt injection, prompt exfiltration, jailbreak testing, RAG poisoning, token abuse, and AI security research |
-| Cloud Simulation | LocalStack (AWS S3, IAM, EC2) |
-| Legacy Targets | Metasploitable2, OWASP Juice Shop |
+| Cloud Simulation | LocalStack for AWS-style services such as S3, IAM, and EC2 |
+| Legacy Targets | Metasploitable2 and OWASP Juice Shop |
 
-**Attack Automation (v1.8+):** Includes `lab_attack_automation.py`, a plugin-based framework for orchestrating modern AD, AD CS, and cloud attack chains.
-**Modern attack vectors (v1.8):** NoPac (CVE-2021-42287), Resource-Based Constrained Delegation (RBCD), AD CS ESC9 (no security extension), LLMNR/NBNS poisoning, additional Kerberoastable service accounts.
+The lab supports AD and post-exploitation research, cloud attack simulation, and defensive analysis workflows. The VLAN edition expands the environment into segmented subnets for more advanced network and attack-path research.
 
-**Vagrantfile:** `labs/security/ad-pentest/Vagrantfile` (v1.8 Enterprise Edition with Cloud & LLM Modern Attacks)
-
-**Network:** `172.28.128.0/24` isolated corporate network (or VLAN-segmented across 5 subnets in `ad-pentest-vlan/`, v2.1.1, which adds ZeroLogon, PetitPotam, NoPac, RBCD, PrintNightmare, and AD CS ESC9)
+**Vagrantfile:** `labs/security/ad-pentest/Vagrantfile`  
+**VLAN edition:** `labs/security/ad-pentest-vlan/Vagrantfile`
 
 ---
 
-### Lab 2 — DevOps / DevSecOps Lab
+## Lab 2: DevOps / DevSecOps Lab
 
 **Path:** `labs/infrastructure/devops-linux-lab/`
 
-A Linux-centric cloud-native lab with enterprise-grade tooling. Designed for Kubernetes operations, GitOps workflows, infrastructure as code, automation, observability, and security engineering.
+This is a Linux-centric cloud-native lab for Kubernetes operations, GitOps workflows, infrastructure automation, observability, and security engineering.
 
-| What it runs | Details |
+| Component | Details |
 |---|---|
-| Kubernetes | k3s cluster (control plane + 2 workers) |
-| Modern K8s Labs | Kind (Kubernetes in Docker) + K3d (K3s in Docker) |
-| Container Registry | Harbor with airgap image seeding (40+ images) |
+| Kubernetes | k3s cluster with control plane and 2 workers |
+| Modern K8s Labs | Kind and K3d |
+| Container Registry | Harbor with airgap image seeding |
 | GitOps | Argo CD |
 | Observability | Prometheus, Grafana, Loki, Promtail |
 | Runtime Security | Falco |
 | Policy Enforcement | Kyverno |
 | TLS Automation | Cert-Manager |
-| Infrastructure as Code | Terraform + OpenTofu |
+| Infrastructure as Code | Terraform and OpenTofu |
 | Configuration Management | Ansible |
 | Linux Practice Nodes | Ubuntu 24.04, Rocky Linux 10, AlmaLinux 10, openSUSE Leap 15.6 |
 
-**Vagrantfile:** `labs/infrastructure/devops-linux-lab/Vagrantfile` (v8.0.0 Enterprise Release)
+This lab is designed for practicing modern platform engineering, cloud-native operations, and security automation in a reproducible environment.
+
+**Vagrantfile:** `labs/infrastructure/devops-linux-lab/Vagrantfile`
 
 ---
 
 ## Repository Structure
 
-```
+```text
 sysadmin-security-lab/
 ├── labs/
 │   ├── infrastructure/
-│   │   └── devops-linux-lab/       # Lab 2 — DevOps/DevSecOps (Kubernetes, ArgoCD, Harbor)
-│   │       └── Vagrantfile         # Deploy independently
+│   │   └── devops-linux-lab/
+│   │       └── Vagrantfile
 │   └── security/
-│       ├── ad-pentest/             # Lab 1 — AD Pentest, flat network
-│       │   └── Vagrantfile         # Deploy independently
-│       └── ad-pentest-vlan/        # Lab 1 — AD Pentest, VLAN-segmented edition
-│           └── Vagrantfile         # Deploy independently
+│       ├── ad-pentest/
+│       │   └── Vagrantfile
+│       └── ad-pentest-vlan/
+│           └── Vagrantfile
 ├── security/
-│   ├── audit/                      # LLM security scanner, validator, Cisco audit
-│   ├── exploitation/               # SQL injection, hashcat assistant
-│   ├── network/                    # Firewall scan, Scapy, tcpdump, Ettercap
-│   ├── reconnaissance/             # Amass, nmap, port scanner
-│   └── wireless/                   # Evil-twin and wireless lab tooling
+│   ├── audit/
+│   ├── exploitation/
+│   ├── network/
+│   ├── reconnaissance/
+│   └── wireless/
 ├── sysadmin/
-│   ├── automation/                 # Package management and update scripts
-│   ├── monitoring/                 # Log analysis and system monitoring
-│   ├── system-hardening/           # ClamAV, rootkit scanning, user audits
-│   └── utilities/                  # UFW, BIND, Timeshift, Git management
+│   ├── automation/
+│   ├── monitoring/
+│   ├── system-hardening/
+│   └── utilities/
 ├── docs/
-│   ├── architecture/               # Architecture diagrams and security scope
-│   ├── guides/                     # Infrastructure and security how-to guides
-│   ├── workflows/                  # Lab deployment and operational workflows
-│   └── archive/reference/          # Legacy reference documents
-├── assets/                         # Repo banner and media
-├── requirements-dev.txt            # Contributor Python dependencies
+│   ├── architecture/
+│   ├── guides/
+│   ├── workflows/
+│   └── archive/reference/
+├── assets/
+├── requirements-dev.txt
 ├── CHANGELOG.md
 ├── CONTRIBUTING.md
 ├── CODE_OF_CONDUCT.md
@@ -132,9 +126,30 @@ sysadmin-security-lab/
 
 ---
 
+## Requirements
+
+Before deploying either lab, make sure your host system supports virtualization and has the required tools installed.
+
+### Host prerequisites
+
+- Linux host recommended.
+- Hardware virtualization enabled in BIOS/UEFI.
+- Sufficient CPU, RAM, and disk space for the lab you want to run.
+- Network access for package installation and image downloads.
+
+### Core tools
+
+- Vagrant.
+- KVM/QEMU.
+- Libvirt.
+- Virt-Manager.
+- Required Vagrant plugins for the selected lab.
+
+---
+
 ## Quick Start
 
-### Lab 1 — AD Pentest Lab
+### Lab 1: Active Directory Pentest Lab
 
 ```bash
 git clone https://github.com/solo2121/sysadmin-security-lab.git
@@ -157,7 +172,7 @@ vagrant status
 vagrant up
 ```
 
-### Lab 2 — DevOps / DevSecOps Lab
+### Lab 2: DevOps / DevSecOps Lab
 
 ```bash
 cd sysadmin-security-lab/labs/infrastructure/devops-linux-lab
@@ -180,47 +195,17 @@ vagrant up
 | Linux Administration | Ubuntu, Rocky Linux, AlmaLinux, openSUSE |
 | Virtualization | Vagrant, Libvirt, KVM |
 | Active Directory | Windows Server 2022, Kerberos, LDAP, Group Policy |
-| AD CS Security | ESC1–ESC9, Certificate Abuse |
-| Cloud | AWS Concepts, LocalStack |
+| AD CS Security | ESC1–ESC9, certificate abuse |
+| Cloud | AWS concepts, LocalStack |
 | Containers | Docker, Harbor |
-| Kubernetes | k3s, Kind, K3d, ArgoCD |
+| Kubernetes | k3s, Kind, K3d, Argo CD |
 | DevOps | Git, CI/CD, Ansible |
 | Infrastructure as Code | Terraform, OpenTofu |
-| DevSecOps | Falco, Kyverno, Security Automation |
+| DevSecOps | Falco, Kyverno, security automation |
 | Monitoring | Prometheus, Grafana, Loki |
 | Security Testing | Nmap, Metasploit, BloodHound, Hashcat |
-| Detection Engineering | MITRE ATT&CK Mapping, Log Analysis |
-| AI Security | Prompt Injection, Prompt Exfiltration, RAG Security, LLM Assessment |
-
----
-
-## Core Domains
-
-| Domain | Lab |
-|---|---|
-| Active Directory Attack and Defense (Kerberos, AD CS, NTLM Relay, ZeroLogon, PetitPotam, NoPac, RBCD) | Lab 1 |
-| Cloud Attack Simulation (AWS IAM, S3, EC2 via LocalStack) | Lab 1 |
-| AI / LLM Security (Prompt Injection, RAG Poisoning, Token Abuse) | Lab 1 |
-| Kubernetes and Cloud-Native Operations (k3s, Kind, K3d, ArgoCD, Harbor) | Lab 2 |
-| Infrastructure as Code (Vagrant, Ansible, Terraform, OpenTofu) | Lab 2 |
-| Security Monitoring and Observability (Prometheus, Grafana, Loki) | Lab 2 |
-| Detection Engineering (MITRE ATT&CK Mapping, Log Analysis) | Both |
-| Linux System Administration and Hardening | Both |
-
----
-
-## Target Audience
-
-This repository is intended for:
-
-- System Administrators
-- Security Engineers
-- Penetration Testers
-- Blue Team Analysts
-- DevOps Engineers
-- DevSecOps Engineers
-- Cloud Engineers
-- Security and DevOps practitioners at any level
+| Detection Engineering | MITRE ATT&CK mapping, log analysis |
+| AI Security | Prompt injection, prompt exfiltration, RAG security, LLM assessment |
 
 ---
 
@@ -238,16 +223,32 @@ This repository is intended for:
 
 ---
 
-## Security & Ethics
+## Security and Ethics
 
-This project is strictly for educational, defensive security, and authorized research purposes.
+This project is intended for educational, defensive security, and authorized research purposes only.
 
 All testing must be performed only in environments that you own or are explicitly authorized to use. Unauthorized access, testing, or exploitation of systems without permission is illegal and strictly prohibited.
+
+If you use any attack simulation or offensive tooling in this repository, make sure it stays inside your isolated lab and follows your own rules of engagement.
+
+---
+
+## Contributing
+
+Contributions are welcome.
+
+If you want to improve the project, please:
+- Open an issue for bugs, documentation gaps, or feature ideas.
+- Keep changes focused and well documented.
+- Update relevant docs when behavior changes.
+- Follow the repository’s code of conduct and security guidelines.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
 
 ---
 
 ## License
 
-[MIT License](https://github.com/solo2121/sysadmin-security-lab/blob/main/LICENSE)
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 Copyright (c) 2025 Miguel A. Carlo
