@@ -1,522 +1,330 @@
-# Installation and Setup Guide
+# Installation Guide
 
-This guide provides detailed instructions for installing and setting up the Sysadmin Security Lab environment.
+This guide explains how to prepare a Linux host and deploy the two independent lab environments in Sysadmin Security Lab.
 
----
+- **Lab 1**: Active Directory Pentest Lab.
+- **Lab 2**: DevOps / DevSecOps Lab.
 
-## Quick Start (Ubuntu 24.04)
-
-This section is for experienced users who want to get the lab running quickly on a fresh Ubuntu 24.04 system.
-
-```bash
-# Install all prerequisites
-sudo apt update && sudo apt install -y \
-  qemu-system-x86 libvirt-daemon-system virtinst libvirt-clients bridge-utils \
-  virt-manager git software-properties-common ansible python3-pip
-
-# Configure user and services
-sudo usermod -aG libvirt,kvm $USER && sudo systemctl enable --now libvirtd
-
-# Clone the repo and start the primary lab
-git clone https://github.com/solo2121/sysadmin-security-lab.git
-cd sysadmin-security-lab/labs/infrastructure/devops-linux-lab && vagrant up
-```
+The labs are designed to run on a Linux host using Vagrant, Libvirt, and KVM/QEMU.
 
 ---
 
-## System Requirements
+## Prerequisites
 
-### Minimum Requirements
+Before installing anything, make sure your host system meets the basic requirements.
 
-- CPU: 4-core processor with virtualization support (Intel VT-x or AMD-V)
-- RAM: 8GB (16GB recommended)
-- Disk: 50GB free space (100GB+ SSD recommended)
-- OS: Ubuntu 24.04 LTS, Ubuntu 22.04 LTS, Debian 12, Rocky Linux 9, or Fedora 40+
+### Host requirements
 
-### Recommended Specifications
+- Linux host recommended.
+- Hardware virtualization enabled in BIOS/UEFI.
+- Sufficient CPU, RAM, and disk space for your chosen lab.
+- Internet access for package installation and box downloads.
 
-- CPU: 8+ core processor
-- RAM: 16GB or more
-- Disk: 100GB+ NVMe SSD storage
-- Network: Gigabit ethernet connection
-- OS: Ubuntu 24.04 LTS
+### Recommended host resources
 
-### Hardware Virtualization
+These are general recommendations. Exact needs depend on which lab and how many VMs you deploy.
 
-Ensure your system supports hardware virtualization:
+- **Lab 1**: High memory and storage usage due to Windows servers, AD CS, and supporting systems.
+- **Lab 2**: Moderate to high memory usage due to Kubernetes, observability, and registry services.
 
-```bash
-# Works for both Intel (vmx) and AMD (svm)
-grep -Eoc '(vmx|svm)' /proc/cpuinfo
-```
+### Required tools
 
-If the output is `0`, virtualization may be disabled in BIOS/UEFI. Enable it there and reboot.
+- Vagrant.
+- KVM/QEMU.
+- Libvirt.
+- Virt-Manager.
+- Required Vagrant plugins.
 
----
+### Recommended Linux distros
 
-## Prerequisites Installation
-
-### 1. Install KVM and Libvirt
-
-**Ubuntu 22.04 / 24.04 / Debian 12:**
-```bash
-sudo apt update && sudo apt install -y \
-  qemu-system-x86 libvirt-daemon-system virtinst \
-  libvirt-clients bridge-utils virt-manager
-```
-
-**Rocky Linux 9 / RHEL 9 / Fedora 40+:**
-```bash
-sudo dnf install -y @virtualization
-```
-
-Verify installation:
-```bash
-virsh version
-```
+The labs should work best on Debian-based or Fedora/RHEL-based Linux hosts with Libvirt and KVM support.
 
 ---
 
-### 2. Install Vagrant
+## Host Setup
 
-Download the latest release from https://developer.hashicorp.com/vagrant/downloads
-
-**Ubuntu/Debian (via HashiCorp APT repo — recommended):**
-```bash
-wget -O - https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
-echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] \
-  https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
-sudo apt update && sudo apt install -y vagrant
-```
-
-**Rocky Linux 9 / RHEL 9:**
-```bash
-sudo dnf install -y dnf-plugins-core
-sudo dnf config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
-sudo dnf install -y vagrant
-```
-
-Verify installation:
-```bash
-vagrant --version
-```
-
----
-
-### 3. Install Vagrant Plugins
-
-Required for KVM/libvirt and security-lab reboot provisioning:
-```bash
-vagrant plugin install vagrant-libvirt
-vagrant plugin install vagrant-reload
-```
-
-Optional but useful:
-```bash
-vagrant plugin install vagrant-disksize
-```
-
----
-
-### 4. Install Ansible
-
-**Ubuntu/Debian:**
-```bash
-sudo apt install -y software-properties-common
-sudo add-apt-repository --yes --update ppa:ansible/ansible
-sudo apt install -y ansible
-```
-
-**Rocky Linux 9 / RHEL 9:**
-```bash
-sudo dnf install -y epel-release
-sudo dnf install -y ansible
-```
-
-**Fedora 40+:**
-```bash
-sudo dnf install -y ansible
-```
-
-Verify:
-```bash
-ansible --version
-```
-
----
-
-### 5. Install Terraform (Optional)
-
-For infrastructure provisioning:
-
-**Ubuntu/Debian:**
-```bash
-wget -O - https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
-echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] \
-  https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
-sudo apt update && sudo apt install -y terraform
-```
-
-**Rocky Linux 9 / Fedora:**
-```bash
-sudo dnf config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
-sudo dnf install -y terraform
-```
-
-Verify:
-```bash
-terraform -version
-```
-
----
-
-### 6. Install Docker (Optional)
-
-For container-based labs:
-
-**Ubuntu/Debian:**
-```bash
-curl -fsSL https://get.docker.com | sudo sh
-sudo usermod -aG docker $USER
-newgrp docker
-```
-
-**Rocky Linux 9 / RHEL 9:**
-```bash
-sudo dnf install -y dnf-plugins-core
-sudo dnf config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
-sudo dnf install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
-sudo systemctl enable --now docker
-sudo usermod -aG docker $USER
-```
-
-> **Note:** Docker Compose is now a CLI plugin (`docker compose`). The legacy `docker-compose` command is deprecated.
-
----
-
-### 7. Install Git
-
-**Ubuntu/Debian:**
-```bash
-sudo apt install -y git
-```
-
-**Rocky Linux 9 / Fedora:**
-```bash
-sudo dnf install -y git
-```
-
-Configure Git:
-```bash
-git config --global user.name "Your Name"
-git config --global user.email "your.email@example.com"
-git config --global init.defaultBranch main
-```
-
----
-
-## User and Permissions Setup
-
-### Add Current User to Required Groups
+### 1. Update your system
 
 ```bash
-sudo usermod -aG libvirt,kvm $USER
+sudo apt update
+sudo apt upgrade -y
 ```
 
-Apply without logging out:
+### 2. Install virtualization packages
+
+#### Debian / Ubuntu
+
 ```bash
-newgrp libvirt
+sudo apt install -y qemu-kvm libvirt-daemon-system libvirt-clients virt-manager vagrant
 ```
 
-### Enable Libvirt Service
+#### Fedora / RHEL / CentOS Stream
+
+```bash
+sudo dnf install -y @virtualization vagrant virt-manager
+```
+
+### 3. Enable and start Libvirt
+
+#### Debian / Ubuntu
 
 ```bash
 sudo systemctl enable --now libvirtd
 ```
 
-Verify:
-```bash
-sudo systemctl status libvirtd
-```
-
----
-
-## Repository Setup
-
-### Clone the Repository
+#### Fedora / RHEL / CentOS Stream
 
 ```bash
-git clone https://github.com/solo2121/sysadmin-security-lab.git
-cd sysadmin-security-lab
+sudo systemctl enable --now libvirtd
 ```
 
-### Install Python Dependencies (If Applicable)
-
-```bash
-pip install -r requirements-dev.txt
-```
-
-> If `requirements-dev.txt` does not exist, dependencies are managed through Vagrant provisioning.
-
----
-
-## Network Configuration
-
-### Verify Default Network
-
-```bash
-virsh net-list --all
-```
-
-Expected output:
-```
- Name      State    Autostart   Persistent
---------------------------------------------
- default   active   yes         yes
-```
-
-### Activate Default Network (If Needed)
-
-```bash
-virsh net-start default
-virsh net-autostart default
-```
-
-### Create Isolated Lab Networks (Optional)
-
-```bash
-virsh net-define <network-definition.xml>
-virsh net-start <network-name>
-```
-
----
-
-## Storage Setup
-
-### Verify Default Storage Pool
-
-```bash
-virsh pool-list --all
-```
-
-Expected output:
-```
- Name      State    Autostart
--------------------------------
- default   active   yes
-```
-
-### Create a Dedicated Lab Storage Pool (Optional)
-
-```bash
-sudo mkdir -p /var/lib/libvirt/images/lab
-virsh pool-define-as lab-storage dir --target /var/lib/libvirt/images/lab
-virsh pool-build lab-storage
-virsh pool-start lab-storage
-virsh pool-autostart lab-storage
-```
-
----
-
-## Vagrant Box Preparation
-
-### Download Base Boxes
-
-**DevOps Linux Lab:**
-```bash
-vagrant box add bento/ubuntu-24.04
-vagrant box add bento/rocky-9
-vagrant box add bento/almalinux-9
-```
-
-**AD Pentest Lab:**
-```bash
-vagrant box add generic/ubuntu2204
-vagrant box add generic/windows2022
-```
-
-### Convert Boxes to Libvirt Format
-
-```bash
-vagrant mutate bento/ubuntu-24.04 libvirt
-```
-
----
-
-## Initial Lab Startup
-
-### Test Basic Functionality
-
-```bash
-cd labs/infrastructure/devops-linux-lab
-vagrant up
-```
-
-> First run may take 10–20 minutes while boxes are downloaded and provisioned.
-
-Monitor VM status:
-```bash
-vagrant status
-```
-
-All VMs should show `running` once complete.
-
-### Connect to a VM
-
-```bash
-vagrant ssh <node-name>
-```
-
-Example:
-```bash
-vagrant ssh k8s-cp
-```
-
-### Suspend and Destroy
-
-```bash
-# Suspend (save state)
-vagrant suspend
-
-# Full teardown
-vagrant destroy -f
-```
-
----
-
-## Troubleshooting
-
-### Virtualization Not Enabled
-
-**Error:** `This platform doesn't support libvirt`
-
-Enable VT-x / AMD-V in your BIOS/UEFI settings, then reinstall:
-```bash
-sudo apt remove --purge qemu-system-x86 libvirt-daemon-system
-sudo apt install -y qemu-system-x86 libvirt-daemon-system
-```
-
-### Permission Denied Errors
-
-**Error:** `Permission denied` when running Vagrant
+### 4. Add your user to the libvirt group
 
 ```bash
 sudo usermod -aG libvirt $USER
 newgrp libvirt
 ```
 
-### Insufficient Disk Space
-
-**Error:** `No space left on device`
+### 5. Verify KVM is available
 
 ```bash
-df -h
-du -sh /var/lib/libvirt/images/*
+lsmod | grep kvm
 ```
 
-Consider moving the storage pool to a larger disk or clearing old boxes:
+If KVM modules are loaded, your host is ready for virtualization.
+
+---
+
+## Install Vagrant Plugins
+
+The repository uses Libvirt-based Vagrant workflows, so install the required plugins before starting the labs.
+
+### Common plugins
+
 ```bash
-vagrant box prune
+vagrant plugin install vagrant-libvirt
 ```
 
-### Network Connectivity Issues
+### Lab 1 plugins
 
-**Error:** VMs cannot reach each other or the internet
+For the Active Directory Pentest Lab, install the additional plugins used by Windows and reload workflows:
 
 ```bash
-virsh net-info default
-ip route show
-```
-
-### Ansible Provisioning Fails
-
-**Error:** `Failed to connect to host`
-
-Verify SSH access manually:
-```bash
-vagrant ssh <node-name>
-```
-
-Also check that port 22 is not blocked by a local firewall:
-```bash
-sudo ufw status
+vagrant plugin install vagrant-reload
+vagrant plugin install vagrant-winrm
 ```
 
 ---
 
-## Post-Installation Verification
+## Lab 1: Active Directory Pentest Lab
+
+This lab is located in:
+
+```text
+labs/security/ad-pentest/
+```
+
+An alternate VLAN-segmented edition is located in:
+
+```text
+labs/security/ad-pentest-vlan/
+```
+
+This environment includes Windows Server 2022, domain-joined workstations, AD CS, Kali Linux, LocalStack, and additional research targets.
+
+### Install Lab 1 dependencies
 
 ```bash
-# Check tool versions
-vagrant --version
-virsh version
-ansible --version
-terraform -version
-docker --version
+sudo apt update
+sudo apt install -y qemu-kvm libvirt-daemon-system virt-manager vagrant
+vagrant plugin install vagrant-libvirt
+vagrant plugin install vagrant-reload
+vagrant plugin install vagrant-winrm
+```
 
-# List downloaded boxes
-vagrant box list
+### Clone the repository
 
-# Verify networking and storage
-virsh net-list --all
-virsh pool-list --all
+```bash
+git clone https://github.com/solo2121/sysadmin-security-lab.git
+cd sysadmin-security-lab/labs/security/ad-pentest
+```
+
+### Start the lab
+
+Start the Domain Controller first, then deploy the rest of the environment.
+
+```bash
+vagrant up dc01
+vagrant status
+vagrant up
+```
+
+### VLAN edition
+
+If you want the segmented network edition, use:
+
+```bash
+cd ../ad-pentest-vlan
+vagrant up dc01
+vagrant up
+```
+
+### Verify Lab 1
+
+After deployment, verify the virtual machines are running and the domain controller is reachable.
+
+```bash
+vagrant status
+```
+
+You should see the lab machines in a running state.
+
+---
+
+## Lab 2: DevOps / DevSecOps Lab
+
+This lab is located in:
+
+```text
+labs/infrastructure/devops-linux-lab/
+```
+
+It includes k3s, Kind, K3d, Harbor, Argo CD, Prometheus, Grafana, Loki, Falco, Kyverno, Cert-Manager, Terraform, OpenTofu, and Ansible.
+
+### Install Lab 2 dependencies
+
+```bash
+sudo apt update
+sudo apt install -y qemu-kvm libvirt-daemon-system virt-manager vagrant
+vagrant plugin install vagrant-libvirt
+```
+
+### Enter the lab directory
+
+```bash
+cd sysadmin-security-lab/labs/infrastructure/devops-linux-lab
+```
+
+### Start the lab
+
+```bash
+vagrant up
+```
+
+### Verify Lab 2
+
+Check the VM status once startup is complete.
+
+```bash
+vagrant status
 ```
 
 ---
 
-## Performance Tuning
+## Common Setup Notes
 
-### Increase File Descriptors
+### Libvirt access issues
 
-```bash
-sudo sysctl -w fs.file-max=2097152
-echo "fs.file-max = 2097152" | sudo tee -a /etc/sysctl.d/99-lab.conf
-```
-
-### Optimize Swap
+If Vagrant cannot connect to Libvirt, verify your user is in the `libvirt` group and that `libvirtd` is running.
 
 ```bash
-sudo sysctl -w vm.swappiness=10
-echo "vm.swappiness = 10" | sudo tee -a /etc/sysctl.d/99-lab.conf
+groups
+systemctl status libvirtd
 ```
 
-### Apply Changes
+### Permission issues
+
+If you are prompted for password access repeatedly, recheck group membership and restart your shell session.
+
+### Box download issues
+
+If box downloads fail, confirm your network connection and make sure Vagrant can reach the configured box source.
+
+### Virtualization performance
+
+If the host is underpowered, reduce the number of running VMs or allocate more memory and CPU.
+
+---
+
+## Verification Checklist
+
+Before you continue using the labs, confirm the following:
+
+- Vagrant is installed.
+- Libvirt is installed and running.
+- KVM modules are loaded.
+- Your user can manage libvirt domains.
+- Required Vagrant plugins are installed.
+- The lab directory contains the expected `Vagrantfile`.
+- `vagrant up` starts the environment successfully.
+
+---
+
+## Uninstall and Cleanup
+
+If you want to stop or destroy a lab environment:
 
 ```bash
-sudo sysctl --system
+vagrant halt
 ```
 
----
+To destroy all VMs in the current lab:
 
-## Next Steps
+```bash
+vagrant destroy -f
+```
 
-1. Review lab-specific `README` files in the `labs/` directory
-2. Read `CONTRIBUTING.md` for contribution guidelines
-3. Explore `docs/guides/` for detailed walkthroughs
-4. Check `TROUBLESHOOTING.md` for known issues
-5. Start with the **DevOps Linux Lab** for foundational concepts
+You can also remove unused packages and clean up your system if needed.
 
 ---
 
-## Additional Resources
+## Troubleshooting
 
-- [Vagrant Docs](https://developer.hashicorp.com/vagrant/docs)
-- [Libvirt Docs](https://libvirt.org/docs.html)
-- [Ansible Docs](https://docs.ansible.com/)
-- [Terraform Docs](https://developer.hashicorp.com/terraform/docs)
-- [KVM/QEMU Docs](https://www.qemu.org/documentation/)
+### Vagrant cannot find the provider
+
+Make sure the `vagrant-libvirt` plugin is installed.
+
+```bash
+vagrant plugin list
+```
+
+### Libvirt service is not active
+
+Start and enable the service.
+
+```bash
+sudo systemctl enable --now libvirtd
+```
+
+### KVM is missing
+
+Confirm that your CPU supports virtualization and that it is enabled in BIOS/UEFI.
+
+### VM startup fails
+
+Check:
+- Available RAM.
+- Available disk space.
+- Virtualization support.
+- Network bridge or NAT configuration.
+
+### Windows VM provisioning problems
+
+For Lab 1, make sure the Windows-specific plugins are installed and that you started the Domain Controller first.
 
 ---
 
-## Support
+## Related Documentation
 
-1. Check `TROUBLESHOOTING.md`
-2. Review lab-specific documentation
-3. Consult upstream tool documentation
-4. Open a GitHub issue with full error output
+- [README](README.md)
+- [Architecture Design](docs/architecture/ARCHITECTURE.md)
+- [Security Scope](docs/architecture/SECURITY-SCOPE.md)
+- [Troubleshooting](TROUBLESHOOTING.md)
 
 ---
 
-## License
+## Notes
 
-This guide is licensed under the MIT License. See `LICENSE` for details.
+This project is intended for educational, defensive security, and authorized research purposes only.
+
+All testing must be performed only in environments that you own or are explicitly authorized to use.
