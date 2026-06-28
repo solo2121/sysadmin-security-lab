@@ -5,7 +5,6 @@ import re
 import socket
 import subprocess
 import sys
-
 from colorama import Fore, init
 
 def validate_ip(ip):
@@ -31,7 +30,7 @@ def get_network_interfaces():
         result = subprocess.run(['ip', '-o', 'link', 'show'], capture_output=True, text=True)
         interfaces = [line.split(':')[1].strip() for line in result.stdout.splitlines()]
         return interfaces or ['eth0', 'wlan0', 'enp0s3', 'en0', 'lo']
-    except:
+    except Exception:
         # Fallback to common interface names if ip command fails
         return ['eth0', 'wlan0', 'enp0s3', 'en0', 'lo']
 
@@ -182,6 +181,11 @@ def firewall_evasion_scan(target):
 
 def complete_scan(target):
     """Run comprehensive sequence of scans"""
+    print(Fore.CYAN + "\nConfiguring evasion options for the complete scan sequence...")
+    decoy_args = get_decoys()
+    spoof_args = get_spoof_options()
+    evasion_args = decoy_args + spoof_args
+
     scans = [
         (['-T4', '-F'], "Quick Scan"),
         (['-sS', '-p-', '--open'], "TCP SYN Scan (All Ports)"),
@@ -192,7 +196,7 @@ def complete_scan(target):
     ]
 
     for args, desc in scans:
-        run_nmap(args, target, desc)
+        run_nmap(args + evasion_args, target, desc)
 
 def custom_scan(target):
     """Run user-defined nmap command"""
