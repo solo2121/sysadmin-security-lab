@@ -237,7 +237,7 @@ main() {
             7) clear; view_log; wait_for_input ;;
             8) clear; view_branches; wait_for_input ;;
             9) printf "Goodbye!\\n"; exit 0 ;;
-            *) 
+            *)
                 printf "Invalid option! Please select 1-9.\\n" >&2
                 sleep 1
                 ;;
