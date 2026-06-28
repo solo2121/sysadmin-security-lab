@@ -84,38 +84,24 @@ add_files() {
             git add .
             printf "All files added to staging area.\\n"
             ;;
-<<<<<<< HEAD
-        *)
-<<<<<<< HEAD
-=======
-            # Handles both 'n' and direct file input
->>>>>>> chore/repository-standardization
-            read -rp "Enter file names to add (space-separated), or press Enter to cancel: " -a files_array
-            if (( ${#files_array[@]} > 0 )); then
-                git add "${files_array[@]}"
-                printf "Selected files added to staging area.\\n"
-<<<<<<< HEAD
-            else 
-=======
-=======
         [nN]|[nN][oO])
             read -rp "Enter file names to add (space-separated), or press Enter to cancel: " -a files_to_add
             if (( ${#files_to_add[@]} > 0 )); then
                 git add "${files_to_add[@]}"
                 printf "Added: %s\\n" "${files_to_add[*]}"
->>>>>>> chore/repository-standardization
             else
->>>>>>> chore/repository-standardization
                 printf "No files added.\\n"
                 return 1
             fi
             ;;
         *)
-            # Handles direct file input
+            # Handles direct file input without 'y' or 'n'
             files_to_add=($choice)
             if (( ${#files_to_add[@]} > 0 )); then
                 git add "${files_to_add[@]}"
                 printf "Added: %s\\n" "${files_to_add[*]}"
+            else
+                printf "Invalid input. No files added.\\n"
             fi
             ;;
     esac
@@ -245,20 +231,4 @@ main() {
         
         case "$choice" in
             1) clear; git_status; wait_for_input ;;
-            2) clear; add_files; wait_for_input ;;
-            3) clear; commit_changes; wait_for_input ;;
-            4) clear; push_changes; wait_for_input ;;
-            5) clear; fetch_changes; wait_for_input ;;
-            6) clear; pull_changes; wait_for_input ;;
-            7) clear; view_log; wait_for_input ;;
-            8) clear; view_branches; wait_for_input ;;
-            9) printf "Goodbye!\\n"; exit 0 ;;
-            *) 
-                printf "Invalid option! Please select 1-9.\\n" >&2
-                sleep 1
-                ;;
-        esac
-    done
-}
-
-main "$@"
+            2) clear; add_files; wait_for_input
