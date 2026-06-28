@@ -1,18 +1,3 @@
-# =============================================================================
-# Sysadmin Security Lab — CI Pipeline
-# =============================================================================
-#
-# Runs on every push and pull request to main and the standardization branch.
-#
-# Jobs:
-#   validate-vagrantfiles  — syntax check all three Vagrantfiles
-#   lint-shell-scripts     — shellcheck all .sh files
-#   lint-python-scripts    — pylint + syntax check all .py files
-#   validate-markdown      — check for broken relative links in .md files
-#   security-scan          — bandit static analysis on Python scripts
-#
-# =============================================================================
-
 name: CI
 
 on:
@@ -24,33 +9,29 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
 
-  # ---------------------------------------------------------------------------
-  # Job 1: Validate all three Vagrantfiles
-  # ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# VAGRANT VALIDATION
+# ---------------------------------------------------------------------------
   validate-vagrantfiles:
     name: Validate Vagrantfiles
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Install Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.2'
-
-      - name: Install Vagrant (for validate command)
+      - name: Install Vagrant
         run: |
-          wget -O - https://apt.releases.hashicorp.com/gpg \
-            | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
-          echo "deb [arch=$(dpkg --print-architecture) \
-            signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] \
-            https://apt.releases.hashicorp.com $(lsb_release -cs) main" \
-            | sudo tee /etc/apt/sources.list.d/hashicorp.list
-          sudo apt-get update -qq
+          sudo apt-get update
           sudo apt-get install -y vagrant
 
       - name: Validate AD Pentest Vagrantfile
@@ -74,178 +55,128 @@ jobs:
         env:
           VAGRANT_DEFAULT_PROVIDER: libvirt
 
-  # ---------------------------------------------------------------------------
-  # Job 2: Shell script linting with shellcheck
-  # ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# SHELLCHECK
+# ---------------------------------------------------------------------------
   lint-shell-scripts:
     name: Lint Shell Scripts
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Install shellcheck
+      - name: Install ShellCheck
         run: sudo apt-get install -y shellcheck
 
-      - name: Run shellcheck on all .sh files
+      - name: Run ShellCheck
         run: |
-          echo "Scanning shell scripts..."
           FAILED=0
           while IFS= read -r -d '' script; do
-            echo "Checking: $script"
-            if ! shellcheck \
-              --severity=error \
+            echo "Checking $script"
+            shellcheck --severity=error \
               --exclude=SC1091,SC2086,SC2034 \
-              "$script"; then
-              FAILED=1
-            fi
+              "$script" || FAILED=1
           done < <(find . -name "*.sh" -not -path "./.git/*" -print0)
 
-          if [ "$FAILED" -eq 1 ]; then
-            echo "shellcheck found errors"
+          if [ "$FAILED" -ne 0 ]; then
             exit 1
           fi
-          echo "All shell scripts passed"
 
-  # ---------------------------------------------------------------------------
-  # Job 3: Python script linting and syntax checking
-  # ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# PYTHON LINT + FORMAT + SYNTAX
+# ---------------------------------------------------------------------------
   lint-python-scripts:
     name: Lint Python Scripts
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up Python 3.11
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
+          cache: pip
 
-      - name: Install linting tools
+      - name: Install tools
         run: |
-          pip install pylint flake8 black isort --quiet
+          pip install pylint flake8 black isort
 
-      - name: Syntax check all Python files
+      - name: Syntax check
         run: |
-          echo "Checking Python syntax..."
-          FAILED=0
-          while IFS= read -r -d '' script; do
-            echo "Checking: $script"
-            if ! python3 -m py_compile "$script"; then
-              echo "Syntax error in: $script"
-              FAILED=1
-            fi
-          done < <(find . -name "*.py" -not -path "./.git/*" -print0)
+          find . -name "*.py" -not -path "./.git/*" -print0 |
+          while IFS= read -r -d '' file; do
+            python3 -m py_compile "$file"
+          done
 
-          if [ "$FAILED" -eq 1 ]; then
-            exit 1
-          fi
-          echo "All Python files have valid syntax"
+      - name: Run Black (format check)
+        run: black --check .
 
-      - name: Run flake8 (style and logic errors)
-        run: |
-          flake8 \
-            --max-line-length=120 \
-            --extend-ignore=E501,W503,E302,E303,W291,E711,E712 \
-            --exclude=.git,__pycache__ \
-            $(find . -name "*.py" -not -path "./.git/*") \
-            || true
+      - name: Run isort (import check)
+        run: isort --check-only .
 
-      - name: Check import ordering with isort
-        run: |
-          isort \
-            --check-only \
-            --diff \
-            --skip .git \
-            $(find . -name "*.py" -not -path "./.git/*") \
-            || true
+      - name: Run flake8
+        run: flake8 --max-line-length=120 .
 
-  # ---------------------------------------------------------------------------
-  # Job 4: Markdown link validation
-  # ---------------------------------------------------------------------------
+      - name: Run pylint
+        run: pylint $(find . -name "*.py" -not -path "./.git/*")
+
+# ---------------------------------------------------------------------------
+# MARKDOWN VALIDATION
+# ---------------------------------------------------------------------------
   validate-markdown:
     name: Validate Markdown Links
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Install markdown-link-check
         run: npm install -g markdown-link-check
 
-      - name: Check relative links in all Markdown files
+      - name: Check Markdown
         run: |
-          echo "Checking markdown links..."
           FAILED=0
 
-          cat > /tmp/mlc-config.json << 'MLCEOF'
+          cat > /tmp/mlc.json << EOF
           {
             "ignorePatterns": [
-              { "pattern": "^https?://" }
-            ],
-            "retryOn429": true,
-            "retryCount": 2,
-            "fallbackRetryDelay": "30s"
+              { "pattern": "^https?://" },
+              { "pattern": "^mailto:" },
+              { "pattern": "^tel:" }
+            ]
           }
-          MLCEOF
+          EOF
 
+          find . -name "*.md" -print0 |
           while IFS= read -r -d '' file; do
-            echo "Checking: $file"
-            DIR=$(dirname "$file")
-            if ! markdown-link-check \
-              --config /tmp/mlc-config.json \
-              --quiet \
-              "$file" 2>&1; then
-              FAILED=1
-            fi
-          done < <(find . -name "*.md" -not -path "./.git/*" -print0)
+            markdown-link-check --config /tmp/mlc.json "$file" || FAILED=1
+          done
 
-          if [ "$FAILED" -eq 1 ]; then
-            echo "Broken relative links found"
-            exit 1
-          fi
-          echo "All relative links are valid"
+          exit $FAILED
 
-  # ---------------------------------------------------------------------------
-  # Job 5: Security scan with bandit
-  # ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# SECURITY SCAN
+# ---------------------------------------------------------------------------
   security-scan:
     name: Security Scan (Python)
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up Python 3.11
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
-      - name: Install bandit
-        run: pip install bandit --quiet
+      - name: Install Bandit
+        run: pip install bandit
 
-      - name: Run bandit on all Python files
+      - name: Run Bandit
         run: |
-          echo "Running bandit security scan..."
-          PY_FILES=$(find . -name "*.py" -not -path "./.git/*")
-
-          if [ -z "$PY_FILES" ]; then
-            echo "No Python files found"
-            exit 0
-          fi
-
-          bandit \
-            --recursive \
-            --severity-level medium \
-            --confidence-level medium \
-            --exclude ./.git \
-            --format txt \
-            $PY_FILES \
-            || true
-
-          echo "Bandit scan complete"
+          bandit -r . -ll -i
