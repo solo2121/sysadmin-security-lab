@@ -1,17 +1,17 @@
 # Sysadmin Security Lab
 
-![License](https://img.shields.io/badge/license-MIT-green)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 ![Platform](https://img.shields.io/badge/platform-Linux-blue)
 ![Vagrant](https://img.shields.io/badge/Vagrant-Lab-orange)
 ![Security](https://img.shields.io/badge/Security-Research-red)
 ![DevSecOps](https://img.shields.io/badge/DevSecOps-Lab-purple)
-![CI](https://github.com/solo2121/sysadmin-security-lab/actions/workflows/ci.yml/badge.svg)
+[![CI](https://github.com/solo2121/sysadmin-security-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/solo2121/sysadmin-security-lab/actions/workflows/ci.yml)
 
 A modular hands-on lab for **system administration, cybersecurity, DevOps, and DevSecOps** practice.
 
 This repository contains two independent lab environments and supporting tooling for enterprise infrastructure simulation, security research, automation, detection engineering, and professional skill development.
 
-**Maintained by:** Miguel A. Carlo (solo2121) &nbsp;|&nbsp; **Status:** Active Development &nbsp;|&nbsp; **Last Updated:** 2026-06-26
+**Maintained by:** Miguel A. Carlo (solo2121) &nbsp;|&nbsp; **Status:** Active Development &nbsp;|&nbsp; **Last Updated:** 2026-06-28
 
 ---
 
@@ -157,7 +157,13 @@ git clone https://github.com/solo2121/sysadmin-security-lab.git
 cd sysadmin-security-lab/labs/security/ad-pentest
 
 sudo apt update
-sudo apt install -y qemu-kvm libvirt-daemon-system virt-manager vagrant
+sudo apt install -y apt-transport-https ca-certificates curl gnupg lsb-release
+
+wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(grep -oP '(?<=UBUNTU_CODENAME=).*' /etc/os-release || lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+
+sudo apt update
+sudo apt install -y vagrant qemu-kvm libvirt-daemon-system virt-manager
 
 vagrant plugin install vagrant-libvirt
 vagrant plugin install vagrant-reload
@@ -179,7 +185,13 @@ vagrant up
 cd sysadmin-security-lab/labs/infrastructure/devops-linux-lab
 
 sudo apt update
-sudo apt install -y qemu-kvm libvirt-daemon-system virt-manager vagrant
+sudo apt install -y apt-transport-https ca-certificates curl gnupg lsb-release
+
+wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(grep -oP '(?<=UBUNTU_CODENAME=).*' /etc/os-release || lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+
+sudo apt update
+sudo apt install -y vagrant qemu-kvm libvirt-daemon-system virt-manager
 
 vagrant plugin install vagrant-libvirt
 
