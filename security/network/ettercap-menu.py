@@ -223,7 +223,7 @@ class SystemUtils:
     def _get_linux_interfaces() -> List[NetworkInterface]:
         """Get network interfaces on Linux systems."""
         interfaces = []
-        net_path = Path('/sys/class/net')
+        net_path = Path('/sys/class/net') # This was the misaligned line
 
         if net_path.exists():
             for iface_path in net_path.iterdir():
