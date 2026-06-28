@@ -61,6 +61,7 @@ class ScanResult(NamedTuple):
     response_time: float = 0.0
     error: Optional[str] = None
     banner: Optional[str] = None
+    target: str = ""
 
 
 def check_privileges() -> bool:
@@ -101,6 +102,7 @@ async def scan_port(
                 is_open=True,
                 scan_type=scan_type,
                 response_time=time.time() - start_time,
+<<<<<<< HEAD
                 banner=banner
             )
         elif scan_type == ScanType.TCP_SYN:
@@ -328,47 +330,120 @@ if __name__ == "__main__":
                     response_time=time.time() - start_time,
                     banner=banner
                 )
+=======
+                banner=banner,
+                target=target
+            )
+>>>>>>> chore/repository-standardization
         elif scan_type == ScanType.TCP_SYN:
             if not check_privileges():
-                return ScanResult(port=port, is_open=False, scan_type=scan_type, error="Root privileges required for SYN scan.")
+                return ScanResult(
+                    port=port, 
+                    is_open=False, 
+                    scan_type=scan_type, 
+                    error="Root privileges required for SYN scan.",
+                    target=target
+                )
             response = sr1(IP(dst=target)/TCP(dport=port, flags="S"), timeout=timeout, verbose=0)
             if response is None:
-                return ScanResult(port=port, is_open=False, scan_type=scan_type, error="filtered (timeout)")
+                return ScanResult(
+                    port=port, 
+                    is_open=False, 
+                    scan_type=scan_type, 
+                    error="filtered (timeout)",
+                    target=target
+                )
             elif response.haslayer(TCP):
-                if response.getlayer(TCP).flags == 0x12: # SYN-ACK
-                    return ScanResult(port=port, is_open=True, scan_type=scan_type, response_time=time.time() - start_time)
-                elif response.getlayer(TCP).flags == 0x14: # RST-ACK
-                    return ScanResult(port=port, is_open=False, scan_type=scan_type, response_time=time.time() - start_time)
-            return ScanResult(port=port, is_open=False, scan_type=scan_type, error="filtered")
+                if response.getlayer(TCP).flags == 0x12:  # SYN-ACK
+                    return ScanResult(
+                        port=port, 
+                        is_open=True, 
+                        scan_type=scan_type, 
+                        response_time=time.time() - start_time,
+                        target=target
+                    )
+                elif response.getlayer(TCP).flags == 0x14:  # RST-ACK
+                    return ScanResult(
+                        port=port, 
+                        is_open=False, 
+                        scan_type=scan_type, 
+                        response_time=time.time() - start_time,
+                        target=target
+                    )
+            return ScanResult(
+                port=port, 
+                is_open=False, 
+                scan_type=scan_type, 
+                error="filtered",
+                target=target
+            )
 
         elif scan_type == ScanType.UDP:
             if not check_privileges():
-                return ScanResult(port=port, is_open=False, scan_type=scan_type, error="Root privileges required for UDP scan.")
+                return ScanResult(
+                    port=port, 
+                    is_open=False, 
+                    scan_type=scan_type, 
+                    error="Root privileges required for UDP scan.",
+                    target=target
+                )
             response = sr1(IP(dst=target)/UDP(dport=port), timeout=timeout, verbose=0)
             if response is None:
-                return ScanResult(port=port, is_open=True, scan_type=scan_type, response_time=time.time() - start_time, banner="Open|Filtered")
+                return ScanResult(
+                    port=port, 
+                    is_open=True, 
+                    scan_type=scan_type, 
+                    response_time=time.time() - start_time, 
+                    banner="Open|Filtered",
+                    target=target
+                )
             elif response.haslayer(ICMP):
                 if int(response.getlayer(ICMP).type) == 3 and int(response.getlayer(ICMP).code) == 3:
-                    return ScanResult(port=port, is_open=False, scan_type=scan_type, response_time=time.time() - start_time)
-            return ScanResult(port=port, is_open=True, scan_type=scan_type, response_time=time.time() - start_time, banner="Open|Filtered")
+                    return ScanResult(
+                        port=port, 
+                        is_open=False, 
+                        scan_type=scan_type, 
+                        response_time=time.time() - start_time,
+                        target=target
+                    )
+            return ScanResult(
+                port=port, 
+                is_open=True, 
+                scan_type=scan_type, 
+                response_time=time.time() - start_time, 
+                banner="Open|Filtered",
+                target=target
+            )
         else:
             return ScanResult(
-                port=port, is_open=False, scan_type=scan_type,
-                error=f"Scan type {scan_type.name} is not implemented."
+                port=port, 
+                is_open=False, 
+                scan_type=scan_type,
+                error=f"Scan type {scan_type.name} is not implemented.",
+                target=target
             )
-    except socket.timeout:
+    except (socket.timeout, asyncio.TimeoutError):
         return ScanResult(
-            port=port, is_open=False, scan_type=scan_type,
-            error="filtered (timeout)"
+            port=port, 
+            is_open=False, 
+            scan_type=scan_type,
+            error="filtered (timeout)",
+            target=target
         )
     except ConnectionRefusedError:
-        return ScanResult(port=port, is_open=False, scan_type=scan_type)
+        return ScanResult(
+            port=port, 
+            is_open=False, 
+            scan_type=scan_type,
+            target=target
+        )
     except Exception as e:
         return ScanResult(
             port=port,
             is_open=False,
             scan_type=scan_type,
-            error=str(e)
+            error=str(e),
+            target=target
         )
 
 
@@ -384,7 +459,6 @@ async def scan_ports(
     if randomize:
         random.shuffle(ports)
 
-    results = []
     semaphore = asyncio.Semaphore(rate_limit)
 
     async def limited_scan(port):
@@ -441,43 +515,42 @@ def display_menu() -> Dict:
 def display_results(results: List[ScanResult]):
     """Display scan results in a readable format."""
     open_ports = [r for r in results if r.is_open]
-    filtered_ports = [r for r in results if "filtered" in str(r.error)]
-    closed_ports = [r for r in results if not r.is_open and not r.error and "filtered" not in str(r.error)]
-    error_ports = [r for r in results if r.error and "filtered" not in str(r.error)
-                   and "not yet implemented" not in str(r.error)]
+    filtered_ports = [r for r in results if r.error and "filtered" in str(r.error).lower()]
+    closed_ports = [r for r in results if not r.is_open and not r.error]
+    error_ports = [r for r in results if r.error and "filtered" not in str(r.error).lower()]
 
     print("\n" + "=" * 50)
     print("SCAN RESULTS".center(50))
     print("=" * 50)
 
-    print(f"\nScan Type: {results[0].scan_type.name.replace('_', ' ').title()}")
-    target = (f"{results[0].port}" if len(results) == 1
-             else f"{len(results)} ports")
-    print(f"Target: {target}")
+    if not results:
+        print("\nNo results to display.")
+        return
+
+    target_ip = socket.gethostbyname(results[0].target)
+    print(f"\nTarget: {results[0].target} ({target_ip})")
+    print(f"Scan Type: {results[0].scan_type.name.replace('_', ' ').title()}")
 
     if open_ports:
         print("\n[+] OPEN PORTS:")
         for result in sorted(open_ports, key=lambda x: x.port):
-            banner = f" | {result.banner[:30]}..." if result.banner else ""
-            print(f"  - Port {result.port}/tcp "
-                 f"(response: {result.response_time:.3f}s){banner}")
+            banner_text = f" | Banner: {result.banner}" if result.banner and result.banner not in ["No banner response", "Open|Filtered"] else ""
+            print(f"  - Port {result.port:<5} (response: {result.response_time:.3f}s){banner_text}")
     else:
-        print("\n[-] No open ports found")
+        print("\n[-] No open ports found.")
 
     if filtered_ports:
-        print("\n[?] FILTERED PORTS (no response):")
-        for result in sorted(filtered_ports, key=lambda x: x.port):
-            print(f"  - Port {result.port}/tcp")
-
-    unimplemented_scans = [r for r in results if r.error and "not yet implemented" in str(r.error)]
-    if unimplemented_scans:        print("\n[!] SKIPPED SCANS (not implemented):")
-        ports_str = ", ".join(str(r.port) for r in sorted(unimplemented_scans, key=lambda x: x.port))
+        print("\n[?] FILTERED PORTS (likely firewalled):")
+        ports_str = ", ".join(str(r.port) for r in sorted(filtered_ports, key=lambda x: x.port))
         print(f"  - Ports: {ports_str}")
+
+    if closed_ports:
+        print(f"\n[*] {len(closed_ports)} ports are closed.")
 
     if error_ports:
         print("\n[!] PORTS WITH ERRORS:")
         for result in sorted(error_ports, key=lambda x: x.port):
-            print(f"  - Port {result.port}/tcp: {result.error}")
+            print(f"  - Port {result.port}: {result.error}")
 
 
 def parse_args():
