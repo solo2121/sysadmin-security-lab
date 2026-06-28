@@ -44,6 +44,8 @@ The project is organized into independent virtual lab environments that can be d
 
 It combines enterprise infrastructure, offensive security, defensive engineering, cloud-native technologies, automation, Infrastructure as Code, and modern DevSecOps workflows into a single professional portfolio project.
 
+![Lab architecture overview](assets/architecture-overview.svg)
+
 ---
 
 ## Highlights
