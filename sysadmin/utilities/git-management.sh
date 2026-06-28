@@ -165,8 +165,7 @@ push_changes() {
             return 1
         fi
     fi
-    esac
-    
+
     printf "Changes pushed successfully!\\n"
 }
 
