@@ -9,7 +9,7 @@
 
 A modular hands-on lab for **system administration, cybersecurity, DevOps, and DevSecOps** practice.
 
-This repository contains two independent lab environments and supporting tooling for enterprise infrastructure simulation, security research, automation, detection engineering, and professional skill development.
+This repository provides two independent lab environments and supporting tooling for enterprise infrastructure simulation, security research, automation, detection engineering, and professional skill development.
 
 **Maintained by:** Miguel A. Carlo (solo2121) &nbsp;|&nbsp; **Status:** Active Development &nbsp;|&nbsp; **Last Updated:** 2026-06-28
 
@@ -17,9 +17,9 @@ This repository contains two independent lab environments and supporting tooling
 
 ## Overview
 
-Sysadmin Security Lab is a modular lab environment for learning and practicing Linux administration, enterprise security, DevOps, and DevSecOps workflows. It is built around isolated virtual lab environments so each system can be deployed independently and studied in a safe, repeatable way.
+Sysadmin Security Lab is a modular lab environment for learning and practicing Linux administration, enterprise security, DevOps, and DevSecOps workflows. It is designed around isolated virtual lab environments so each system can be deployed independently and studied in a safe, repeatable way.
 
-The repository is designed for hands-on learning, security research, attack simulation, defensive engineering, automation, and portfolio development. It combines infrastructure, tooling, documentation, and workflows in one place.
+The repository is intended for hands-on learning, security research, attack simulation, defensive engineering, automation, and portfolio development. It combines infrastructure, tooling, documentation, and workflows in one place.
 
 ![Lab architecture overview](assets/architecture-overview.svg)
 
