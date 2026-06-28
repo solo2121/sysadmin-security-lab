@@ -1,11 +1,11 @@
 # Kubernetes Security Hardening — k3s Lab Guide
 
-Practical security hardening for the k3s cluster in the DevOps lab. Covers CIS Kubernetes Benchmark controls, Falco runtime rules, Kyverno admission policies, RBAC configuration, and network policies. All examples reference the actual cluster in `labs/infrastructure/devops-linux-lab/`.
+Practical security hardening for the k3s cluster in the DevOps lab. It covers CIS Kubernetes Benchmark controls, Falco runtime rules, Kyverno admission policies, RBAC configuration, and network policies. All examples reference the actual cluster in `labs/infrastructure/devops-linux-lab/`.
 
-**Cluster control plane:** `devops-1` (auto-detected IP, octet .114)
+**Cluster control plane:** `devops-1` (auto-detected IP, octet .114)  
 **Kubeconfig:** `/vagrant/kubeconfig.yaml` or `/etc/rancher/k3s/k3s.yaml`
 
----
+***
 
 ## Table of Contents
 
@@ -23,7 +23,7 @@ Practical security hardening for the k3s cluster in the DevOps lab. Covers CIS K
 12. [Node Hardening](#12-node-hardening)
 13. [Hardening Verification Checklist](#13-hardening-verification-checklist)
 
----
+***
 
 ## 1. Setup and Access
 
@@ -64,7 +64,7 @@ curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/inst
   | sh -s -- -b /usr/local/bin
 ```
 
----
+***
 
 ## 2. CIS Benchmark Assessment
 
@@ -114,6 +114,7 @@ kubescape scan framework nsa --severity-threshold medium --format pretty-printer
 The most commonly failed controls and their fixes:
 
 **Control 1.2.6 — Ensure anonymous auth is disabled**
+
 ```bash
 # k3s disables anonymous auth by default
 # Verify:
@@ -122,17 +123,19 @@ cat /etc/rancher/k3s/k3s.yaml | grep anonymous-auth
 ```
 
 **Control 1.2.22 — Ensure audit logging is enabled**
+
 ```bash
 # See Section 10 — Audit Logging
 ```
 
 **Control 4.2.6 — Ensure --protect-kernel-defaults is set**
+
 ```bash
 # Check current kubelet args
 systemctl cat k3s | grep protect-kernel
 ```
 
----
+***
 
 ## 3. RBAC — Role-Based Access Control
 
@@ -159,7 +162,7 @@ kubectl auth can-i get secrets --as=system:serviceaccount:default:myapp
 
 ### Create Least-Privilege Service Accounts
 
-Replace the default service account (which gets broad permissions) with dedicated accounts per workload.
+Replace the default service account with dedicated accounts per workload.
 
 ```yaml
 # Save as /tmp/rbac-readonly.yaml
@@ -234,7 +237,7 @@ kubectl get clusterrolebindings \
 kubectl delete clusterrolebinding BINDING_NAME
 ```
 
----
+***
 
 ## 4. Network Policies
 
@@ -341,11 +344,11 @@ kubectl get networkpolicies --all-namespaces
 kubectl describe networkpolicy default-deny-all
 ```
 
----
+***
 
 ## 5. Pod Security Standards
 
-Kubernetes Pod Security Standards (PSS) replace the deprecated PodSecurityPolicy. Three levels: Privileged, Baseline, Restricted.
+Kubernetes Pod Security Standards replace the deprecated PodSecurityPolicy. Three levels: Privileged, Baseline, Restricted.
 
 ### Enable Pod Security Admission
 
@@ -421,7 +424,7 @@ kube-score score /vagrant/k8s/*.yaml
 kube-score score --output-format json /tmp/pod-restricted.yaml | jq '.[] | {name, checks: [.checks[] | select(.grade < 5)]}'
 ```
 
----
+***
 
 ## 6. Falco Runtime Security
 
@@ -555,11 +558,11 @@ kubectl rollout status daemonset/falco -n falco
       tags: [container, supply_chain]
 ```
 
----
+***
 
 ## 7. Kyverno Policy Enforcement
 
-Kyverno enforces policies at admission time — before any resource is created or modified in the cluster.
+Kyverno enforces policies at admission time, before any resource is created or modified in the cluster.
 
 ### Verify Kyverno is Running
 
@@ -775,7 +778,7 @@ kubectl get policyreports --all-namespaces
 kubectl describe policyreport -n default
 ```
 
----
+***
 
 ## 8. Secrets Management
 
@@ -830,7 +833,7 @@ kubectl get secrets --all-namespaces -o json | \
   kubectl replace -f - 2>/dev/null   # Re-encrypt all secrets
 ```
 
-### Use External Secrets (Best Practice)
+### Use External Secrets
 
 For production-like setups, use a secrets manager instead of Kubernetes secrets.
 
@@ -843,7 +846,7 @@ helm install external-secrets \
   --create-namespace
 ```
 
----
+***
 
 ## 9. Image Security with Harbor and Trivy
 
@@ -915,7 +918,7 @@ spec:
               YOUR_COSIGN_PUBLIC_KEY
 ```
 
----
+***
 
 ## 10. Audit Logging
 
@@ -988,7 +991,7 @@ cat /var/log/k3s-audit.log | jq \
    {user: .user.username, verb: .verb, resource: .objectRef.resource, code: .responseStatus.code}'
 ```
 
----
+***
 
 ## 11. Cert-Manager TLS Hardening
 
@@ -1065,7 +1068,7 @@ kubectl describe certificate grafana-tls -n monitoring
 # Certificate should show: Ready = True
 ```
 
----
+***
 
 ## 12. Node Hardening
 
@@ -1120,7 +1123,7 @@ sysctl --system
 sudo systemctl disable --now avahi-daemon cups bluetooth 2>/dev/null || true
 ```
 
-### etcd Security (k3s embedded)
+### etcd Security
 
 k3s uses a built-in SQLite datastore by default. Verify it is not exposed:
 
@@ -1133,7 +1136,7 @@ ls -la /var/lib/rancher/k3s/server/db/
 # Should be readable only by root
 ```
 
----
+***
 
 ## 13. Hardening Verification Checklist
 
@@ -1238,10 +1241,10 @@ kubectl get pods --all-namespaces -o json | \
 # Expected: empty
 ```
 
----
+***
 
 ## Disclaimer
 
-Apply hardening controls progressively in a lab environment. Some controls (privileged pod denial, root container denial) will break system pods if applied globally. Always exclude `kube-system` and security tool namespaces from restrictive policies, and test in a non-critical namespace before applying cluster-wide.
+Apply hardening controls progressively in a lab environment. Some controls, especially privileged pod denial and root container denial, can break system pods if applied globally. Always exclude `kube-system` and security tool namespaces from restrictive policies, and test in a non-critical namespace before applying cluster-wide.
 
 All hardening in this guide is for the isolated lab environment in `labs/infrastructure/devops-linux-lab/`.

@@ -1,6 +1,6 @@
 # Ansible Automation — Lab Guide
 
-A practical guide for using Ansible against the Linux nodes in the DevOps lab. Covers inventory setup, ad-hoc commands, playbooks, roles, and hardening automation grounded in the actual lab VM topology.
+A practical guide for using Ansible against the Linux nodes in the DevOps lab. It covers inventory setup, ad-hoc commands, playbooks, roles, and hardening automation grounded in the actual lab VM topology.
 
 **Lab nodes available for Ansible:**
 
@@ -13,9 +13,9 @@ A practical guide for using Ansible against the Linux nodes in the DevOps lab. C
 | alma-lab | 192.168.121.22 | AlmaLinux 10 | Linux practice node |
 | suse-lab | 192.168.121.23 | openSUSE Leap 15.6 | Linux practice node |
 
-SSH keys are automatically distributed from `devops-1` to all nodes at provisioning time.
+SSH keys are automatically distributed from `devops-1` to all nodes during provisioning.
 
----
+***
 
 ## Table of Contents
 
@@ -34,7 +34,7 @@ SSH keys are automatically distributed from `devops-1` to all nodes at provision
 13. [Testing with Molecule](#13-testing-with-molecule)
 14. [Troubleshooting](#14-troubleshooting)
 
----
+***
 
 ## 1. Setup and Prerequisites
 
@@ -77,7 +77,7 @@ ssh-copy-id -i ~/.ssh/id_rsa.pub vagrant@192.168.121.30
 ssh-copy-id -i ~/.ssh/id_rsa.pub vagrant@192.168.121.31
 ```
 
----
+***
 
 ## 2. Inventory
 
@@ -170,7 +170,7 @@ ansible all -i inventory/hosts.ini -m ping
 
 Expected output:
 
-```
+```text
 node1 | SUCCESS => { "ping": "pong" }
 node2 | SUCCESS => { "ping": "pong" }
 ubuntu-lab | SUCCESS => { "ping": "pong" }
@@ -179,42 +179,42 @@ alma-lab | SUCCESS => { "ping": "pong" }
 suse-lab | SUCCESS => { "ping": "pong" }
 ```
 
----
+***
 
 ## 3. Configuration
 
-Create `ansible.cfg` in your project root — Ansible reads this before `/etc/ansible/ansible.cfg`.
+Create `ansible.cfg` in your project root. Ansible uses the project-local config before the system-wide configuration.
 
 ```ini
 # ansible.cfg
 [defaults]
-inventory          = inventory/hosts.ini
-remote_user        = vagrant
-private_key_file   = /home/vagrant/.ssh/id_rsa
-host_key_checking  = False
-forks              = 10
-timeout            = 30
-stdout_callback    = yaml
-callbacks_enabled  = timer, profile_tasks
+inventory = inventory/hosts.ini
+remote_user = vagrant
+private_key_file = /home/vagrant/.ssh/id_rsa
+host_key_checking = False
+forks = 10
+timeout = 30
+stdout_callback = yaml
+callbacks_enabled = timer, profile_tasks
 
 [privilege_escalation]
-become             = True
-become_method      = sudo
-become_user        = root
-become_ask_pass    = False
+become = True
+become_method = sudo
+become_user = root
+become_ask_pass = False
 
 [ssh_connection]
-pipelining         = True
-ssh_args           = -o ControlMaster=auto -o ControlPersist=60s
+pipelining = True
+ssh_args = -o ControlMaster=auto -o ControlPersist=60s
 ```
 
 With this in place, you can drop the `-i inventory/hosts.ini` flag from most commands.
 
----
+***
 
 ## 4. Ad-Hoc Commands
 
-Ad-hoc commands run a single module without writing a playbook. Useful for quick checks and one-off tasks.
+Ad-hoc commands run a single module without writing a playbook. They are useful for quick checks and one-off tasks.
 
 ### Syntax
 
@@ -329,7 +329,7 @@ ansible managed_nodes -m service -a "name=cron state=restarted"
 ansible all -m service -a "name=cups state=stopped enabled=no"
 ```
 
----
+***
 
 ## 5. Playbook Fundamentals
 
@@ -337,7 +337,7 @@ Playbooks are YAML files that define a sequence of tasks to run against hosts.
 
 ### Project Structure
 
-```
+```text
 ansible-lab/
 ├── ansible.cfg
 ├── inventory/
@@ -496,13 +496,13 @@ tasks:
     when: hostname_output.stdout == "node1"
 ```
 
----
+***
 
 ## 6. Variables and Facts
 
-### Variable Precedence (lowest to highest)
+### Variable Precedence
 
-```
+```text
 role defaults → inventory vars → playbook vars → task vars → extra vars (-e)
 ```
 
@@ -529,9 +529,8 @@ ansible-playbook site.yml -e "@vars/override.yml"
 
 ### Group and Host Variables
 
-```
+```text
 inventory/
-├── hosts.ini
 ├── group_vars/
 │   ├── all.yml              # Applies to all hosts
 │   ├── managed_nodes.yml    # Applies to managed_nodes group
@@ -580,7 +579,7 @@ tasks:
       build_time: "{{ ansible_date_time.iso8601 }}"
 ```
 
----
+***
 
 ## 7. Templates with Jinja2
 
@@ -661,13 +660,14 @@ rtcsync
 logdir /var/log/chrony
 ```
 
----
+***
 
 ## 8. Handlers
 
-Handlers run only when notified by a task that made a change. Used for service restarts.
+Handlers run only when notified by a task that made a change. They are commonly used for service restarts.
 
 ```yaml
+---
 - name: Configure and harden SSH
   hosts: all_lab_nodes
   become: true
@@ -701,7 +701,7 @@ Handlers run only when notified by a task that made a change. Used for service r
       notify: Apply sysctl
 ```
 
----
+***
 
 ## 9. Roles
 
@@ -709,15 +709,15 @@ Roles organize playbooks into reusable, shareable units with a standardized dire
 
 ### Role Structure
 
-```
+```text
 roles/
 └── hardening/
     ├── defaults/
-    │   └── main.yml       # Default variables (lowest priority)
+    │   └── main.yml
     ├── vars/
-    │   └── main.yml       # Role variables (higher priority)
+    │   └── main.yml
     ├── tasks/
-    │   ├── main.yml       # Entry point — imports other task files
+    │   ├── main.yml
     │   ├── ssh.yml
     │   ├── users.yml
     │   ├── packages.yml
@@ -730,7 +730,7 @@ roles/
     ├── files/
     │   └── sudoers_lab
     ├── meta/
-    │   └── main.yml       # Role dependencies
+    │   └── main.yml
     └── README.md
 ```
 
@@ -816,7 +816,7 @@ common_packages:
         monitoring_interval: 60
 ```
 
----
+***
 
 ## 10. Hardening Playbooks
 
@@ -850,6 +850,7 @@ These playbooks automate security hardening across your lab nodes. They implemen
       net.ipv4.conf.all.log_martians: 1
       net.ipv4.tcp_syncookies: 1
       net.ipv6.conf.all.accept_redirects: 0
+
       # Kernel hardening
       kernel.randomize_va_space: 2
       kernel.dmesg_restrict: 1
@@ -977,9 +978,9 @@ These playbooks automate security hardening across your lab nodes. They implemen
         owner: root
         group: root
       loop:
-        - { path: /etc/passwd,  mode: '0644' }
-        - { path: /etc/shadow,  mode: '0640' }
-        - { path: /etc/group,   mode: '0644' }
+        - { path: /etc/passwd, mode: '0644' }
+        - { path: /etc/shadow, mode: '0640' }
+        - { path: /etc/group, mode: '0644' }
         - { path: /etc/gshadow, mode: '0640' }
         - { path: /etc/ssh/sshd_config, mode: '0600' }
 
@@ -1062,7 +1063,7 @@ ansible all -m command -a "sshd -T | grep -E 'permitroot|passwordauth|maxauthtri
       delegate_to: localhost
 ```
 
----
+***
 
 ## 11. Vault — Encrypting Secrets
 
@@ -1116,7 +1117,7 @@ ansible-playbook playbooks/hardening.yml --vault-password-file ~/.vault_pass
 # vault_password_file = ~/.vault_pass
 ```
 
----
+***
 
 ## 12. Ansible Galaxy
 
@@ -1142,3 +1143,66 @@ collections:
   - name: community.general
   - name: ansible.posix
   - name: community.crypto
+EOF
+```
+
+```bash
+# Install from requirements
+ansible-galaxy install -r requirements.yml
+```
+
+***
+
+## 13. Testing with Molecule
+
+Molecule lets you test roles in disposable environments before applying them to the lab.
+
+```bash
+# Initialize a new scenario
+molecule init scenario -r hardening -d docker
+
+# Run the full test suite
+molecule test
+
+# Converge without verification
+molecule converge
+
+# Run verification only
+molecule verify
+```
+
+A common workflow is to run `molecule test` locally, then apply the role to the lab only after the tests pass.
+
+***
+
+## 14. Troubleshooting
+
+### SSH Connectivity Fails
+
+- Check that the target host is up and reachable.
+- Verify the inventory uses the correct `ansible_host` value.
+- Confirm the SSH key is present on the managed node.
+
+### Playbook Fails on a Package Task
+
+- Confirm the node uses the expected package manager.
+- Make sure the relevant collection is installed.
+- Run with `--check --diff` first to narrow down the failing task.
+
+### Sysctl Changes Do Not Persist
+
+- Confirm `ansible.posix` is installed.
+- Check whether another service rewrites `/etc/sysctl.d`.
+- Re-run the playbook and verify the handler executed.
+
+### Vault Prompts Unexpectedly
+
+- Confirm the vault password file path in `ansible.cfg`.
+- Make sure the file is readable only by the control user.
+- Use `ansible-vault view` to verify the encrypted variables file is valid.
+
+***
+
+## Notes
+
+This guide assumes the control node is `devops-1` and the managed nodes are reachable over the `192.168.121.0/24` network. If you add more nodes later, extend the inventory groups and keep the naming convention consistent.
