@@ -50,21 +50,40 @@ sudo apt update
 sudo apt upgrade -y
 ```
 
-### 2. Install virtualization packages
+### 2. Install Vagrant
 
 #### Debian / Ubuntu
 
 ```bash
-sudo apt install -y qemu-kvm libvirt-daemon-system libvirt-clients virt-manager vagrant
+wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(grep -oP '(?<=UBUNTU_CODENAME=).*' /etc/os-release || lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+sudo apt update
+sudo apt install -y vagrant
 ```
 
 #### Fedora / RHEL / CentOS Stream
 
 ```bash
-sudo dnf install -y @virtualization vagrant virt-manager
+sudo dnf install -y dnf-plugins-core
+sudo dnf config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
+sudo dnf -y install vagrant
 ```
 
-### 3. Enable and start Libvirt
+### 3. Install virtualization packages
+
+#### Debian / Ubuntu
+
+```bash
+sudo apt install -y qemu-kvm libvirt-daemon-system libvirt-clients virt-manager
+```
+
+#### Fedora / RHEL / CentOS Stream
+
+```bash
+sudo dnf install -y @virtualization virt-manager
+```
+
+### 4. Enable and start Libvirt
 
 #### Debian / Ubuntu
 
@@ -78,14 +97,14 @@ sudo systemctl enable --now libvirtd
 sudo systemctl enable --now libvirtd
 ```
 
-### 4. Add your user to the libvirt group
+### 5. Add your user to the libvirt group
 
 ```bash
 sudo usermod -aG libvirt $USER
 newgrp libvirt
 ```
 
-### 5. Verify KVM is available
+### 6. Verify KVM is available
 
 ```bash
 lsmod | grep kvm
