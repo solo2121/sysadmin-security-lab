@@ -280,13 +280,13 @@ vagrant up
 
 | Document | Purpose |
 |---|---|
-| `PORTFOLIO.md` | Portfolio index and skills mapping |
-| `ARCHITECTURE.md` | Infrastructure design |
-| `SECURITY-SCOPE.md` | Security boundaries |
-| `INSTALLATION.md` | Full installation guide |
-| `SETUP-WITH-EXAMPLES.md` | Deployment walkthrough |
-| `TROUBLESHOOTING.md` | Common issues |
-| `CHANGELOG.md` | Project history |
+| [PORTFOLIO.md](docs/PORTFOLIO.md) | Portfolio index and skills mapping |
+| [ARCHITECTURE.md](docs/architecture/ARCHITECTURE.md) | Infrastructure design |
+| [SECURITY-SCOPE.md](docs/architecture/SECURITY-SCOPE.md) | Security boundaries |
+| [INSTALLATION.md](INSTALLATION.md) | Full installation guide |
+| [SETUP-WITH-EXAMPLES.md](docs/SETUP-WITH-EXAMPLES.md) | Deployment walkthrough |
+| [TROUBLESHOOTING.md](TROUBLESHOOTING.md) | Common issues |
+| [CHANGELOG.md](CHANGELOG.md) | Project history |
 
 ---
 
@@ -317,6 +317,6 @@ See `CONTRIBUTING.md` for details.
 
 This project is licensed under the MIT License.
 
-See `LICENSE` for details.
+See [LICENSE](LICENSE) for details.
 
 Copyright (c) 2025–2026 Miguel A. Carlo
