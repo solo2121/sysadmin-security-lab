@@ -51,6 +51,12 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y vagrant
 
+      - name: Install Vagrant plugins
+        run: |
+          vagrant plugin install vagrant-reload
+          vagrant plugin install vagrant-libvirt
+          vagrant plugin list
+
       - name: Validate AD Pentest Vagrantfile
         run: vagrant validate
         working-directory: labs/security/ad-pentest
