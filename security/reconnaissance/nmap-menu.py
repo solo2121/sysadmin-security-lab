@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 
-import subprocess
-import sys
-from colorama import init, Fore, Style
+import os
 import re
 import socket
-import os
+import subprocess
+import sys
+
+from colorama import Fore, init
 
 def validate_ip(ip):
     """Validate if a string is a valid IP address"""
@@ -29,7 +30,7 @@ def get_network_interfaces():
     try:
         result = subprocess.run(['ip', '-o', 'link', 'show'], capture_output=True, text=True)
         interfaces = [line.split(':')[1].strip() for line in result.stdout.splitlines()]
-        return interfaces
+        return interfaces or ['eth0', 'wlan0', 'enp0s3', 'en0', 'lo']
     except:
         # Fallback to common interface names if ip command fails
         return ['eth0', 'wlan0', 'enp0s3', 'en0', 'lo']
@@ -151,7 +152,7 @@ def run_nmap(args, target, description=""):
 
 def menu():
     """Display main menu options"""
-    print(Fore.YELLOW + Style.BRIGHT + """
+    print(Fore.YELLOW + """
 Nmap Scan Automation Menu
 =========================
 1) Quick Scan (nmap -T4 -F)
@@ -207,7 +208,7 @@ def custom_scan(target):
 
 def main():
     """Main program loop"""
-    print(Fore.CYAN + Style.BRIGHT + "\nNmap Automation Tool - Advanced Evasion Techniques")
+    print(Fore.CYAN + "\nNmap Automation Tool - Advanced Evasion Techniques")
     print(Fore.YELLOW + "="*60)
     print(Fore.MAGENTA + "Note: Spoofing requires specifying a network interface")
 
