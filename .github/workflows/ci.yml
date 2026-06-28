@@ -34,26 +34,17 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y vagrant
 
-      - name: Validate AD Pentest Vagrantfile
+      - name: Validate Vagrantfiles
         run: |
-          cd labs/security/ad-pentest
-          vagrant validate
-        env:
-          VAGRANT_DEFAULT_PROVIDER: libvirt
-
-      - name: Validate AD Pentest VLAN Vagrantfile
-        run: |
-          cd labs/security/ad-pentest-vlan
-          vagrant validate
-        env:
-          VAGRANT_DEFAULT_PROVIDER: libvirt
-
-      - name: Validate DevOps Lab Vagrantfile
-        run: |
-          cd labs/infrastructure/devops-linux-lab
-          vagrant validate
-        env:
-          VAGRANT_DEFAULT_PROVIDER: libvirt
+          set -eo pipefail
+          VAGRANT_DEFAULT_PROVIDER=libvirt
+          
+          echo "--- Validating AD Pentest Vagrantfile ---"
+          (cd labs/security/ad-pentest && vagrant validate)
+          echo "--- Validating AD Pentest VLAN Vagrantfile ---"
+          (cd labs/security/ad-pentest-vlan && vagrant validate)
+          echo "--- Validating DevOps Lab Vagrantfile ---"
+          (cd labs/infrastructure/devops-linux-lab && vagrant validate)
 
 # ---------------------------------------------------------------------------
 # SHELLCHECK
@@ -71,17 +62,10 @@ jobs:
 
       - name: Run ShellCheck
         run: |
-          FAILED=0
-          while IFS= read -r -d '' script; do
-            echo "Checking $script"
-            shellcheck --severity=error \
-              --exclude=SC1091,SC2086,SC2034 \
-              "$script" || FAILED=1
-          done < <(find . -name "*.sh" -not -path "./.git/*" -print0)
-
-          if [ "$FAILED" -ne 0 ]; then
-            exit 1
-          fi
+          set -eo pipefail
+          find . -name "*.sh" -not -path "./.git/*" -print0 |
+            xargs -0 -n1 shellcheck --severity=error \
+              --exclude=SC1091,SC2086,SC2034
 
 # ---------------------------------------------------------------------------
 # PYTHON LINT + FORMAT + SYNTAX
@@ -121,7 +105,7 @@ jobs:
         run: flake8 --max-line-length=120 .
 
       - name: Run pylint
-        run: pylint $(find . -name "*.py" -not -path "./.git/*")
+        run: find . -name "*.py" -not -path "./.git/*" | xargs pylint
 
 # ---------------------------------------------------------------------------
 # MARKDOWN VALIDATION
@@ -153,10 +137,11 @@ jobs:
 
           find . -name "*.md" -print0 |
           while IFS= read -r -d '' file; do
-            markdown-link-check --config /tmp/mlc.json "$file" || FAILED=1
+            echo "Checking $file"
+            markdown-link-check --quiet --config /tmp/mlc.json "$file" || FAILED=1
           done
 
-          exit $FAILED
+          [ "$FAILED" -eq 0 ]
 
 # ---------------------------------------------------------------------------
 # SECURITY SCAN
@@ -179,4 +164,4 @@ jobs:
 
       - name: Run Bandit
         run: |
-          bandit -r . -ll -i
+          bandit -r . -ll -c
