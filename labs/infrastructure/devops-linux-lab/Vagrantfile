@@ -171,12 +171,23 @@ end
 LIBVIRT_NETWORK = detect_libvirt_network
 puts "Using libvirt network: #{LIBVIRT_NETWORK}"
 network_parts = LIBVIRT_NETWORK.split('/')
-NETWORK_BASE = network_parts[0].split('.')[0..2].join('.')
+
+# Allow environment override — useful for Proxmox, custom libvirt networks,
+# or any host where auto-detection returns the wrong base.
+# Usage: export NETWORK_BASE="10.0.0" before vagrant up
+NETWORK_BASE = ENV['NETWORK_BASE'] || network_parts[0].split('.')[0..2].join('.')
+
 def vm_ip(octet)
   "#{NETWORK_BASE}.#{octet}"
 end
 
-MASTER_IP = vm_ip(114)
+# Allow environment override for the master IP directly.
+# Usage: export MASTER_IP="192.168.100.50" before vagrant up
+MASTER_IP = ENV['MASTER_IP'] || vm_ip(114)
+
+puts "Network base : #{NETWORK_BASE}"
+puts "Master IP    : #{MASTER_IP}"
+
 File.write("/tmp/lab.env", "MASTER_IP=#{MASTER_IP}\nNETWORK_BASE=#{NETWORK_BASE}\n")
 
 # =============================================================================

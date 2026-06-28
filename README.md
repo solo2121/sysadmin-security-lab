@@ -5,6 +5,7 @@
 ![Vagrant](https://img.shields.io/badge/Vagrant-Lab-orange)
 ![Security](https://img.shields.io/badge/Security-Research-red)
 ![DevSecOps](https://img.shields.io/badge/DevSecOps-Lab-purple)
+![CI](https://github.com/solo2121/sysadmin-security-lab/actions/workflows/ci.yml/badge.svg)
 
 A modular hands-on lab for **system administration, cybersecurity, DevOps, and DevSecOps** practice.
 
