@@ -163,7 +163,7 @@ New scripts should include:
 
 - [`../../README.md`](../../README.md)
 - [`security-scope.md`](security-scope.md)
-- [`../workflows/WORKFLOWS.md`](../workflows/WORKFLOWS.md)
-- [`../SETUP-WITH-EXAMPLES.md`](../SETUP-WITH-EXAMPLES.md)
-- [`../../INSTALLATION.md`](../../INSTALLATION.md)
-- [`../../TROUBLESHOOTING.md`](../../TROUBLESHOOTING.md)
+- [`../workflows/workflows.md`](../workflows/workflows.md)
+- [`../setup-with-examples.md`](../setup-with-examples.md)
+- [`../../installation.md`](../../installation.md)
+- [`../../troubleshooting.md`](../../troubleshooting.md)

@@ -85,8 +85,8 @@
 | [`docs/guides/security/`](../docs/guides/security/) | AD pentest and LLM security guides |
 | [`docs/workflows/`](../docs/workflows/) | Lab deployment and operational workflows |
 | [`docs/architecture/`](../docs/architecture/) | Architecture and security scope |
-| [`INSTALLATION.md`](../INSTALLATION.md) | Full host setup instructions |
-| [`TROUBLESHOOTING.md`](../TROUBLESHOOTING.md) | Common issues and fixes |
+| [`installation.md`](../installation.md) | Full host setup instructions |
+| [`troubleshooting.md`](../troubleshooting.md) | Common issues and fixes |
 | [`CHANGELOG.md`](../CHANGELOG.md) | Version history |
 
 ---
