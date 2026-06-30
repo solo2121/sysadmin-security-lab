@@ -276,7 +276,6 @@ jobs:
           while IFS= read -r -d '' file; do
             echo "Checking $file"
             if ! markdown-link-check \
-              --quiet \
               --config .markdown-link-check.json \
               "$file"; then
               FAILED=1
