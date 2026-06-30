@@ -7,6 +7,8 @@
 #   lint-shell-scripts     — shellcheck errors only (not warnings)
 #   lint-python-scripts    — syntax check only (flake8 informational)
 #   security-scan          — bandit informational only (never blocks)
+#   run-tests              — pytest (Python) and bats (Bash) unit tests
+#   check-doc-links        — markdown link check, informational only (never blocks)
 #
 # Philosophy:
 #   Only REAL errors block the build. Style warnings and security
@@ -223,4 +225,64 @@ jobs:
             $PY_FILES 2>&1 || true
 
           echo "Bandit scan complete (see findings above for review)"
+          exit 0
+
+  # ---------------------------------------------------------------------------
+  # Job 5: Automated test suites — pytest (Python) and bats (Bash)
+  # ---------------------------------------------------------------------------
+  run-tests:
+    name: Run Test Suites
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install pytest
+        run: pip install pytest --quiet
+
+      - name: Run Python unit tests
+        run: pytest tests/python/ -v
+
+      - name: Install bats
+        run: sudo apt-get update -qq && sudo apt-get install -y bats
+
+      - name: Run Bash unit tests
+        run: bats tests/bash/
+
+  # ---------------------------------------------------------------------------
+  # Job 6: Markdown link check — catch broken internal doc references
+  # ---------------------------------------------------------------------------
+  check-doc-links:
+    name: Check Markdown Links (informational — never blocks)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install markdown-link-check
+        run: npm install -g markdown-link-check@3.13.6
+
+      - name: Check all markdown files for broken links (report only)
+        run: |
+          echo "Checking markdown links across the repo (informational only)..."
+          echo "Findings are reported for review but never fail the build —"
+          echo "external link rot, rate limits, and third-party site changes"
+          echo "are not 'real errors' in the sense this pipeline blocks on."
+          echo
+          while IFS= read -r -d '' file; do
+            echo "Checking $file"
+            markdown-link-check \
+              --config .markdown-link-check.json \
+              "$file" || true
+          done < <(find . -name "*.md" -not -path "./.git/*" -print0)
+
+          echo
+          echo "Markdown link check complete (see findings above for review)"
           exit 0

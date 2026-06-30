@@ -474,7 +474,7 @@ When reporting an issue, include:
 
 ## Related Files
 
-- [Installation Guide](INSTALLATION.md)
+- [Installation Guide](installation.md)
 - [README](README.md)
-- [Architecture Design](docs/architecture/ARCHITECTURE.md)
-- [Security Scope](docs/architecture/SECURITY-SCOPE.md)
+- [Architecture Design](docs/architecture/architecture.md)
+- [Security Scope](docs/architecture/security-scope.md)

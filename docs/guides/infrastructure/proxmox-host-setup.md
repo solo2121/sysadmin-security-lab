@@ -642,5 +642,5 @@ virsh dominfo sysadmin-security-lab_dc01 | grep cpu
 - [`managing-kvm-qemu-cli-tutorial.md`](managing-kvm-qemu-cli-tutorial.md) — KVM management reference
 - [`../../../labs/security/ad-pentest/README.md`](../../../labs/security/ad-pentest/README.md) — AD pentest lab setup
 - [`../../../labs/infrastructure/devops-linux-lab/README.md`](../../../labs/infrastructure/devops-linux-lab/README.md) — DevOps lab setup
-- [`../../../INSTALLATION.md`](../../../INSTALLATION.md) — Full dependency installation guide
-- [`../../../TROUBLESHOOTING.md`](../../../TROUBLESHOOTING.md) — Common issues and fixes
+- [`../../../installation.md`](../../../installation.md) — Full dependency installation guide
+- [`../../../troubleshooting.md`](../../../troubleshooting.md) — Common issues and fixes

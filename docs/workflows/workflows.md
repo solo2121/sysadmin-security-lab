@@ -35,7 +35,7 @@ cd labs/security/ad-pentest-vlan
 cat README.md
 
 # Review architecture
-cat docs/ARCHITECTURE.md 2>/dev/null || echo "No architecture doc"
+cat docs/architecture.md 2>/dev/null || echo "No architecture doc"
 
 # Check requirements
 head -20 Vagrantfile
@@ -769,17 +769,16 @@ VAGRANT_LOG=debug vagrant <command> 2>&1 | tee debug.log
 ---
 
 ## Related Documentation
-
-- [INSTALLATION.md](../../INSTALLATION.md) - Setup
-- [TROUBLESHOOTING.md](../../TROUBLESHOOTING.md) - Issues
-- [ARCHITECTURE.md](../architecture/ARCHITECTURE.md) - Design
+- `../installation.md` - Setup
+- `../troubleshooting.md` - Issues
+- `../architecture/architecture.md` - Design
 - Lab-specific READMEs
 
 ---
 
 ## License
-
-This workflow documentation is licensed under the MIT License. See [LICENSE](../../LICENSE) for details.
-
+ 
+This workflow documentation is licensed under the MIT License. See `../LICENSE` for details.
+ 
 **Last Updated:** 2026-06-13  
 **Version:** 1.0

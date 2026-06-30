@@ -26,7 +26,7 @@ Recommended host setup:
 - 8 GB RAM minimum, 16 GB or more recommended.
 - 50 GB free disk minimum, 100 GB or more recommended.
 
-See [`../INSTALLATION.md`](../INSTALLATION.md) for full setup instructions.
+See [`../installation.md`](../installation.md) for full setup instructions.
 
 ---
 
@@ -77,7 +77,7 @@ vagrant destroy -f
 
 Security labs may include intentionally vulnerable services, weak credentials, exploitation workflows, and attack-chain documentation. Run them only in isolated lab networks you own or are authorized to test.
 
-Before launching a security lab, review [`../docs/architecture/SECURITY-SCOPE.md`](../docs/architecture/SECURITY-SCOPE.md).
+Before launching a security lab, review [`../docs/architecture/security-scope.md`](../docs/architecture/security-scope.md).
 
 ---
 
@@ -113,4 +113,4 @@ Common checks:
 - Check `virsh list --all` if VMs are stuck or partially created.
 - Destroy and rebuild only lab resources you are sure you no longer need.
 
-For more help, see [`../TROUBLESHOOTING.md`](../TROUBLESHOOTING.md).
+For more help, see [`../troubleshooting.md`](../troubleshooting.md).

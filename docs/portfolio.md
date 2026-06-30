@@ -85,8 +85,8 @@
 | [`docs/guides/security/`](../docs/guides/security/) | AD pentest and LLM security guides |
 | [`docs/workflows/`](../docs/workflows/) | Lab deployment and operational workflows |
 | [`docs/architecture/`](../docs/architecture/) | Architecture and security scope |
-| [`INSTALLATION.md`](../INSTALLATION.md) | Full host setup instructions |
-| [`TROUBLESHOOTING.md`](../TROUBLESHOOTING.md) | Common issues and fixes |
+| [`installation.md`](../installation.md) | Full host setup instructions |
+| [`troubleshooting.md`](../troubleshooting.md) | Common issues and fixes |
 | [`CHANGELOG.md`](../CHANGELOG.md) | Version history |
 
 ---
@@ -96,7 +96,7 @@
 1. [`labs/infrastructure/devops-linux-lab/README.md`](../labs/infrastructure/devops-linux-lab/README.md) — start with the base infrastructure.
 2. [`labs/security/ad-pentest/README.md`](../labs/security/ad-pentest/README.md) — move into the core offensive security environment.
 3. [`security/audit/`](../security/audit/) — explore the LLM and detection tooling layer.
-4. [`docs/architecture/ARCHITECTURE.md`](../docs/architecture/ARCHITECTURE.md) — review the full system design.
+4. [`docs/architecture/architecture.md`](../docs/architecture/architecture.md) — review the full system design.
 
 ---
 
