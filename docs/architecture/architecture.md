@@ -26,9 +26,9 @@ sysadmin-security-lab/
 │   ├── README.md
 │   └── sysadmin-security-lab-banner.png
 ├── docs/
-│   ├── ARCHITECTURE.md
+│   ├── architecture.md
 │   ├── LAB-DEPLOYMENT-WORKFLOW.md
-│   ├── SECURITY-SCOPE.md
+│   ├── security-scope.md
 │   ├── SETUP-WITH-EXAMPLES.md
 │   ├── WORKFLOWS.md
 │   └── guides/
@@ -122,7 +122,7 @@ Required controls:
 - Keep lab networks isolated from production and employer systems.
 - Do not bridge intentionally vulnerable systems onto public networks.
 - Treat credentials in lab documentation as throwaway training material.
-- Review [`SECURITY-SCOPE.md`](SECURITY-SCOPE.md) before running offensive scenarios.
+- Review [`security-scope.md`](security-scope.md) before running offensive scenarios.
 
 ---
 
@@ -162,7 +162,7 @@ New scripts should include:
 ## Related Documents
 
 - [`../../README.md`](../../README.md)
-- [`SECURITY-SCOPE.md`](SECURITY-SCOPE.md)
+- [`security-scope.md`](security-scope.md)
 - [`../workflows/WORKFLOWS.md`](../workflows/WORKFLOWS.md)
 - [`../SETUP-WITH-EXAMPLES.md`](../SETUP-WITH-EXAMPLES.md)
 - [`../../INSTALLATION.md`](../../INSTALLATION.md)

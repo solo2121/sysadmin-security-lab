@@ -96,7 +96,7 @@
 1. [`labs/infrastructure/devops-linux-lab/README.md`](../labs/infrastructure/devops-linux-lab/README.md) — start with the base infrastructure.
 2. [`labs/security/ad-pentest/README.md`](../labs/security/ad-pentest/README.md) — move into the core offensive security environment.
 3. [`security/audit/`](../security/audit/) — explore the LLM and detection tooling layer.
-4. [`docs/architecture/ARCHITECTURE.md`](../docs/architecture/ARCHITECTURE.md) — review the full system design.
+4. [`docs/architecture/architecture.md`](../docs/architecture/architecture.md) — review the full system design.
 
 ---
 

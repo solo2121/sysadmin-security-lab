@@ -281,8 +281,8 @@ vagrant up
 | Document | Purpose |
 |---|---|
 | [PORTFOLIO.md](docs/PORTFOLIO.md) | Portfolio index and skills mapping |
-| [ARCHITECTURE.md](docs/architecture/ARCHITECTURE.md) | Infrastructure design |
-| [SECURITY-SCOPE.md](docs/architecture/SECURITY-SCOPE.md) | Security boundaries |
+| [architecture.md](docs/architecture/architecture.md) | Infrastructure design |
+| [security-scope.md](docs/architecture/security-scope.md) | Security boundaries |
 | [INSTALLATION.md](INSTALLATION.md) | Full installation guide |
 | [SETUP-WITH-EXAMPLES.md](docs/SETUP-WITH-EXAMPLES.md) | Deployment walkthrough |
 | [TROUBLESHOOTING.md](TROUBLESHOOTING.md) | Common issues |
