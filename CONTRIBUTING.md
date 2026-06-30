@@ -50,7 +50,23 @@ Professional contributions should follow the feature branch workflow. Direct pus
 
 ### Pre-Commit Checks
 
-Before committing, run the following checks manually to keep the codebase clean:
+The repo ships a `.pre-commit-config.yaml` that automates the checks below.
+Install it once per clone:
+
+```bash
+pip install -r requirements-dev.txt
+pre-commit install
+```
+
+From then on, `shellcheck`, `flake8`, `detect-secrets`, and a markdown
+link checker run automatically on every `git commit`. To run everything
+manually against the whole repo:
+
+```bash
+pre-commit run --all-files
+```
+
+You can still run the checks individually if you prefer:
 
 ```bash
 # Shell scripts
@@ -62,6 +78,20 @@ pylint path/to/script.py
 # Vagrant syntax check
 vagrant validate
 ```
+
+### Running the Test Suite
+
+```bash
+# Python tests
+pytest tests/python/ -v
+
+# Bash tests (requires bats-core: sudo apt-get install -y bats)
+bats tests/bash/
+```
+
+See [`tests/README.md`](tests/README.md) for more detail on what's covered
+and how to add new tests. Both suites also run automatically in CI via the
+`run-tests` job.
 
 These checks help catch issues before changes are submitted.
 
