@@ -284,7 +284,7 @@ vagrant up
 | [architecture.md](docs/architecture/architecture.md) | Infrastructure design |
 | [security-scope.md](docs/architecture/security-scope.md) | Security boundaries |
 | [INSTALLATION.md](INSTALLATION.md) | Full installation guide |
-| [SETUP-WITH-EXAMPLES.md](docs/SETUP-WITH-EXAMPLES.md) | Deployment walkthrough |
+| [setup-with-examples.md](docs/setup-with-examples.md) | Deployment walkthrough |
 | [TROUBLESHOOTING.md](TROUBLESHOOTING.md) | Common issues |
 | [CHANGELOG.md](CHANGELOG.md) | Project history |
 
