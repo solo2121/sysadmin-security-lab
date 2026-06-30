@@ -9,9 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `tests/python/` — pytest unit tests for Python tooling logic (argument parsing, data structures).
+- `tests/bash/` — bats unit tests for Bash script helper functions and configuration tables.
+- `run-tests` CI job running pytest and bats on every push/PR.
+- `check-doc-links` CI job that fails the build on broken internal markdown links.
+- `.pre-commit-config.yaml` — shellcheck, flake8, detect-secrets, and markdown-link-check hooks for local commit-time validation.
+- `.secrets.baseline` — audited baseline of intentional lab credentials (AD pentest creds, Vagrantfile test passwords, LocalStack fake AWS key) so `detect-secrets` only flags genuinely new findings.
+
+### Fixed
+- Broken relative links in `docs/architecture/ARCHITECTURE.md`, `docs/workflows/WORKFLOWS.md`, `docs/guides/infrastructure/proxmox-host-setup.md`, and `labs/security/ad-pentest/README.md` left over from the docs reorganization.
+
 ### Planned
-- GitHub Actions CI/CD pipeline.
-- Pre-commit hook automation.
 - Additional AD CS attack scenarios.
 - Ansible role automation for the DevOps lab.
 

@@ -1,0 +1,65 @@
+# =============================================================================
+# Pre-commit hooks — Sysadmin Security Lab
+# =============================================================================
+# Install once:
+#   pip install pre-commit --break-system-packages
+#   pre-commit install
+#
+# Run manually against all files:
+#   pre-commit run --all-files
+#
+# Philosophy mirrors .github/workflows/ci.yml: catch real errors before
+# they're committed, but don't block on style preferences or on patterns
+# that are intentional in offensive-security scripts (e.g. bandit findings
+# in exploit/recon tooling).
+# =============================================================================
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: ["--maxkb=5000"]
+      - id: check-case-conflict
+      - id: mixed-line-ending
+      - id: check-yaml
+        args: ["--allow-multiple-documents"]
+      - id: detect-private-key
+
+  - repo: https://github.com/koalaman/shellcheck-precommit
+    rev: v0.10.0
+    hooks:
+      - id: shellcheck
+        name: shellcheck (errors only)
+        args:
+          - "--severity=error"
+          - "--exclude=SC1091,SC2086,SC2034,SC2155,SC2164,SC2181,SC2207"
+
+  - repo: https://github.com/pycqa/flake8
+    rev: 7.1.1
+    hooks:
+      - id: flake8
+        name: flake8 (informational style check)
+        args:
+          - "--max-line-length=120"
+          - "--extend-ignore=E501,W503,E302,E303,W291,W293,E711,E712,E128,W292,F401,E722,F811,E305"
+        # Style findings should not block a commit, only inform.
+        verbose: true
+
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+      - id: detect-secrets
+        name: detect-secrets (block accidental credential commits)
+        args: ["--baseline", ".secrets.baseline"]
+        exclude: ^docs/archive/
+
+  - repo: https://github.com/tcort/markdown-link-check
+    rev: v3.13.6
+    hooks:
+      - id: markdown-link-check
+        name: markdown-link-check (catch broken internal doc links)
+        args: ["--quiet", "--config", ".markdown-link-check.json"]

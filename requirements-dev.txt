@@ -2,3 +2,8 @@
 # Install with: pip install -r requirements-dev.txt
 
 pylint
+pytest>=8.0
+flake8
+bandit
+pre-commit
+detect-secrets
