@@ -769,10 +769,9 @@ VAGRANT_LOG=debug vagrant <command> 2>&1 | tee debug.log
 ---
 
 ## Related Documentation
-
-- [INSTALLATION.md](../../INSTALLATION.md) - Setup
-- [TROUBLESHOOTING.md](../../TROUBLESHOOTING.md) - Issues
-- [architecture.md](../architecture/architecture.md) - Design
+- [`../INSTALLATION.md`](../INSTALLATION.md) - Setup
+- `../TROUBLESHOOTING.md` - Issues
+- `../architecture/architecture.md` - Design
 - Lab-specific READMEs
 
 ---
