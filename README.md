@@ -278,15 +278,15 @@ vagrant up
 
 ## Documentation Hub
 
-| Document | Purpose |
-|---|---|
-| [PORTFOLIO.md](docs/PORTFOLIO.md) | Portfolio index and skills mapping |
-| [architecture.md](docs/architecture/architecture.md) | Infrastructure design |
-| [security-scope.md](docs/architecture/security-scope.md) | Security boundaries |
-| [INSTALLATION.md](INSTALLATION.md) | Full installation guide |
-| [setup-with-examples.md](docs/setup-with-examples.md) | Deployment walkthrough |
-| [TROUBLESHOOTING.md](TROUBLESHOOTING.md) | Common issues |
-| [CHANGELOG.md](CHANGELOG.md) | Project history |
+| Document                                                    | Purpose                          |
+|-------------------------------------------------------------|----------------------------------|
+| [PORTFOLIO.md](docs/portfolio.md)                           | Portfolio index and skills mapping |
+| [architecture.md](docs/architecture/architecture.md)        | Infrastructure design            |
+| [security-scope.md](docs/architecture/security-scope.md)    | Security boundaries              |
+| [INSTALLATION.md](installation.md)                          | Full installation guide          |
+| [setup-with-examples.md](docs/setup-with-examples.md)       | Deployment walkthrough           |
+| [TROUBLESHOOTING.md](troubleshooting.md)                    | Common issues                    |
+| [CHANGELOG.md](CHANGELOG.md)                                | Project history                  |
 
 ---
 
