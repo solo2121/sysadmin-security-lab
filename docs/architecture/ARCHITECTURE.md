@@ -161,9 +161,9 @@ New scripts should include:
 
 ## Related Documents
 
-- [`../README.md`](../README.md)
+- [`../../README.md`](../../README.md)
 - [`SECURITY-SCOPE.md`](SECURITY-SCOPE.md)
-- [`WORKFLOWS.md`](WORKFLOWS.md)
-- [`SETUP-WITH-EXAMPLES.md`](SETUP-WITH-EXAMPLES.md)
-- [`../INSTALLATION.md`](../INSTALLATION.md)
-- [`../TROUBLESHOOTING.md`](../TROUBLESHOOTING.md)
+- [`../workflows/WORKFLOWS.md`](../workflows/WORKFLOWS.md)
+- [`../SETUP-WITH-EXAMPLES.md`](../SETUP-WITH-EXAMPLES.md)
+- [`../../INSTALLATION.md`](../../INSTALLATION.md)
+- [`../../TROUBLESHOOTING.md`](../../TROUBLESHOOTING.md)
