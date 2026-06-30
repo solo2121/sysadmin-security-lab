@@ -35,7 +35,7 @@ cd labs/security/ad-pentest-vlan
 cat README.md
 
 # Review architecture
-cat docs/ARCHITECTURE.md 2>/dev/null || echo "No architecture doc"
+cat docs/architecture.md 2>/dev/null || echo "No architecture doc"
 
 # Check requirements
 head -20 Vagrantfile
@@ -772,7 +772,7 @@ VAGRANT_LOG=debug vagrant <command> 2>&1 | tee debug.log
 
 - [INSTALLATION.md](../../INSTALLATION.md) - Setup
 - [TROUBLESHOOTING.md](../../TROUBLESHOOTING.md) - Issues
-- [ARCHITECTURE.md](../architecture/ARCHITECTURE.md) - Design
+- [architecture.md](../architecture/architecture.md) - Design
 - Lab-specific READMEs
 
 ---

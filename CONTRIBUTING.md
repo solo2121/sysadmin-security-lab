@@ -205,7 +205,7 @@ Please review:
 
 - [Code of Conduct](CODE_OF_CONDUCT.md)
 - [Security Policy](SECURITY.md)
-- [Security Scope](docs/architecture/SECURITY-SCOPE.md)
+- [Security Scope](docs/architecture/security-scope.md)
 
 For questions or discussions, visit our [GitHub Discussions](https://github.com/solo2121/sysadmin-security-lab/discussions).
 
