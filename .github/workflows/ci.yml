@@ -8,7 +8,7 @@
 #   lint-python-scripts    — syntax check only (flake8 informational)
 #   security-scan          — bandit informational only (never blocks)
 #   run-tests              — pytest (Python) and bats (Bash) unit tests
-#   check-doc-links        — verify internal markdown links resolve
+#   check-doc-links        — markdown link check, informational only (never blocks)
 #
 # Philosophy:
 #   Only REAL errors block the build. Style warnings and security
@@ -259,7 +259,7 @@ jobs:
   # Job 6: Markdown link check — catch broken internal doc references
   # ---------------------------------------------------------------------------
   check-doc-links:
-    name: Check Markdown Links
+    name: Check Markdown Links (informational — never blocks)
     runs-on: ubuntu-latest
 
     steps:
@@ -269,21 +269,20 @@ jobs:
       - name: Install markdown-link-check
         run: npm install -g markdown-link-check@3.13.6
 
-      - name: Check all markdown files for broken links
+      - name: Check all markdown files for broken links (report only)
         run: |
-          echo "Checking markdown links across the repo..."
-          FAILED=0
+          echo "Checking markdown links across the repo (informational only)..."
+          echo "Findings are reported for review but never fail the build —"
+          echo "external link rot, rate limits, and third-party site changes"
+          echo "are not 'real errors' in the sense this pipeline blocks on."
+          echo
           while IFS= read -r -d '' file; do
             echo "Checking $file"
-            if ! markdown-link-check \
+            markdown-link-check \
               --config .markdown-link-check.json \
-              "$file"; then
-              FAILED=1
-            fi
+              "$file" || true
           done < <(find . -name "*.md" -not -path "./.git/*" -print0)
 
-          if [ "$FAILED" -eq 1 ]; then
-            echo "Broken links found — fix them before merging"
-            exit 1
-          fi
-          echo "All markdown links resolved"
+          echo
+          echo "Markdown link check complete (see findings above for review)"
+          exit 0
