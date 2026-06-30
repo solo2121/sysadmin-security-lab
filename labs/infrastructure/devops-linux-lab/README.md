@@ -175,11 +175,11 @@ Groups available from the menu:
 
 | Service | URL | Credentials |
 |---|---|---|
-| Harbor | https://MASTER_IP:30001 | admin / (your HARBOR_PASS) |
-| Argo CD | https://MASTER_IP:30003 | admin / (see argocd-initial-admin-secret) |
-| Grafana | https://MASTER_IP:auto-port | admin / admin |
+| Harbor | `https://MASTER_IP:30001` | admin / (your HARBOR_PASS) |
+| Argo CD | `https://MASTER_IP:30003` | admin / (see argocd-initial-admin-secret) |
+| Grafana | `https://MASTER_IP:<auto-detected-port>` | admin / admin |
 | Prometheus | kubectl port-forward | — |
-| K3s API | https://MASTER_IP:16443 | kubeconfig at /vagrant/kubeconfig.yaml |
+| K3s API | `https://MASTER_IP:16443` | kubeconfig at /vagrant/kubeconfig.yaml |
 
 `MASTER_IP` is auto-detected at boot and printed to the console.
 
