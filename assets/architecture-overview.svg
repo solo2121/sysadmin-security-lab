@@ -1,5 +1,6 @@
-<svg viewBox="0 0 1400 780" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg viewBox="0 0 1400 900" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
   <defs>
+    <!-- Gradients -->
     <linearGradient id="gradientOrange" x1="0%" y1="0%" x2="0%" y2="100%">
       <stop offset="0%" style="stop-color:#ff9500;stop-opacity:1" />
       <stop offset="100%" style="stop-color:#cc7700;stop-opacity:1" />
@@ -8,109 +9,233 @@
       <stop offset="0%" style="stop-color:#00d084;stop-opacity:1" />
       <stop offset="100%" style="stop-color:#00a860;stop-opacity:1" />
     </linearGradient>
+    <linearGradient id="gradientBlue" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#326ce5;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1e4db7;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0f1f;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#0f1724;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1a1f2e;stop-opacity:1" />
+    </linearGradient>
+
+    <!-- Filters -->
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="4" stdDeviation="3" flood-opacity="0.3"/>
+    </filter>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="glowOrange">
+      <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
     <style>
-      .title { font-size: 38px; font-weight: 700; fill: #9beaff; font-family: "Helvetica Neue", Arial, sans-serif; text-anchor: middle; }
-      .section-title { font-size: 20px; font-weight: 700; fill: #ffb86b; font-family: "Helvetica Neue", Arial, sans-serif; text-anchor: middle; }
-      .section-title-green { font-size: 20px; font-weight: 700; fill: #7ef2b8; font-family: "Helvetica Neue", Arial, sans-serif; text-anchor: middle; }
-      .box-title { font-size: 13px; font-weight: 700; fill: #ffffff; font-family: "Helvetica Neue", Arial, sans-serif; text-anchor: middle; }
-      .box-text { font-size: 12px; fill: #e8ecf4; font-family: "Helvetica Neue", Arial, sans-serif; text-anchor: middle; }
-      .tile-text { font-size: 11px; fill: #ffffff; font-family: "Helvetica Neue", Arial, sans-serif; text-anchor: middle; }
-      .description { font-size: 13px; fill: #cfd8ea; font-family: "Helvetica Neue", Arial, sans-serif; text-anchor: middle; }
-      .network-label { font-size: 12px; fill: #7ef2b8; font-family: "Helvetica Neue", Arial, sans-serif; font-weight: 700; text-anchor: middle; }
-      .box { stroke-width: 1.5; rx: 6; ry: 6; }
+      .bg-dark { fill: url(#bgGradient); }
+      .title { font-size: 42px; font-weight: 800; fill: #a8e6ff; font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; text-anchor: middle; letter-spacing: 0.5px; }
+      .subtitle { font-size: 16px; font-weight: 500; fill: #7fc9f5; font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; text-anchor: middle; opacity: 0.9; }
+      .section-title { font-size: 22px; font-weight: 700; fill: #ffb86b; font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; text-anchor: middle; }
+      .section-title-green { font-size: 22px; font-weight: 700; fill: #7ef2b8; font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; text-anchor: middle; }
+      .box-title { font-size: 14px; font-weight: 700; fill: #ffffff; font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; text-anchor: middle; }
+      .box-text { font-size: 12px; fill: #d4dae6; font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; text-anchor: middle; opacity: 0.95; }
+      .description { font-size: 13px; fill: #9db1cc; font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; text-anchor: middle; font-weight: 500; }
+      .network-label { font-size: 12px; fill: #7ef2b8; font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; font-weight: 700; text-anchor: middle; }
+      .box { stroke-width: 2; rx: 8; ry: 8; }
+      .box-large { stroke-width: 2; rx: 10; ry: 10; }
       .border-orange { stroke: url(#gradientOrange); }
       .border-green { stroke: url(#gradientGreen); }
-      .bg-dark { fill: #0f1724; }
+      .border-blue { stroke: url(#gradientBlue); }
+      .corner-badge { font-size: 24px; text-anchor: middle; opacity: 0.15; }
+      .footer { font-size: 13px; fill: #8a99b8; font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; text-anchor: middle; font-weight: 400; }
     </style>
   </defs>
 
-  <rect width="1400" height="780" class="bg-dark"/>
+  <!-- Background -->
+  <rect width="1400" height="900" class="bg-dark"/>
 
-  <text x="700" y="48" class="title">Enterprise infrastructure architecture — lab overview</text>
+  <!-- Subtle grid pattern overlay -->
+  <defs>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1a2838" stroke-width="0.5" opacity="0.1"/>
+    </pattern>
+  </defs>
+  <rect width="1400" height="900" fill="url(#grid)"/>
 
-  <!-- ===================== Lab 1: AD Pentest Lab ===================== -->
-  <text x="225" y="90" class="section-title">Lab 1 — Active Directory pentest lab</text>
-  <text x="225" y="112" class="description">172.28.128.0/24 · lab.local</text>
+  <!-- Main title with accent -->
+  <text x="700" y="54" class="title">Enterprise Infrastructure Architecture</text>
+  <text x="700" y="78" class="subtitle">Lab Overview — DevSecOps & AD Security Research</text>
 
-  <rect x="50" y="130" width="350" height="580" class="box border-orange" fill="none" stroke-dasharray="6,6"/>
+  <!-- Decorative line under title -->
+  <line x1="350" y1="95" x2="1050" y2="95" stroke="url(#gradientOrange)" stroke-width="1" opacity="0.4"/>
 
-  <rect x="95" y="150" width="260" height="60" class="box border-orange" fill="#ff9500" opacity="0.16"/>
-  <text x="225" y="175" class="box-title">Kali Linux</text>
-  <text x="225" y="193" class="box-text">Attacker VM</text>
+  <!-- ===================== LAB 1: AD PENTEST LAB ===================== -->
+  <g>
+    <!-- Section label with icon background -->
+    <circle cx="65" cy="125" r="16" fill="#ff9500" opacity="0.15" filter="url(#glowOrange)"/>
+    <text x="65" y="132" class="corner-badge">①</text>
+    
+    <text x="230" y="130" class="section-title">Active Directory Pentest Lab</text>
+    <text x="230" y="152" class="description">172.28.128.0/24 · lab.local · ~14 VMs</text>
 
-  <rect x="95" y="244" width="260" height="60" class="box border-orange" fill="#ff9500" opacity="0.16"/>
-  <text x="225" y="269" class="box-title">Windows DC</text>
-  <text x="225" y="287" class="box-text">Server 2022</text>
+    <!-- Lab 1 container with gradient border -->
+    <rect x="40" y="170" width="380" height="660" class="box-large border-orange" fill="none" opacity="0.8" filter="url(#shadow)"/>
+    <rect x="42" y="172" width="376" height="656" class="box-large border-orange" fill="#ff9500" opacity="0.04"/>
 
-  <rect x="95" y="338" width="80" height="55" class="box border-orange" fill="#ff9500" opacity="0.14"/>
-  <text x="135" y="371" class="box-text">SQL Server</text>
+    <!-- Attacker VM -->
+    <rect x="85" y="195" width="310" height="75" class="box border-orange" fill="#ff9500" opacity="0.20" filter="url(#shadow)"/>
+    <text x="240" y="222" class="box-title">Kali Linux — Attacker VM</text>
+    <text x="240" y="243" class="box-text">Penetration testing & exploitation platform</text>
+    <circle cx="90" cy="200" r="3" fill="#ff9500" opacity="0.6"/>
 
-  <rect x="185" y="338" width="80" height="55" class="box border-orange" fill="#ff9500" opacity="0.14"/>
-  <text x="225" y="371" class="box-text">Exchange</text>
+    <!-- Domain Controller -->
+    <rect x="85" y="290" width="310" height="75" class="box border-orange" fill="#ff9500" opacity="0.18" filter="url(#shadow)"/>
+    <text x="240" y="317" class="box-title">Windows Domain Controller</text>
+    <text x="240" y="338" class="box-text">Server 2022 · Primary AD infrastructure</text>
+    <circle cx="90" cy="295" r="3" fill="#ff9500" opacity="0.6"/>
 
-  <rect x="275" y="338" width="80" height="55" class="box border-orange" fill="#ff9500" opacity="0.14"/>
-  <text x="315" y="371" class="box-text">SharePoint</text>
+    <!-- Services row -->
+    <g filter="url(#shadow)">
+      <rect x="85" y="385" width="96" height="68" class="box border-orange" fill="#ff9500" opacity="0.16"/>
+      <text x="133" y="410" class="box-title">SQL Server</text>
+      <text x="133" y="428" class="box-text">Database</text>
+      
+      <rect x="197" y="385" width="96" height="68" class="box border-orange" fill="#ff9500" opacity="0.16"/>
+      <text x="245" y="410" class="box-title">Exchange</text>
+      <text x="245" y="428" class="box-text">Mail services</text>
+      
+      <rect x="309" y="385" width="86" height="68" class="box border-orange" fill="#ff9500" opacity="0.16"/>
+      <text x="352" y="410" class="box-title">SharePoint</text>
+      <text x="352" y="428" class="box-text">Collaboration</text>
+    </g>
 
-  <rect x="95" y="427" width="260" height="50" class="box" stroke="#e24b4a" fill="#e24b4a" opacity="0.20"/>
-  <text x="225" y="452" class="box-title">Legacy targets</text>
-  <text x="225" y="468" class="box-text">Metasploitable2 · OWASP Juice Shop</text>
+    <!-- Legacy targets (red accent) -->
+    <rect x="85" y="473" width="310" height="65" class="box" stroke="#e24b4a" fill="#e24b4a" opacity="0.18" filter="url(#shadow)"/>
+    <text x="240" y="501" class="box-title">Legacy Attack Targets</text>
+    <text x="240" y="522" class="box-text">Metasploitable2 · OWASP Juice Shop</text>
+    <circle cx="90" cy="478" r="3" fill="#e24b4a" opacity="0.7"/>
 
-  <rect x="95" y="511" width="260" height="50" class="box border-orange" fill="#ff9500" opacity="0.16"/>
-  <text x="225" y="536" class="box-title">Cloud simulation</text>
-  <text x="225" y="552" class="box-text">LocalStack (S3, IAM, EC2)</text>
+    <!-- Cloud simulation -->
+    <rect x="85" y="558" width="310" height="65" class="box border-orange" fill="#ff9500" opacity="0.16" filter="url(#shadow)"/>
+    <text x="240" y="586" class="box-title">Cloud Simulation Layer</text>
+    <text x="240" y="607" class="box-text">LocalStack · S3, IAM, EC2 emulation</text>
+    <circle cx="90" cy="563" r="3" fill="#ff9500" opacity="0.6"/>
 
-  <rect x="95" y="595" width="260" height="50" class="box border-orange" fill="#ff9500" opacity="0.16"/>
-  <text x="225" y="620" class="box-title">LLM platform</text>
-  <text x="225" y="636" class="box-text">Vulnerable endpoints for security testing</text>
+    <!-- LLM platform -->
+    <rect x="85" y="643" width="310" height="65" class="box border-orange" fill="#ff9500" opacity="0.16" filter="url(#shadow)"/>
+    <text x="240" y="671" class="box-title">LLM Security Testing</text>
+    <text x="240" y="692" class="box-text">Vulnerable endpoints for research</text>
+    <circle cx="90" cy="648" r="3" fill="#ff9500" opacity="0.6"/>
 
-  <text x="225" y="672" class="description">
-    <tspan x="225" dy="0">~14 VMs total</tspan>
-    <tspan x="225" dy="18">VLAN edition adds segmented attack-path subnets</tspan>
+    <!-- Lab notes -->
+    <text x="240" y="730" class="description" style="font-size: 12px;">
+      <tspan x="240" dy="0">📋 VLAN edition with segmented subnets</tspan>
+      <tspan x="240" dy="16">📋 Isolated network environment</tspan>
+    </text>
+  </g>
+
+  <!-- Connection visual between labs -->
+  <line x1="420" y1="500" x2="795" y2="500" stroke="#7fc9f5" stroke-width="1" stroke-dasharray="5,5" opacity="0.3"/>
+  <circle cx="607.5" cy="500" r="4" fill="#7fc9f5" opacity="0.5"/>
+
+  <!-- ===================== LAB 2: DEVOPS/DEVSECOPS LAB ===================== -->
+  <g>
+    <!-- Section label with icon background -->
+    <circle cx="1335" cy="125" r="16" fill="#00d084" opacity="0.15" filter="url(#glow)"/>
+    <text x="1335" y="132" class="corner-badge">②</text>
+
+    <text x="1170" y="130" class="section-title-green">DevOps / DevSecOps Lab</text>
+    <text x="1170" y="152" class="description">k3s Kubernetes cluster · GitOps · Observability</text>
+
+    <!-- Lab 2 container with gradient border -->
+    <rect x="795" y="170" width="565" height="660" class="box-large border-green" fill="none" opacity="0.8" filter="url(#shadow)"/>
+    <rect x="797" y="172" width="561" height="656" class="box-large border-green" fill="#00d084" opacity="0.04"/>
+
+    <!-- Network label -->
+    <text x="1078" y="198" class="network-label">▦ libvirt network</text>
+
+    <!-- Control plane -->
+    <rect x="835" y="218" width="486" height="75" class="box border-green" fill="#326ce5" opacity="0.22" filter="url(#shadow)"/>
+    <text x="1078" y="245" class="box-title">k3s Control Plane</text>
+    <text x="1078" y="266" class="box-text">devops1 — Kubernetes master node</text>
+    <circle cx="840" cy="223" r="3" fill="#00d084" opacity="0.7"/>
+
+    <!-- Worker nodes -->
+    <g filter="url(#shadow)">
+      <rect x="835" y="313" width="154" height="72" class="box border-green" fill="#326ce5" opacity="0.18"/>
+      <text x="912" y="341" class="box-title">worker-1</text>
+      <text x="912" y="359" class="box-text">Node 1</text>
+      
+      <rect x="1010" y="313" width="154" height="72" class="box border-green" fill="#326ce5" opacity="0.18"/>
+      <text x="1087" y="341" class="box-title">worker-2</text>
+      <text x="1087" y="359" class="box-text">Node 2</text>
+      
+      <rect x="1185" y="313" width="150" height="72" class="box border-green" fill="#326ce5" opacity="0.18"/>
+      <text x="1260" y="341" class="box-title">worker-3</text>
+      <text x="1260" y="359" class="box-text">Node 3</text>
+    </g>
+
+    <!-- Connect control plane to workers -->
+    <line x1="1078" y1="293" x2="912" y2="313" stroke="#326ce5" stroke-width="1.5" opacity="0.4"/>
+    <line x1="1078" y1="293" x2="1087" y2="313" stroke="#326ce5" stroke-width="1.5" opacity="0.4"/>
+    <line x1="1078" y1="293" x2="1260" y2="313" stroke="#326ce5" stroke-width="1.5" opacity="0.4"/>
+
+    <!-- Harbor & Argo CD -->
+    <rect x="835" y="405" width="486" height="65" class="box border-green" fill="#00d084" opacity="0.16" filter="url(#shadow)"/>
+    <text x="1078" y="433" class="box-title">Harbor Registry · Argo CD</text>
+    <text x="1078" y="454" class="box-text">Container registry & GitOps automation</text>
+    <circle cx="840" cy="410" r="3" fill="#00d084" opacity="0.6"/>
+
+    <!-- Observability stack -->
+    <rect x="835" y="490" width="486" height="65" class="box border-green" fill="#00d084" opacity="0.16" filter="url(#shadow)"/>
+    <text x="1078" y="518" class="box-title">Prometheus · Grafana · Loki</text>
+    <text x="1078" y="539" class="box-text">Metrics, visualization &amp; log aggregation</text>
+    <circle cx="840" cy="495" r="3" fill="#00d084" opacity="0.6"/>
+
+    <!-- Runtime security (red accent) -->
+    <rect x="835" y="575" width="486" height="65" class="box" stroke="#e24b4a" fill="#e24b4a" opacity="0.18" filter="url(#shadow)"/>
+    <text x="1078" y="603" class="box-title">Falco · Kyverno</text>
+    <text x="1078" y="624" class="box-text">Runtime security &amp; policy enforcement</text>
+    <circle cx="840" cy="580" r="3" fill="#e24b4a" opacity="0.7"/>
+
+    <!-- OS variants -->
+    <g filter="url(#shadow)">
+      <rect x="835" y="660" width="224" height="55" class="box border-green" fill="#dd4814" opacity="0.22"/>
+      <text x="947" y="690" class="box-text">Ubuntu 20.04 · Rocky Linux 9</text>
+      
+      <rect x="1097" y="660" width="224" height="55" class="box border-green" fill="#00a86b" opacity="0.22"/>
+      <text x="1209" y="690" class="box-text">AlmaLinux · openSUSE Leap</text>
+    </g>
+
+    <!-- Lab notes -->
+    <text x="1078" y="745" class="description" style="font-size: 12px;">
+      <tspan x="1078" dy="0">📋 Independent Vagrantfile deployment</tspan>
+      <tspan x="1078" dy="16">📋 Isolated network — no shared infrastructure</tspan>
+    </text>
+  </g>
+
+  <!-- ===================== FOOTER ===================== -->
+  <line x1="100" y1="850" x2="1300" y2="850" stroke="#7fc9f5" stroke-width="1" opacity="0.2"/>
+  <text x="700" y="880" class="footer">
+    Each lab deploys independently via dedicated Vagrantfile · KVM/QEMU virtualization on Linux host
   </text>
 
-  <!-- ===================== Lab 2: DevOps / DevSecOps Lab ===================== -->
-  <text x="1075" y="90" class="section-title-green">Lab 2 — DevOps / DevSecOps lab</text>
-  <text x="1075" y="112" class="description">k3s Kubernetes cluster · GitOps · observability</text>
-
-  <rect x="800" y="130" width="550" height="580" class="box border-green" fill="none" stroke-dasharray="6,6"/>
-
-  <text x="1075" y="152" class="network-label">Local libvirt network</text>
-
-  <rect x="840" y="175" width="470" height="60" class="box border-green" fill="#326ce5" opacity="0.28"/>
-  <text x="1075" y="200" class="box-title">k3s control plane</text>
-  <text x="1075" y="218" class="box-text">devops1</text>
-
-  <rect x="840" y="265" width="148" height="66" class="box border-green" fill="#326ce5" opacity="0.22"/>
-  <text x="914" y="303" class="box-title">worker-1</text>
-
-  <rect x="1000" y="265" width="148" height="66" class="box border-green" fill="#326ce5" opacity="0.22"/>
-  <text x="1074" y="303" class="box-title">worker-2</text>
-
-  <rect x="1160" y="265" width="150" height="66" class="box border-green" fill="#326ce5" opacity="0.22"/>
-  <text x="1235" y="303" class="box-title">worker-3</text>
-
-  <rect x="840" y="361" width="470" height="52" class="box border-green" fill="#00d084" opacity="0.16"/>
-  <text x="1075" y="386" class="box-title">Harbor · Argo CD</text>
-  <text x="1075" y="402" class="box-text">Registry · GitOps</text>
-
-  <rect x="840" y="443" width="470" height="52" class="box border-green" fill="#00d084" opacity="0.16"/>
-  <text x="1075" y="468" class="box-title">Prometheus · Grafana · Loki</text>
-  <text x="1075" y="484" class="box-text">Observability &amp; runtime metrics</text>
-
-  <rect x="840" y="525" width="470" height="52" class="box" stroke="#e24b4a" fill="#e24b4a" opacity="0.20"/>
-  <text x="1075" y="550" class="box-title">Falco · Kyverno</text>
-  <text x="1075" y="566" class="box-text">Runtime security &amp; policy enforcement</text>
-
-  <rect x="840" y="607" width="220" height="42" class="box border-green" fill="#dd4814" opacity="0.24"/>
-  <text x="950" y="632" class="tile-text">Ubuntu 20.04 · Rocky 9</text>
-
-  <rect x="1070" y="607" width="240" height="42" class="box border-green" fill="#00a86b" opacity="0.24"/>
-  <text x="1190" y="632" class="tile-text">AlmaLinux · openSUSE Leap</text>
-
-  <text x="1075" y="672" class="description">
-    <tspan x="1075" dy="0">Independent Vagrantfile</tspan>
-    <tspan x="1075" dy="18">No shared network with Lab 1</tspan>
-  </text>
-
-  <text x="700" y="748" class="description" style="font-size:14px;">Each lab deploys independently via its own Vagrantfile · KVM/QEMU + libvirt on a Linux host</text>
+  <!-- Legend indicators -->
+  <g opacity="0.6">
+    <circle cx="100" cy="860" r="4" fill="#ff9500"/>
+    <text x="115" y="865" class="footer" style="text-anchor: start; font-size: 11px;">Security Labs</text>
+    
+    <circle cx="280" cy="860" r="4" fill="#00d084"/>
+    <text x="295" y="865" class="footer" style="text-anchor: start; font-size: 11px;">Kubernetes Infrastructure</text>
+    
+    <circle cx="550" cy="860" r="4" fill="#e24b4a"/>
+    <text x="565" y="865" class="footer" style="text-anchor: start; font-size: 11px;">Security-focused Components</text>
+  </g>
 </svg>
