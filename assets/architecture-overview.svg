@@ -121,12 +121,12 @@
   <!-- Observability Stack -->
   <rect x="820" y="385" width="250" height="50" class="box border-green" fill="#ff6b35" opacity="0.2"/>
   <text x="945" y="405" class="box-title">Prometheus, Grafana, Loki</text>
-  <text x="945" y="420" class="box-text">(Observability & Runtime Security)</text>
+  <text x="945" y="420" class="box-text">(Observability &amp; Runtime Security)</text>
 
   <!-- Falco + Kyverno -->
   <rect x="820" y="455" width="250" height="50" class="box border-green" fill="#ff4444" opacity="0.2"/>
   <text x="945" y="475" class="box-title">Falco + Kyverno</text>
-  <text x="945" y="490" class="box-text">(Runtime Security & Policy)</text>
+  <text x="945" y="490" class="box-text">(Runtime Security &amp; Policy)</text>
 
   <!-- Linux Distributions -->
   <g>
