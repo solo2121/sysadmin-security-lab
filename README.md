@@ -26,6 +26,7 @@ This repository provides two independent enterprise lab environments and support
 
 
 - [Overview](#overview)
+- [Architecture Overview](#architecture-overview)
 - [Highlights](#highlights)
 - [Who This Project Is For](#who-this-project-is-for)
 - [Portfolio Goals](#portfolio-goals)
@@ -54,10 +55,23 @@ Sysadmin Security Lab is a modular enterprise homelab built for learning and pra
 The project is organized into independent virtual lab environments that can be deployed separately, allowing focused practice without affecting other environments.
 
 
-It combines enterprise infrastructure, offensive security, defensive engineering, cloud-native technologies, automation, Infrastructure as Code, and modern DevSecOps workflows into a single professional portfolio project.
+It combines enterprise infrastructure, offensive security, defensive engineering, cloud-native technologies, automation, Infrastructure as Code, and modern DevSecOps workflows into a single professional development platform.
 
 
-![Lab architecture overview](assets/architecture-overview.svg)
+---
+
+
+## Architecture Overview
+
+
+![Enterprise Infrastructure Architecture](assets/architecture-overview.svg)
+
+**Two Independent Lab Environments:**
+
+- **Lab 1 – Active Directory Pentest Lab** (172.28.128.0/24): Windows enterprise security environment with domain controllers, member servers, cloud simulation, and AI security testing.
+- **Lab 2 – DevOps / DevSecOps Lab**: Linux-centric Kubernetes platform with k3s control plane, worker nodes, container registry, observability stack, and runtime security.
+
+Each lab deploys independently via dedicated Vagrantfile on KVM/QEMU virtualization infrastructure. See [Architecture Documentation](docs/architecture/architecture.md) for detailed infrastructure design.
 
 
 ---
@@ -169,7 +183,7 @@ Each lab is independent and can be deployed separately.
 **Alternative VLAN deployment:** `labs/security/ad-pentest-vlan/`
 
 
-This Windows enterprise security lab is designed for Active Directory security research, adversary emulation, post-exploitation analysis, detection engineering, cloud attack simulation, and AI/LLM security assessment.
+This Windows enterprise security lab is designed for Active Directory security research, adversary emulation, post-exploitation analysis, detection engineering, cloud attack simulation, and AI/LLM security testing.
 
 
 | Component | Description |
