@@ -81,18 +81,14 @@ add_files() {
             git add .
             printf "All files added to staging area.\n"
             ;;
-        [nN]|[nN][oO])
-            read -rp "Enter file names to add (space-separated), or press Enter to cancel: " -a files_to_add
-            if (( ${#files_to_add[@]} > 0 )); then
-                git add "${files_to_add[@]}"
-                printf "Added: %s\n" "${files_to_add[*]}"
-            else
-                printf "No files added.\n"
-                return 1
-            fi
-            ;;
         *)
-            read -ra files_to_add <<<"$choice"
+            read -rp "Enter file names to add (space-separated), or press Enter to cancel: " -a files_to_add
+            # If user typed file names in the first prompt, append them
+            if [[ "$choice" != [nN] && "$choice" != [nN][oO] ]]; then
+                local -a typed_files
+                read -ra typed_files <<<"$choice"
+                files_to_add+=("${typed_files[@]}")
+            fi
             if (( ${#files_to_add[@]} > 0 )); then
                 git add "${files_to_add[@]}"
                 printf "Added: %s\n" "${files_to_add[*]}"
@@ -121,12 +117,8 @@ commit_changes() {
         return 1
     fi
 
-    local commit_msg
-    if [[ -n "$scope" ]]; then
-        commit_msg="$type($scope): $description"
-    else
-        commit_msg="$type: $description"
-    fi
+    local commit_msg="$type: $description"
+    [[ -n "$scope" ]] && commit_msg="$type($scope): $description"
 
     if ! git commit -m "$commit_msg"; then
         printf "Commit failed!\n" >&2
@@ -151,14 +143,8 @@ push_changes() {
     fi
 
     printf "\nPushing changes to remote repository...\n"
-    read -rp "Push to branch '$current_branch'? (y/n): " confirm
-
-    if [[ "$confirm" =~ ^[yY]$ ]]; then
-        branch="$current_branch"
-    else
-        read -rp "Enter branch name (default: $current_branch): " branch
-        branch=${branch:-$current_branch}
-    fi
+    read -rp "Enter branch to push to (default: $current_branch): " branch
+    branch=${branch:-$current_branch}
 
     if [[ -z "$branch" ]]; then
         printf "Error: Branch name cannot be empty.\n" >&2
@@ -166,7 +152,7 @@ push_changes() {
     fi
 
     if ! git push origin "$branch"; then
-        printf "Push to branch '%s' failed!\n" "$branch" >&2
+        printf "Push to branch '%s' failed! Check for remote changes or authentication issues.\n" "$branch" >&2
         return 1
     fi
 
@@ -182,8 +168,19 @@ fetch_changes() {
     printf "Fetch completed!\n\n"
 
     printf "Remote changes summary:\n"
-    if ! git log HEAD..origin/"$(git branch --show-current)" --oneline 2>/dev/null; then
-        printf "No new changes to fetch.\n"
+    local current_branch remote_log
+    current_branch=$(git branch --show-current)
+
+    if ! git show-ref --verify --quiet "refs/remotes/origin/$current_branch"; then
+        printf "No upstream branch found for '%s'.\n" "$current_branch"
+        return
+    fi
+
+    remote_log=$(git log "HEAD..origin/$current_branch" --oneline)
+    if [[ -n "$remote_log" ]]; then
+        printf "%s\n" "$remote_log"
+    else
+        printf "No new remote changes on branch '%s'.\n" "$current_branch"
     fi
 }
 
