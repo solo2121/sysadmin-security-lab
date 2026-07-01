@@ -13,6 +13,17 @@ The labs are designed to run on a Linux host using Vagrant, Libvirt, and KVM/QEM
 
 Before installing anything, make sure your host system meets the basic requirements.
 
+**Quick check:** run [`scripts/check-prerequisites.sh`](scripts/check-prerequisites.sh)
+from the repo root to validate KVM, libvirt, Vagrant, required plugins,
+disk/RAM, and network reachability in one pass:
+
+```bash
+./scripts/check-prerequisites.sh --all
+```
+
+It won't install anything for you, but every failure includes the exact
+fix command.
+
 ### Host requirements
 
 - Linux host recommended.
@@ -26,6 +37,10 @@ These are general recommendations. Exact needs depend on which lab and how many 
 
 - **Lab 1**: High memory and storage usage due to Windows servers, AD CS, and supporting systems.
 - **Lab 2**: Moderate to high memory usage due to Kubernetes, observability, and registry services.
+
+If your host doesn't meet the full recommendations, see
+[`docs/optimization/minimal-resource-deployment.md`](docs/optimization/minimal-resource-deployment.md)
+for tested reduced-VM profiles for both labs.
 
 ### Required tools
 

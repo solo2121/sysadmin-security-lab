@@ -195,5 +195,8 @@ main_menu(){
   done
 }
 
-check_root_access
-main_menu
+# Only run interactively if executed directly, not when sourced (e.g. by tests)
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+  check_root_access
+  main_menu
+fi

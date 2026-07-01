@@ -19,6 +19,17 @@ We appreciate your interest in helping improve this project.
 
 ## Ways to Contribute
 
+### Questions and Discussions
+
+Not sure if something is a bug, or just have a question about how to use
+a lab? Use [GitHub Discussions](https://github.com/solo2121/sysadmin-security-lab/discussions)
+rather than opening an issue — issues are for confirmed bugs and tracked
+work. Three categories are available:
+
+- **Q&A** — setup problems, "how do I..." questions
+- **Feature Ideas** — suggest a new lab scenario, tool, or improvement (check [`ROADMAP.md`](ROADMAP.md) first)
+- **General** — anything else, including showing off what you've built with the labs
+
 ### Issue Reporting
 
 - **Bug Reports**  
