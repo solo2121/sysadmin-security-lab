@@ -1,5 +1,5 @@
 <svg viewBox="0 0 1400 750" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <!-- Define gradients and styles -->
+  <!-- Improved, aligned, and refined architecture overview SVG -->
   <defs>
     <linearGradient id="gradientOrange" x1="0%" y1="0%" x2="0%" y2="100%">
       <stop offset="0%" style="stop-color:#ff9500;stop-opacity:1" />
@@ -14,17 +14,19 @@
       <stop offset="100%" style="stop-color:#0052cc;stop-opacity:1" />
     </linearGradient>
     <style>
-      .title { font-size: 32px; font-weight: bold; fill: #00d4ff; font-family: Arial, sans-serif; }
-      .section-title { font-size: 24px; font-weight: bold; fill: #ffb100; font-family: Arial, sans-serif; }
-      .section-title-green { font-size: 24px; font-weight: bold; fill: #00ff88; font-family: Arial, sans-serif; }
-      .box-title { font-size: 14px; font-weight: bold; fill: #ffffff; font-family: Arial, sans-serif; text-anchor: middle; }
-      .box-text { font-size: 12px; fill: #ffffff; font-family: Arial, sans-serif; text-anchor: middle; }
-      .description { font-size: 13px; fill: #cccccc; font-family: Arial, sans-serif; text-anchor: middle; }
-      .network-label { font-size: 12px; fill: #00ff88; font-family: Arial, sans-serif; font-weight: bold; }
-      .box { stroke-width: 2; }
-      .border-orange { stroke: #ff9500; }
-      .border-green { stroke: #00d084; }
-      .bg-dark { fill: #1a1a2e; }
+      /* Typography and color refinements */
+      .title { font-size: 40px; font-weight: 700; fill: #9beaff; font-family: "Helvetica Neue", Arial, sans-serif; text-anchor: middle; }
+      .section-title { font-size: 20px; font-weight: 700; fill: #ffb86b; font-family: "Helvetica Neue", Arial, sans-serif; text-anchor: middle; }
+      .section-title-green { font-size: 20px; font-weight: 700; fill: #7ef2b8; font-family: "Helvetica Neue", Arial, sans-serif; text-anchor: middle; }
+      .box-title { font-size: 13px; font-weight: 700; fill: #ffffff; font-family: "Helvetica Neue", Arial, sans-serif; text-anchor: middle; }
+      .box-text { font-size: 12px; fill: #ffffff; font-family: "Helvetica Neue", Arial, sans-serif; text-anchor: middle; }
+      .description { font-size: 13px; fill: #cfd8ea; font-family: "Helvetica Neue", Arial, sans-serif; text-anchor: middle; }
+      .network-label { font-size: 12px; fill: #7ef2b8; font-family: "Helvetica Neue", Arial, sans-serif; font-weight: 700; text-anchor: middle; }
+      .box { stroke-width: 2; rx: 6; ry: 6; }
+      .border-orange { stroke: url(#gradientOrange); }
+      .border-green { stroke: url(#gradientGreen); }
+      .bg-dark { fill: #0f1724; }
+      .muted { fill: #9aa7bf; }
       .line-orange { stroke: #ff9500; stroke-width: 2; }
       .line-green { stroke: #00d084; stroke-width: 2; }
     </style>
@@ -33,128 +35,114 @@
   <!-- Background -->
   <rect width="1400" height="750" class="bg-dark"/>
 
-  <!-- Title -->
-  <text x="700" y="35" class="title">Professional Enterprise Infrastructure Architecture Diagram</text>
+  <!-- Title (centered) -->
+  <text x="700" y="48" class="title">Enterprise Infrastructure Architecture — Lab Overview</text>
 
   <!-- Lab 1: Active Directory Pentest Lab (Left Side) -->
-  <text x="200" y="75" class="section-title">Lab 1: Active Directory Pentest Lab</text>
-  <text x="200" y="95" class="description">172.28.128.0/24 - lab.local</text>
+  <!-- Center for left box: x = 50 + 350/2 = 225 -->
+  <text x="225" y="90" class="section-title">Lab 1 — Active Directory Pentest Lab</text>
+  <text x="225" y="112" class="description">172.28.128.0/24 · lab.local</text>
 
   <!-- Lab 1 Network Box -->
-  <rect x="50" y="110" width="350" height="580" class="box border-orange" fill="none" stroke-dasharray="5,5"/>
+  <rect x="50" y="130" width="350" height="560" class="box border-orange" fill="none" stroke-dasharray="6,6"/>
 
   <!-- Kali Attacker -->
-  <rect x="70" y="130" width="100" height="60" class="box border-orange" fill="#cc7700" opacity="0.3"/>
-  <text x="120" y="150" class="box-title">Kali Linux</text>
-  <text x="120" y="168" class="box-text">2026.2 Attacker</text>
+  <rect x="95" y="150" width="110" height="60" class="box border-orange" fill="#cc7700" opacity="0.28"/>
+  <text x="150" y="185" class="box-title">Kali Linux</text>
+  <text x="150" y="202" class="box-text">Attacker VM</text>
 
   <!-- Windows DC -->
-  <rect x="70" y="210" width="100" height="60" class="box border-orange" fill="#0066cc" opacity="0.3"/>
-  <text x="120" y="235" class="box-title">Windows DC</text>
-  <text x="120" y="253" class="box-text">Server 2022</text>
+  <rect x="95" y="230" width="110" height="60" class="box border-orange" fill="#0066cc" opacity="0.30"/>
+  <text x="150" y="265" class="box-title">Windows DC</text>
+  <text x="150" y="282" class="box-text">Server 2022</text>
 
   <!-- Servers Row -->
-  <rect x="70" y="290" width="70" height="55" class="box border-orange" fill="#ff6600" opacity="0.2"/>
-  <text x="105" y="308" class="box-text">SQL</text>
-  <text x="105" y="323" class="box-text">Server</text>
+  <rect x="95" y="310" width="80" height="55" class="box border-orange" fill="#ff6600" opacity="0.20"/>
+  <text x="135" y="335" class="box-text">SQL Server</text>
 
-  <rect x="150" y="290" width="70" height="55" class="box border-orange" fill="#9933ff" opacity="0.2"/>
-  <text x="185" y="308" class="box-text">Exchange</text>
-  <text x="185" y="323" class="box-text">Server</text>
+  <rect x="185" y="310" width="80" height="55" class="box border-orange" fill="#9933ff" opacity="0.20"/>
+  <text x="225" y="335" class="box-text">Exchange</text>
 
-  <rect x="230" y="290" width="70" height="55" class="box border-orange" fill="#0066ff" opacity="0.2"/>
-  <text x="265" y="308" class="box-text">SharePoint</text>
-  <text x="265" y="323" class="box-text">Server</text>
+  <rect x="275" y="310" width="80" height="55" class="box border-orange" fill="#0066ff" opacity="0.20"/>
+  <text x="315" y="335" class="box-text">SharePoint</text>
 
   <!-- Legacy Targets -->
-  <rect x="70" y="365" width="230" height="50" class="box border-orange" fill="#cc0000" opacity="0.2"/>
-  <text x="185" y="385" class="box-title">Legacy Targets</text>
-  <text x="185" y="400" class="box-text">(Metasploitable2, Juice Shop)</text>
+  <rect x="95" y="380" width="280" height="50" class="box border-orange" fill="#cc0000" opacity="0.22"/>
+  <text x="235" y="410" class="box-title">Legacy Targets</text>
+  <text x="235" y="426" class="box-text">Metasploitable2 · OWASP Juice Shop</text>
 
   <!-- Cloud Simulation -->
-  <rect x="70" y="435" width="230" height="50" class="box border-orange" fill="#ff9500" opacity="0.2"/>
-  <text x="185" y="455" class="box-title">Cloud Simulation</text>
-  <text x="185" y="470" class="box-text">(LocalStack S3, IAM, EC2)</text>
+  <rect x="95" y="445" width="280" height="50" class="box border-orange" fill="#ff9500" opacity="0.20"/>
+  <text x="235" y="475" class="box-title">Cloud Simulation</text>
+  <text x="235" y="491" class="box-text">LocalStack (S3, IAM, EC2)</text>
 
   <!-- LLM Platform -->
-  <rect x="70" y="505" width="230" height="50" class="box border-orange" fill="#0066ff" opacity="0.2"/>
-  <text x="185" y="525" class="box-title">LLM Platform</text>
-  <text x="185" y="540" class="box-text">(15 Vulnerable Endpoints)</text>
+  <rect x="95" y="510" width="280" height="50" class="box border-orange" fill="#0066ff" opacity="0.18"/>
+  <text x="235" y="540" class="box-title">LLM Platform</text>
+  <text x="235" y="556" class="box-text">Vulnerable endpoints for security testing</text>
 
-  <!-- Lab 1 Stats -->
-  <text x="185" y="610" class="description">14 VMs total - VLAN edition adds</text>
-  <text x="185" y="630" class="description">5 segmented subnets for advanced attacks</text>
+  <!-- Lab 1 Stats (centered) -->
+  <text x="225" y="585" class="description">~14 VMs · VLAN edition adds segmented subnets for advanced attack paths</text>
 
   <!-- Lab 2: DevOps/DevSecOps Lab (Right Side) -->
-  <text x="950" y="75" class="section-title-green">Lab 2: DevOps/DevSecOps Lab</text>
-  <text x="950" y="95" class="description">k3s Kubernetes Cluster with Enterprise Tooling</text>
+  <!-- Center for right box: x = 800 + 550/2 = 1075 -->
+  <text x="1075" y="90" class="section-title-green">Lab 2 — DevOps / DevSecOps Lab</text>
+  <text x="1075" y="112" class="description">k3s Kubernetes cluster · GitOps · Observability</text>
 
   <!-- Lab 2 Network Box -->
-  <rect x="800" y="110" width="550" height="580" class="box border-green" fill="none" stroke-dasharray="5,5"/>
+  <rect x="800" y="130" width="550" height="560" class="box border-green" fill="none" stroke-dasharray="6,6"/>
 
-  <!-- Network Label -->
-  <text x="960" y="135" class="network-label">Local libvirt network</text>
+  <!-- Network Label (centered) -->
+  <text x="1075" y="150" class="network-label">Local libvirt network</text>
 
   <!-- k3s Control Plane -->
-  <rect x="820" y="145" width="180" height="60" class="box border-green" fill="#326ce5" opacity="0.4"/>
-  <text x="910" y="165" class="box-title">k3s Control Plane</text>
-  <text x="910" y="183" class="box-text">(devops1)</text>
+  <rect x="840" y="175" width="220" height="64" class="box border-green" fill="#326ce5" opacity="0.36"/>
+  <text x="950" y="205" class="box-title">k3s Control Plane</text>
+  <text x="950" y="222" class="box-text">devops1</text>
 
-  <!-- Worker Nodes -->
-  <rect x="820" y="225" width="80" height="70" class="box border-green" fill="#326ce5" opacity="0.3"/>
-  <text x="860" y="255" class="box-title">worker-1</text>
-  <text x="860" y="273" class="box-text">Node</text>
+  <!-- Worker Nodes (aligned row) -->
+  <rect x="840" y="260" width="90" height="72" class="box border-green" fill="#326ce5" opacity="0.30"/>
+  <text x="885" y="295" class="box-title">worker-1</text>
 
-  <rect x="920" y="225" width="80" height="70" class="box border-green" fill="#326ce5" opacity="0.3"/>
-  <text x="960" y="255" class="box-title">worker-2</text>
-  <text x="960" y="273" class="box-text">Node</text>
+  <rect x="940" y="260" width="90" height="72" class="box border-green" fill="#326ce5" opacity="0.30"/>
+  <text x="985" y="295" class="box-title">worker-2</text>
 
-  <rect x="1020" y="225" width="80" height="70" class="box border-green" fill="#326ce5" opacity="0.3"/>
-  <text x="1060" y="255" class="box-title">worker-3</text>
-  <text x="1060" y="273" class="box-text">Node</text>
+  <rect x="1040" y="260" width="90" height="72" class="box border-green" fill="#326ce5" opacity="0.30"/>
+  <text x="1085" y="295" class="box-title">worker-3</text>
 
   <!-- Harbor + ArgoCD -->
-  <rect x="820" y="315" width="250" height="50" class="box border-green" fill="#00a860" opacity="0.2"/>
-  <text x="945" y="335" class="box-title">Harbor + ArgoCD</text>
-  <text x="945" y="350" class="box-text">(Registry, GitOps)</text>
+  <rect x="840" y="350" width="280" height="52" class="box border-green" fill="#00a860" opacity="0.20"/>
+  <text x="980" y="380" class="box-title">Harbor · Argo CD</text>
+  <text x="980" y="396" class="box-text">Registry · GitOps</text>
 
   <!-- Observability Stack -->
-  <rect x="820" y="385" width="250" height="50" class="box border-green" fill="#ff6b35" opacity="0.2"/>
-  <text x="945" y="405" class="box-title">Prometheus, Grafana, Loki</text>
-  <text x="945" y="420" class="box-text">(Observability &amp; Runtime Security)</text>
+  <rect x="840" y="420" width="280" height="52" class="box border-green" fill="#ff6b35" opacity="0.18"/>
+  <text x="980" y="450" class="box-title">Prometheus · Grafana · Loki</text>
+  <text x="980" y="466" class="box-text">Observability & runtime security</text>
 
   <!-- Falco + Kyverno -->
-  <rect x="820" y="455" width="250" height="50" class="box border-green" fill="#ff4444" opacity="0.2"/>
-  <text x="945" y="475" class="box-title">Falco + Kyverno</text>
-  <text x="945" y="490" class="box-text">(Runtime Security &amp; Policy)</text>
+  <rect x="840" y="490" width="280" height="52" class="box border-green" fill="#ff4444" opacity="0.18"/>
+  <text x="980" y="520" class="box-title">Falco · Kyverno</text>
+  <text x="980" y="536" class="box-text">Runtime security & policy enforcement</text>
 
-  <!-- Linux Distributions -->
+  <!-- Linux Distribution Tiles (aligned) -->
   <g>
-    <!-- Ubuntu -->
-    <rect x="820" y="525" width="55" height="55" class="box border-green" fill="#dd4814" opacity="0.3"/>
-    <text x="847" y="550" class="box-text">Ubuntu</text>
-    <text x="847" y="566" class="box-text">20.04</text>
+    <rect x="840" y="570" width="64" height="56" class="box border-green" fill="#dd4814" opacity="0.28"/>
+    <text x="872" y="595" class="box-text">Ubuntu 20.04</text>
 
-    <!-- Rocky -->
-    <rect x="895" y="525" width="55" height="55" class="box border-green" fill="#10b981" opacity="0.3"/>
-    <text x="922" y="550" class="box-text">Rocky</text>
-    <text x="922" y="566" class="box-text">9</text>
+    <rect x="912" y="570" width="64" height="56" class="box border-green" fill="#10b981" opacity="0.28"/>
+    <text x="944" y="595" class="box-text">Rocky 9</text>
 
-    <!-- AlmaLinux -->
-    <rect x="970" y="525" width="55" height="55" class="box border-green" fill="#00a86b" opacity="0.3"/>
-    <text x="997" y="550" class="box-text">Alma</text>
-    <text x="997" y="566" class="box-text">Linux</text>
+    <rect x="984" y="570" width="64" height="56" class="box border-green" fill="#00a86b" opacity="0.28"/>
+    <text x="1016" y="595" class="box-text">AlmaLinux</text>
 
-    <!-- openSUSE -->
-    <rect x="1045" y="525" width="55" height="55" class="box border-green" fill="#73ba25" opacity="0.3"/>
-    <text x="1072" y="550" class="box-text">openSUSE</text>
-    <text x="1072" y="566" class="box-text">Leap</text>
+    <rect x="1056" y="570" width="64" height="56" class="box border-green" fill="#73ba25" opacity="0.28"/>
+    <text x="1088" y="595" class="box-text">openSUSE Leap</text>
   </g>
 
-  <!-- Lab 2 Stats -->
-  <text x="945" y="630" class="description">Independent Vagrantfile - no shared network with Lab 1</text>
+  <!-- Lab 2 Stats (centered) -->
+  <text x="1075" y="655" class="description">Independent Vagrantfile — no shared network with Lab 1</text>
 
-  <!-- Deployment Method -->
-  <text x="700" y="700" class="description" style="font-size: 14px;">Each lab deploys independently via its own Vagrantfile</text>
-  <text x="700" y="720" class="description" style="font-size: 14px;">KVM/QEMU + libvirt on Linux host</text>
+  <!-- Deployment Method (centered under diagram) -->
+  <text x="700" y="720" class="description" style="font-size:14px;">Each lab deploys independently via its own Vagrantfile · KVM/QEMU + libvirt on Linux host</text>
 </svg>
