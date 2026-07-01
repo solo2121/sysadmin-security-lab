@@ -1,5 +1,7 @@
 # AppArmor Tutorial for Rhino Linux
 
+> **Archived reference doc** — not actively maintained against the current labs. See [docs/archive/README.md](../README.md) for context.
+
 ## Introduction to AppArmor
 
 AppArmor is a Linux security module that provides Mandatory Access Control (MAC) by confining programs to a limited set of resources. It's included by default in Ubuntu and helps protect your system by restricting what applications can do.

@@ -1,5 +1,7 @@
 # Complete Git Tutorial (Revised and Corrected)
 
+> **Archived reference doc** — not actively maintained against the current labs. See [docs/archive/README.md](../README.md) for context.
+
 *Includes .gitconfig/.gitignore management and troubleshooting*
 
 ---
