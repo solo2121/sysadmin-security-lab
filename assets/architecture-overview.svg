@@ -38,6 +38,11 @@
       </feMerge>
     </filter>
 
+    <!-- Grid pattern -->
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1a2838" stroke-width="0.5" opacity="0.1"/>
+    </pattern>
+
     <style>
       .bg-dark { fill: url(#bgGradient); }
       .title { font-size: 42px; font-weight: 800; fill: #a8e6ff; font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; text-anchor: middle; letter-spacing: 0.5px; }
@@ -60,18 +65,11 @@
 
   <!-- Background -->
   <rect width="1400" height="900" class="bg-dark"/>
-
-  <!-- Subtle grid pattern overlay -->
-  <defs>
-    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1a2838" stroke-width="0.5" opacity="0.1"/>
-    </pattern>
-  </defs>
   <rect width="1400" height="900" fill="url(#grid)"/>
 
   <!-- Main title with accent -->
   <text x="700" y="54" class="title">Enterprise Infrastructure Architecture</text>
-  <text x="700" y="78" class="subtitle">Lab Overview — DevSecOps & AD Security Research</text>
+  <text x="700" y="78" class="subtitle">Lab Overview — DevSecOps &amp; AD Security Research</text>
 
   <!-- Decorative line under title -->
   <line x1="350" y1="95" x2="1050" y2="95" stroke="url(#gradientOrange)" stroke-width="1" opacity="0.4"/>
@@ -92,7 +90,7 @@
     <!-- Attacker VM -->
     <rect x="85" y="195" width="310" height="75" class="box border-orange" fill="#ff9500" opacity="0.20" filter="url(#shadow)"/>
     <text x="240" y="222" class="box-title">Kali Linux — Attacker VM</text>
-    <text x="240" y="243" class="box-text">Penetration testing & exploitation platform</text>
+    <text x="240" y="243" class="box-text">Penetration testing &amp; exploitation platform</text>
     <circle cx="90" cy="200" r="3" fill="#ff9500" opacity="0.6"/>
 
     <!-- Domain Controller -->
@@ -187,10 +185,10 @@
     <line x1="1078" y1="293" x2="1087" y2="313" stroke="#326ce5" stroke-width="1.5" opacity="0.4"/>
     <line x1="1078" y1="293" x2="1260" y2="313" stroke="#326ce5" stroke-width="1.5" opacity="0.4"/>
 
-    <!-- Harbor & Argo CD -->
+    <!-- Harbor &amp; Argo CD -->
     <rect x="835" y="405" width="486" height="65" class="box border-green" fill="#00d084" opacity="0.16" filter="url(#shadow)"/>
     <text x="1078" y="433" class="box-title">Harbor Registry · Argo CD</text>
-    <text x="1078" y="454" class="box-text">Container registry & GitOps automation</text>
+    <text x="1078" y="454" class="box-text">Container registry &amp; GitOps automation</text>
     <circle cx="840" cy="410" r="3" fill="#00d084" opacity="0.6"/>
 
     <!-- Observability stack -->
