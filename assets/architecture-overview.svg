@@ -45,21 +45,21 @@
 
     <style>
       .bg-dark { fill: url(#bgGradient); }
-      .title { font-size: 42px; font-weight: 800; fill: #a8e6ff; font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; text-anchor: middle; letter-spacing: 0.5px; }
-      .subtitle { font-size: 16px; font-weight: 500; fill: #7fc9f5; font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; text-anchor: middle; opacity: 0.9; }
-      .section-title { font-size: 22px; font-weight: 700; fill: #ffb86b; font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; text-anchor: middle; }
-      .section-title-green { font-size: 22px; font-weight: 700; fill: #7ef2b8; font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; text-anchor: middle; }
-      .box-title { font-size: 14px; font-weight: 700; fill: #ffffff; font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; text-anchor: middle; }
-      .box-text { font-size: 12px; fill: #d4dae6; font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; text-anchor: middle; opacity: 0.95; }
-      .description { font-size: 13px; fill: #9db1cc; font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; text-anchor: middle; font-weight: 500; }
-      .network-label { font-size: 12px; fill: #7ef2b8; font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; font-weight: 700; text-anchor: middle; }
+      .title { font-size: 52px; font-weight: 800; fill: #a8e6ff; font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; text-anchor: middle; letter-spacing: 0.5px; }
+      .subtitle { font-size: 20px; font-weight: 500; fill: #7fc9f5; font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; text-anchor: middle; opacity: 0.9; }
+      .section-title { font-size: 26px; font-weight: 700; fill: #ffb86b; font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; text-anchor: middle; }
+      .section-title-green { font-size: 26px; font-weight: 700; fill: #7ef2b8; font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; text-anchor: middle; }
+      .box-title { font-size: 16px; font-weight: 700; fill: #ffffff; font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; text-anchor: middle; }
+      .box-text { font-size: 14px; fill: #d4dae6; font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; text-anchor: middle; opacity: 0.95; }
+      .description { font-size: 15px; fill: #9db1cc; font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; text-anchor: center; font-weight: 500; }
+      .network-label { font-size: 14px; fill: #7ef2b8; font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; font-weight: 700; text-anchor: middle; }
       .box { stroke-width: 2; rx: 8; ry: 8; }
       .box-large { stroke-width: 2; rx: 10; ry: 10; }
       .border-orange { stroke: url(#gradientOrange); }
       .border-green { stroke: url(#gradientGreen); }
       .border-blue { stroke: url(#gradientBlue); }
-      .corner-badge { font-size: 24px; text-anchor: middle; opacity: 0.15; }
-      .footer { font-size: 13px; fill: #8a99b8; font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; text-anchor: middle; font-weight: 400; }
+      .corner-badge { font-size: 28px; text-anchor: middle; opacity: 0.15; }
+      .footer { font-size: 14px; fill: #8a99b8; font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; text-anchor: middle; font-weight: 400; }
     </style>
   </defs>
 
@@ -68,11 +68,11 @@
   <rect width="1400" height="900" fill="url(#grid)"/>
 
   <!-- Main title with accent -->
-  <text x="700" y="54" class="title">Enterprise Infrastructure Architecture</text>
-  <text x="700" y="78" class="subtitle">Lab Overview — DevSecOps &amp; AD Security Research</text>
+  <text x="700" y="54" class="title">DevOps / DevSecOps Lab</text>
+  <text x="700" y="78" class="subtitle">Enterprise Infrastructure Architecture Overview</text>
 
   <!-- Decorative line under title -->
-  <line x1="350" y1="95" x2="1050" y2="95" stroke="url(#gradientOrange)" stroke-width="1" opacity="0.4"/>
+  <line x1="350" y1="95" x2="1050" y2="95" stroke="url(#gradientOrange)" stroke-width="2" opacity="0.5"/>
 
   <!-- ===================== LAB 1: AD PENTEST LAB ===================== -->
   <g>
@@ -91,13 +91,11 @@
     <rect x="85" y="195" width="310" height="75" class="box border-orange" fill="#ff9500" opacity="0.20" filter="url(#shadow)"/>
     <text x="240" y="222" class="box-title">Kali Linux — Attacker VM</text>
     <text x="240" y="243" class="box-text">Penetration testing &amp; exploitation platform</text>
-    <circle cx="90" cy="200" r="3" fill="#ff9500" opacity="0.6"/>
 
     <!-- Domain Controller -->
     <rect x="85" y="290" width="310" height="75" class="box border-orange" fill="#ff9500" opacity="0.18" filter="url(#shadow)"/>
     <text x="240" y="317" class="box-title">Windows Domain Controller</text>
     <text x="240" y="338" class="box-text">Server 2022 · Primary AD infrastructure</text>
-    <circle cx="90" cy="295" r="3" fill="#ff9500" opacity="0.6"/>
 
     <!-- Services row -->
     <g filter="url(#shadow)">
@@ -118,22 +116,19 @@
     <rect x="85" y="473" width="310" height="65" class="box" stroke="#e24b4a" fill="#e24b4a" opacity="0.18" filter="url(#shadow)"/>
     <text x="240" y="501" class="box-title">Legacy Attack Targets</text>
     <text x="240" y="522" class="box-text">Metasploitable2 · OWASP Juice Shop</text>
-    <circle cx="90" cy="478" r="3" fill="#e24b4a" opacity="0.7"/>
 
     <!-- Cloud simulation -->
     <rect x="85" y="558" width="310" height="65" class="box border-orange" fill="#ff9500" opacity="0.16" filter="url(#shadow)"/>
     <text x="240" y="586" class="box-title">Cloud Simulation Layer</text>
     <text x="240" y="607" class="box-text">LocalStack · S3, IAM, EC2 emulation</text>
-    <circle cx="90" cy="563" r="3" fill="#ff9500" opacity="0.6"/>
 
     <!-- LLM platform -->
     <rect x="85" y="643" width="310" height="65" class="box border-orange" fill="#ff9500" opacity="0.16" filter="url(#shadow)"/>
     <text x="240" y="671" class="box-title">LLM Security Testing</text>
     <text x="240" y="692" class="box-text">Vulnerable endpoints for research</text>
-    <circle cx="90" cy="648" r="3" fill="#ff9500" opacity="0.6"/>
 
     <!-- Lab notes -->
-    <text x="240" y="730" class="description" style="font-size: 12px;">
+    <text x="240" y="730" class="description" style="font-size: 14px;">
       <tspan x="240" dy="0">📋 VLAN edition with segmented subnets</tspan>
       <tspan x="240" dy="16">📋 Isolated network environment</tspan>
     </text>
@@ -163,7 +158,6 @@
     <rect x="835" y="218" width="486" height="75" class="box border-green" fill="#326ce5" opacity="0.22" filter="url(#shadow)"/>
     <text x="1078" y="245" class="box-title">k3s Control Plane</text>
     <text x="1078" y="266" class="box-text">devops1 — Kubernetes master node</text>
-    <circle cx="840" cy="223" r="3" fill="#00d084" opacity="0.7"/>
 
     <!-- Worker nodes -->
     <g filter="url(#shadow)">
@@ -189,19 +183,16 @@
     <rect x="835" y="405" width="486" height="65" class="box border-green" fill="#00d084" opacity="0.16" filter="url(#shadow)"/>
     <text x="1078" y="433" class="box-title">Harbor Registry · Argo CD</text>
     <text x="1078" y="454" class="box-text">Container registry &amp; GitOps automation</text>
-    <circle cx="840" cy="410" r="3" fill="#00d084" opacity="0.6"/>
 
     <!-- Observability stack -->
     <rect x="835" y="490" width="486" height="65" class="box border-green" fill="#00d084" opacity="0.16" filter="url(#shadow)"/>
     <text x="1078" y="518" class="box-title">Prometheus · Grafana · Loki</text>
     <text x="1078" y="539" class="box-text">Metrics, visualization &amp; log aggregation</text>
-    <circle cx="840" cy="495" r="3" fill="#00d084" opacity="0.6"/>
 
     <!-- Runtime security (red accent) -->
     <rect x="835" y="575" width="486" height="65" class="box" stroke="#e24b4a" fill="#e24b4a" opacity="0.18" filter="url(#shadow)"/>
     <text x="1078" y="603" class="box-title">Falco · Kyverno</text>
     <text x="1078" y="624" class="box-text">Runtime security &amp; policy enforcement</text>
-    <circle cx="840" cy="580" r="3" fill="#e24b4a" opacity="0.7"/>
 
     <!-- OS variants -->
     <g filter="url(#shadow)">
@@ -213,7 +204,7 @@
     </g>
 
     <!-- Lab notes -->
-    <text x="1078" y="745" class="description" style="font-size: 12px;">
+    <text x="1078" y="745" class="description" style="font-size: 14px;">
       <tspan x="1078" dy="0">📋 Independent Vagrantfile deployment</tspan>
       <tspan x="1078" dy="16">📋 Isolated network — no shared infrastructure</tspan>
     </text>
@@ -228,12 +219,12 @@
   <!-- Legend indicators -->
   <g opacity="0.6">
     <circle cx="100" cy="860" r="4" fill="#ff9500"/>
-    <text x="115" y="865" class="footer" style="text-anchor: start; font-size: 11px;">Security Labs</text>
+    <text x="115" y="865" class="footer" style="text-anchor: start; font-size: 13px;">Security Labs</text>
     
     <circle cx="280" cy="860" r="4" fill="#00d084"/>
-    <text x="295" y="865" class="footer" style="text-anchor: start; font-size: 11px;">Kubernetes Infrastructure</text>
+    <text x="295" y="865" class="footer" style="text-anchor: start; font-size: 13px;">Kubernetes Infrastructure</text>
     
     <circle cx="550" cy="860" r="4" fill="#e24b4a"/>
-    <text x="565" y="865" class="footer" style="text-anchor: start; font-size: 11px;">Security-focused Components</text>
+    <text x="565" y="865" class="footer" style="text-anchor: start; font-size: 13px;">Security-focused Components</text>
   </g>
 </svg>
