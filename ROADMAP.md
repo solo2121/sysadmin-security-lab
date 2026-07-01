@@ -15,8 +15,6 @@ For a running log of what's already shipped, see
 - [ ] Expand automated test coverage to more of `sysadmin/` and `security/`
       scripts (currently: `log-analyzer.sh`, `setup-vlans.sh`,
       `port-scanner.py`)
-- [ ] GitHub Discussions enabled for Q&A / feature requests (templates in
-      `.github/DISCUSSION_TEMPLATE/`)
 
 ## Mid-term
 

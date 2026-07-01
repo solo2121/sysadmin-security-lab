@@ -1,4 +1,7 @@
 # **The Ultimate TimeShift CLI Guide: Mastering System Snapshots**
+
+> **Archived reference doc** — not actively maintained against the current labs. See [docs/archive/README.md](../README.md) for context.
+
 *A Comprehensive Guide to Backup, Restore, and System Recovery*
 
 ---

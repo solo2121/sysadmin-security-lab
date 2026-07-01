@@ -1,4 +1,7 @@
 
+
+> **Archived reference doc** — not actively maintained against the current labs. See [docs/archive/README.md](../README.md) for context.
+
 Pacstall is a powerful package manager for Ubuntu and Debian-based systems that brings an Arch-like user repository (AUR) experience. It allows users to install the latest software from source or pre-built packages easily.
 
 ---
