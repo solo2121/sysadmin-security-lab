@@ -295,12 +295,16 @@ vagrant up
 
 | Document | Purpose |
 |---|---|
+| [docs/README.md](docs/README.md) | Full documentation index |
 | [PORTFOLIO.md](docs/portfolio.md) | Portfolio index and skills mapping |
 | [architecture.md](docs/architecture/architecture.md) | Infrastructure design |
 | [security-scope.md](docs/architecture/security-scope.md) | Security boundaries |
 | [installation.md](installation.md) | Full installation guide |
 | [setup-with-examples.md](docs/setup-with-examples.md) | Deployment walkthrough |
+| [check-prerequisites.sh](scripts/check-prerequisites.sh) | Validate your host before deploying |
+| [minimal-resource-deployment.md](docs/optimization/minimal-resource-deployment.md) | Running either lab on smaller hosts |
 | [TROUBLESHOOTING.md](troubleshooting.md) | Common issues |
+| [ROADMAP.md](ROADMAP.md) | Planned improvements |
 | [CHANGELOG.md](CHANGELOG.md) | Project history |
 
 ---

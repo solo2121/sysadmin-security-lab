@@ -1,0 +1,14 @@
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For anything that doesn't fit Q&A or Feature Ideas — general
+        feedback, showing off something you built with the labs, or
+        open-ended discussion.
+  - type: textarea
+    id: content
+    attributes:
+      label: What's on your mind?
+    validations:
+      required: true
