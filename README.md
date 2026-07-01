@@ -39,7 +39,7 @@ This repository provides two independent enterprise lab environments and support
 
 ## Architecture Overview
 
-![Enterprise Infrastructure Architecture](assets/architecture-overview.svg)
+![Enterprise Infrastructure Architecture](assets/architecture-overview.png)
 
 ### Two Independent Lab Environments
 
