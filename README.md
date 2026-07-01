@@ -1,6 +1,5 @@
 # Sysadmin Security Lab
 
-
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 ![Platform](https://img.shields.io/badge/platform-Linux-blue)
 ![Vagrant](https://img.shields.io/badge/Vagrant-Lab-orange)
@@ -8,23 +7,18 @@
 ![DevSecOps](https://img.shields.io/badge/DevSecOps-Lab-purple)
 [![CI](https://github.com/solo2121/sysadmin-security-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/solo2121/sysadmin-security-lab/actions/workflows/ci.yml)
 
-
 A modular hands-on lab for Linux System Administration, Cybersecurity, DevOps, and DevSecOps practice.
 
-
 This repository provides two independent enterprise lab environments and supporting tooling for infrastructure simulation, security research, automation, detection engineering, and professional portfolio development.
-
 
 **Maintained by:** Miguel A. Carlo (solo2121)  
 **Project Status:** Active Development
 
-
 ---
-
 
 ## Table of Contents
 
-
+- [Architecture Overview](#architecture-overview)
 - [Overview](#overview)
 - [Highlights](#highlights)
 - [Who This Project Is For](#who-this-project-is-for)
@@ -41,30 +35,35 @@ This repository provides two independent enterprise lab environments and support
 - [Contributing](#contributing)
 - [License](#license)
 
-
 ---
 
+## Architecture Overview
+
+![Enterprise Infrastructure Architecture](assets/architecture-overview.svg)
+
+### Two Independent Lab Environments
+
+- **Lab 1 – Active Directory Pentest Lab** (172.28.128.0/24)  
+  Windows enterprise security environment with domain controllers, member servers, cloud simulation, and AI security testing.
+
+- **Lab 2 – DevOps / DevSecOps Lab**  
+  Linux-centric Kubernetes platform with k3s control plane, worker nodes, container registry, observability stack, and runtime security.
+
+Each lab deploys independently via dedicated Vagrantfile on KVM/QEMU virtualization infrastructure. See [Architecture Documentation](docs/architecture/architecture.md) for detailed infrastructure design and networking specifications.
+
+---
 
 ## Overview
 
-
 Sysadmin Security Lab is a modular enterprise homelab built for learning and practicing Linux administration, Active Directory security, cloud-native infrastructure, DevOps, and DevSecOps.
-
 
 The project is organized into independent virtual lab environments that can be deployed separately, allowing focused practice without affecting other environments.
 
-
-It combines enterprise infrastructure, offensive security, defensive engineering, cloud-native technologies, automation, Infrastructure as Code, and modern DevSecOps workflows into a single professional portfolio project.
-
-
-![Lab architecture overview](assets/architecture-overview.svg)
-
+It combines enterprise infrastructure, offensive security, defensive engineering, cloud-native technologies, automation, Infrastructure as Code, and modern DevSecOps workflows into a single professional-grade learning platform.
 
 ---
 
-
 ## Highlights
-
 
 - Two fully independent enterprise lab environments.
 - Automated provisioning using Vagrant, Libvirt, and KVM.
@@ -76,15 +75,11 @@ It combines enterprise infrastructure, offensive security, defensive engineering
 - AI and LLM security testing and experimentation.
 - Comprehensive documentation covering architecture, deployment, troubleshooting, and workflows.
 
-
 ---
-
 
 ## Who This Project Is For
 
-
 This repository is intended for:
-
 
 - Linux System Administrators.
 - Security Engineers.
@@ -95,15 +90,11 @@ This repository is intended for:
 - Students building enterprise homelabs.
 - Professionals learning modern infrastructure and security engineering.
 
-
 ---
-
 
 ## Portfolio Goals
 
-
 This repository demonstrates practical experience with:
-
 
 - Linux system administration.
 - Enterprise Active Directory.
@@ -115,21 +106,15 @@ This repository demonstrates practical experience with:
 - Infrastructure as Code.
 - Security research in isolated lab environments.
 
-
 ---
-
 
 ## Choose Your Lab
 
-
 Choose the environment that matches your learning objectives.
-
 
 ### Lab 1 – Active Directory Pentest Lab
 
-
 Focus areas:
-
 
 - Windows enterprise infrastructure.
 - Active Directory.
@@ -138,12 +123,9 @@ Focus areas:
 - Cloud attack simulation.
 - AI and LLM security testing.
 
-
 ### Lab 2 – DevOps / DevSecOps Lab
 
-
 Focus areas:
-
 
 - Kubernetes.
 - GitOps.
@@ -153,24 +135,17 @@ Focus areas:
 - Policy enforcement.
 - Platform engineering.
 
-
 Each lab is independent and can be deployed separately.
-
 
 ---
 
-
 ## Lab 1 – Active Directory Pentest Lab
-
 
 **Directory:** `labs/security/ad-pentest/`
 
-
 **Alternative VLAN deployment:** `labs/security/ad-pentest-vlan/`
 
-
-This Windows enterprise security lab is designed for Active Directory security research, adversary emulation, post-exploitation analysis, detection engineering, cloud attack simulation, and AI/LLM security assessment.
-
+This Windows enterprise security lab is designed for Active Directory security research, adversary emulation, post-exploitation analysis, detection engineering, cloud attack simulation, and AI/LLM security testing.
 
 | Component | Description |
 |---|---|
@@ -183,21 +158,15 @@ This Windows enterprise security lab is designed for Active Directory security r
 | AI Security | Prompt injection, prompt leakage, jailbreaks, token abuse, RAG security |
 | Legacy Targets | Metasploitable2, OWASP Juice Shop |
 
-
 The VLAN edition expands the environment into segmented enterprise networks for advanced attack path and lateral movement simulations.
-
 
 ---
 
-
 ## Lab 2 – DevOps / DevSecOps Lab
-
 
 **Directory:** `labs/infrastructure/devops-linux-lab/`
 
-
 This is a Linux-centric cloud-native platform engineering environment focused on Kubernetes operations, infrastructure automation, GitOps, observability, and security engineering.
-
 
 | Component | Description |
 |---|---|
@@ -215,15 +184,11 @@ This is a Linux-centric cloud-native platform engineering environment focused on
 | Configuration Management | Ansible |
 | Linux Nodes | Ubuntu, Rocky Linux, AlmaLinux, openSUSE |
 
-
 This environment provides practical experience in cloud-native operations, automation, DevSecOps, and platform engineering.
-
 
 ---
 
-
 ## Repository Structure
-
 
 ```text
 sysadmin-security-lab/
@@ -255,18 +220,13 @@ sysadmin-security-lab/
 └── README.md
 ```
 
-
 ---
-
 
 ## Requirements
 
-
 Before deploying either lab:
 
-
 ### Host Requirements
-
 
 - Linux host recommended.
 - Hardware virtualization enabled.
@@ -277,30 +237,22 @@ Before deploying either lab:
 - Sufficient CPU, RAM, and storage.
 - Internet connectivity.
 
-
 ---
-
 
 ## Quick Start
 
-
 ### Clone the repository
-
 
 ```bash
 git clone https://github.com/solo2121/sysadmin-security-lab.git
 cd sysadmin-security-lab
 ```
 
-
 ### Install dependencies
-
 
 Install the required dependencies by following the [Installation Guide](installation.md).
 
-
 ### Deploy Active Directory Lab
-
 
 ```bash
 cd labs/security/ad-pentest
@@ -308,21 +260,16 @@ vagrant up dc01
 vagrant up
 ```
 
-
 ### Deploy DevOps / DevSecOps Lab
-
 
 ```bash
 cd labs/infrastructure/devops-linux-lab
 vagrant up
 ```
 
-
 ---
 
-
 ## Skills Demonstrated
-
 
 | Area | Technologies |
 |---|---|
@@ -342,67 +289,49 @@ vagrant up
 | Security Testing | Nmap, BloodHound, Metasploit, Hashcat |
 | AI Security | Prompt Injection, Prompt Leakage, Jailbreak Testing, RAG Security |
 
-
 ---
-
 
 ## Documentation Hub
 
-
-| Document                                                    | Purpose                            |
-|-------------------------------------------------------------|------------------------------------|
-| [PORTFOLIO.md](docs/portfolio.md)                           | Portfolio index and skills mapping |
-| [architecture.md](docs/architecture/architecture.md)        | Infrastructure design              |
-| [security-scope.md](docs/architecture/security-scope.md)    | Security boundaries                |
-| [installation.md](installation.md)                          | Full installation guide            |
-| [setup-with-examples.md](docs/setup-with-examples.md)       | Deployment walkthrough             |
-| [TROUBLESHOOTING.md](troubleshooting.md)                    | Common issues                      |
-| [CHANGELOG.md](CHANGELOG.md)                                | Project history                    |
-
+| Document | Purpose |
+|---|---|
+| [PORTFOLIO.md](docs/portfolio.md) | Portfolio index and skills mapping |
+| [architecture.md](docs/architecture/architecture.md) | Infrastructure design |
+| [security-scope.md](docs/architecture/security-scope.md) | Security boundaries |
+| [installation.md](installation.md) | Full installation guide |
+| [setup-with-examples.md](docs/setup-with-examples.md) | Deployment walkthrough |
+| [TROUBLESHOOTING.md](troubleshooting.md) | Common issues |
+| [CHANGELOG.md](CHANGELOG.md) | Project history |
 
 ---
-
 
 ## Security and Ethics
 
-
 This project is intended solely for education, authorized security research, and defensive security practice.
-
 
 Only perform testing against systems you own or where you have explicit authorization.
 
-
 Unauthorized access, testing, or exploitation of external systems is strictly prohibited.
-
 
 ---
 
-
 ## Contributing
 
-
 Contributions are welcome.
-
 
 - Open an issue before major changes.
 - Keep pull requests focused.
 - Update documentation when needed.
 - Follow project contribution guidelines.
 
-
 See `CONTRIBUTING.md` for details.
-
 
 ---
 
-
 ## License
-
 
 This project is licensed under the MIT License.
 
-
 See [LICENSE](LICENSE) for details.
-
 
 Copyright (c) 2025–2026 Miguel A. Carlo
