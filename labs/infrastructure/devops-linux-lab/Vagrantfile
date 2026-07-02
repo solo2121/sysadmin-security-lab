@@ -222,17 +222,17 @@ if HARBOR_PASS.nil? || HARBOR_PASS.empty?
       puts "Please set an admin password for Harbor."
       puts "The password must be at least 8 characters long."
       puts ""
-      
+
       begin
         # Prompt for password using io/console (no echo)
         print "Enter Harbor admin password: "
         password = STDIN.noecho(&:gets).chomp
         puts ""
-        
+
         if password.nil? || password.empty?
           abort("ERROR: Password cannot be empty.")
         end
-        
+
         if password.length < 8
           puts "WARNING: Password is less than 8 characters. This is not recommended."
           print "Continue with weak password? (y/N): "
@@ -241,21 +241,21 @@ if HARBOR_PASS.nil? || HARBOR_PASS.empty?
             abort("Password creation cancelled.")
           end
         end
-        
+
         print "Confirm password: "
         confirm_password = STDIN.noecho(&:gets).chomp
         puts ""
-        
+
         if password != confirm_password
           abort("ERROR: Passwords do not match.")
         end
-        
+
         ENV['HARBOR_PASS'] = password
         HARBOR_PASS = password
         puts "Password configured successfully."
         puts "="*60
         puts ""
-        
+
       rescue Interrupt
         puts "\nPassword input cancelled."
         exit 1
@@ -1124,48 +1124,48 @@ PYEOF
             echo "=========================================="
             echo "INSTALLING TERRAFORM ${TERRAFORM_VERSION}"
             echo "=========================================="
-            
+
             # Clean up any previous installations
             rm -f /usr/local/bin/terraform
-            
+
             # Download and install Terraform
             TEMP_DIR=$(mktemp -d)
             cd "$TEMP_DIR"
-            
+
             # FIX 4: Dynamic architecture detection
             ARCH=$(uname -m | sed 's/x86_64/amd64/' | sed 's/aarch64/arm64/')
             echo "Detected architecture: ${ARCH}"
-            
+
             echo "Downloading Terraform ${TERRAFORM_VERSION} for ${ARCH}..."
             curl -fsSL "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_${ARCH}.zip" -o terraform.zip
-            
+
             echo "Extracting Terraform..."
             apt-get install -y unzip 2>/dev/null || dnf install -y unzip 2>/dev/null || zypper install -y unzip 2>/dev/null || true
             unzip -q terraform.zip
-            
+
             echo "Installing Terraform to /usr/local/bin..."
             mv terraform /usr/local/bin/
             chmod +x /usr/local/bin/terraform
-            
+
             # Verify installation
             if command -v terraform >/dev/null 2>&1; then
               TERRAFORM_INSTALLED_VERSION=$(terraform version -json 2>/dev/null | grep -o '"terraform_version":"[^"]*"' | cut -d'"' -f4 || terraform version | head -1)
               echo "Terraform installed successfully: ${TERRAFORM_INSTALLED_VERSION}"
-              
+
               # Enable bash completion
               terraform -install-autocomplete 2>/dev/null || true
-              
+
               # Create marker file
               touch "$TERRAFORM_MARKER"
             else
               echo "ERROR: Terraform installation failed"
               exit 1
             fi
-            
+
             # Cleanup
             cd /
             rm -rf "$TEMP_DIR"
-            
+
             echo "=========================================="
             echo "Terraform is ready to use!"
             echo "Run 'terraform --version' to verify"
@@ -1182,47 +1182,47 @@ PYEOF
             echo "=========================================="
             echo "INSTALLING OPENTOFU ${OPENTOFU_VERSION}"
             echo "=========================================="
-            
+
             # Clean up any previous installations
             rm -f /usr/local/bin/tofu
-            
+
             # Download and install OpenTofu
             TEMP_DIR=$(mktemp -d)
             cd "$TEMP_DIR"
-            
+
             ARCH=$(uname -m | sed 's/x86_64/amd64/' | sed 's/aarch64/arm64/')
             echo "Detected architecture: ${ARCH}"
-            
+
             echo "Downloading OpenTofu ${OPENTOFU_VERSION} for ${ARCH}..."
             curl -fsSL "https://github.com/opentofu/opentofu/releases/download/v${OPENTOFU_VERSION}/tofu_${OPENTOFU_VERSION}_linux_${ARCH}.zip" -o tofu.zip
-            
+
             echo "Extracting OpenTofu..."
             apt-get install -y unzip 2>/dev/null || dnf install -y unzip 2>/dev/null || zypper install -y unzip 2>/dev/null || true
             unzip -q tofu.zip
-            
+
             echo "Installing OpenTofu to /usr/local/bin..."
             mv tofu /usr/local/bin/
             chmod +x /usr/local/bin/tofu
-            
+
             # Verify installation
             if command -v tofu >/dev/null 2>&1; then
               TOFU_VERSION=$(tofu version -json 2>/dev/null | grep -o '"version":"[^"]*"' | cut -d'"' -f4 || tofu version | head -1)
               echo "OpenTofu installed successfully: ${TOFU_VERSION}"
-              
+
               # Enable bash completion
               tofu -install-autocomplete 2>/dev/null || true
-              
+
               # Create marker file
               touch "$OPENTOFU_MARKER"
             else
               echo "ERROR: OpenTofu installation failed"
               exit 1
             fi
-            
+
             # Cleanup
             cd /
             rm -rf "$TEMP_DIR"
-            
+
             echo "=========================================="
             echo "OpenTofu is ready to use!"
             echo "Run 'tofu --version' to verify"
@@ -1284,15 +1284,15 @@ PYEOF
             # ============================================================
             if [ ! -f "$KYVERNO_MARKER" ]; then
               echo "Installing Kyverno ${KYVERNO_VERSION}..."
-              
+
               # Clean up any existing Kyverno resources
               helm uninstall kyverno -n kyverno 2>/dev/null || true
               kubectl delete namespace kyverno --ignore-not-found=true
               sleep 10
-              
+
               helm repo add kyverno https://kyverno.github.io/kyverno/ --force-update
               helm repo update
-              
+
               # Install with retry logic for image pull issues
               INSTALL_SUCCESS=false
               for attempt in 1 2 3; do
@@ -1313,7 +1313,7 @@ PYEOF
                   sleep 30
                 fi
               done
-              
+
               if [ "$INSTALL_SUCCESS" = "false" ]; then
                 echo "WARNING: Kyverno install had issues - continuing anyway"
                 # Try one more time without waiting
@@ -1439,7 +1439,7 @@ EOF
 
               # Delete applications first then CRDs with --wait=false to prevent hangs
               kubectl delete applications --all -n argocd --ignore-not-found=true --wait=false 2>/dev/null || true
-              
+
               # Delete CRDs with --wait=false to prevent finalizer hangs
               kubectl delete crd applications.argoproj.io --ignore-not-found=true --wait=false 2>/dev/null || true
               kubectl delete crd appprojects.argoproj.io --ignore-not-found=true --wait=false 2>/dev/null || true
@@ -1749,17 +1749,17 @@ EOF
           # Create new cluster
           if kind create cluster --config /opt/kind/config.yaml --name lab; then
             echo "Kind cluster 'lab' created successfully!"
-            
+
             # Set up kubeconfig
             mkdir -p /home/vagrant/.kube
             kind get kubeconfig --name lab > /home/vagrant/.kube/config
             chown -R vagrant:vagrant /home/vagrant/.kube
-            
+
             echo ""
             echo "Cluster status:"
             kubectl cluster-info
             kubectl get nodes
-            
+
             # Create convenience aliases
             cat >> /home/vagrant/.bashrc <<'EOF'
 # Kind aliases
@@ -1767,7 +1767,7 @@ alias kind-kill='kind delete cluster --name lab'
 alias kind-restart='kind delete cluster --name lab && kind create cluster --config /opt/kind/config.yaml --name lab'
 alias kind-status='kubectl get nodes && kubectl get pods -A'
 EOF
-            
+
           else
             echo "ERROR: Kind cluster creation failed"
             exit 1
@@ -1872,17 +1872,17 @@ EOF
           # Create new cluster
           if k3d cluster create lab --config /opt/k3d/config.yaml; then
             echo "K3d cluster 'lab' created successfully!"
-            
+
             # Set up kubeconfig
             mkdir -p /home/vagrant/.kube
             k3d kubeconfig get lab > /home/vagrant/.kube/config
             chown -R vagrant:vagrant /home/vagrant/.kube
-            
+
             echo ""
             echo "Cluster status:"
             kubectl cluster-info
             kubectl get nodes
-            
+
             # Create convenience aliases
             cat >> /home/vagrant/.bashrc <<'EOF'
 # K3d aliases
@@ -1890,7 +1890,7 @@ alias k3d-kill='k3d cluster delete lab'
 alias k3d-restart='k3d cluster delete lab && k3d cluster create lab --config /opt/k3d/config.yaml'
 alias k3d-status='kubectl get nodes && kubectl get pods -A'
 EOF
-            
+
           else
             echo "ERROR: K3d cluster creation failed"
             exit 1
