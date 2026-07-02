@@ -868,7 +868,7 @@ These playbooks automate security hardening across your lab nodes. They implemen
       ansible.builtin.command: sysctl --system
 
   tasks:
-    # ---- SSH Hardening ----
+    # ---- SSH Hardening ---- #
     - name: Ensure SSH is installed
       ansible.builtin.package:
         name: openssh-server
