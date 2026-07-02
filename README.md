@@ -7,7 +7,7 @@
 ![DevSecOps](https://img.shields.io/badge/DevSecOps-Lab-purple)
 [![CI](https://github.com/solo2121/sysadmin-security-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/solo2121/sysadmin-security-lab/actions/workflows/ci.yml)
 
-A modular hands-on lab for Linux System Administration, Cybersecurity, DevOps, and DevSecOps practice.
+A modular, enterprise-grade homelab for hands-on practice in Linux administration, Active Directory security, DevOps, and DevSecOps.
 
 This repository provides two independent enterprise lab environments and supporting tooling for infrastructure simulation, security research, automation, detection engineering, and professional portfolio development.
 
@@ -24,8 +24,8 @@ This repository provides two independent enterprise lab environments and support
 - [Who This Project Is For](#who-this-project-is-for)
 - [Portfolio Goals](#portfolio-goals)
 - [Choose Your Lab](#choose-your-lab)
-- [Lab 1 – Active Directory Pentest Lab](#lab-1-active-directory-pentest-lab)
-- [Lab 2 – DevOps / DevSecOps Lab](#lab-2-devops-devsecops-lab)
+- [Lab 1 – Active Directory Pentest Lab](#lab-1--active-directory-pentest-lab)
+- [Lab 2 – DevOps / DevSecOps Lab](#lab-2--devops--devsecops-lab)
 - [Repository Structure](#repository-structure)
 - [Requirements](#requirements)
 - [Quick Start](#quick-start)
@@ -43,13 +43,13 @@ This repository provides two independent enterprise lab environments and support
 
 ### Two Independent Lab Environments
 
-- **Lab 1 – Active Directory Pentest Lab** (172.28.128.0/24)  
-  Windows enterprise security environment with domain controllers, member servers, cloud simulation, and AI security testing.
+- **Lab 1 – Active Directory Pentest Lab** (`172.28.128.0/24`)  
+  A Windows enterprise security environment with domain controllers, member servers, cloud simulation, and AI security testing.
 
 - **Lab 2 – DevOps / DevSecOps Lab**  
-  Linux-centric Kubernetes platform with k3s control plane, worker nodes, container registry, observability stack, and runtime security.
+  A Linux-centric Kubernetes platform with a k3s control plane, worker nodes, container registry, observability stack, and runtime security.
 
-Each lab deploys independently via dedicated Vagrantfile on KVM/QEMU virtualization infrastructure. See [Architecture Documentation](docs/architecture/architecture.md) for detailed infrastructure design and networking specifications.
+Each lab deploys independently through its own Vagrantfile on KVM/QEMU virtualization infrastructure. See [Architecture Documentation](docs/architecture/architecture.md) for detailed infrastructure design and networking specifications.
 
 ---
 
@@ -59,7 +59,7 @@ Sysadmin Security Lab is a modular enterprise homelab built for learning and pra
 
 The project is organized into independent virtual lab environments that can be deployed separately, allowing focused practice without affecting other environments.
 
-It combines enterprise infrastructure, offensive security, defensive engineering, cloud-native technologies, automation, Infrastructure as Code, and modern DevSecOps workflows into a single professional-grade learning platform.
+It combines enterprise infrastructure, offensive security, defensive engineering, cloud-native technologies, automation, Infrastructure as Code, and modern DevSecOps workflows into a single learning platform.
 
 ---
 
@@ -71,7 +71,7 @@ It combines enterprise infrastructure, offensive security, defensive engineering
 - Kubernetes platform engineering with GitOps workflows.
 - Infrastructure as Code using Terraform, OpenTofu, and Ansible.
 - DevSecOps tooling including Falco and Kyverno.
-- Continuous Integration for automated project validation.
+- Continuous integration for automated project validation.
 - AI and LLM security testing and experimentation.
 - Comprehensive documentation covering architecture, deployment, troubleshooting, and workflows.
 
@@ -112,6 +112,9 @@ This repository demonstrates practical experience with:
 
 Choose the environment that matches your learning objectives.
 
+- **Lab 1** if you want to focus on Windows, Active Directory, and offensive security.
+- **Lab 2** if you want to focus on Kubernetes, automation, and DevSecOps.
+
 ### Lab 1 – Active Directory Pentest Lab
 
 Focus areas:
@@ -141,8 +144,7 @@ Each lab is independent and can be deployed separately.
 
 ## Lab 1 – Active Directory Pentest Lab
 
-**Directory:** `labs/security/ad-pentest/`
-
+**Directory:** `labs/security/ad-pentest/`  
 **Alternative VLAN deployment:** `labs/security/ad-pentest-vlan/`
 
 This Windows enterprise security lab is designed for Active Directory security research, adversary emulation, post-exploitation analysis, detection engineering, cloud attack simulation, and AI/LLM security testing.
@@ -228,7 +230,7 @@ Before deploying either lab:
 
 ### Host Requirements
 
-- Linux host recommended.
+- Linux host required.
 - Hardware virtualization enabled.
 - KVM/QEMU.
 - Libvirt.
@@ -328,7 +330,7 @@ Contributions are welcome.
 - Update documentation when needed.
 - Follow project contribution guidelines.
 
-See `CONTRIBUTING.md` for details.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
 ---
 
