@@ -1,55 +1,32 @@
 # Roadmap
 
-This is a working list of planned improvements, not a commitment with
-dates. Priorities shift based on what's most useful to work on next.
-Suggestions and PRs against any of these are welcome — see
-[`CONTRIBUTING.md`](CONTRIBUTING.md).
+This roadmap is a working list of ideas I want to improve over time. It is not a promise of dates or deadlines—priorities change based on what is most useful next. I maintain these labs myself, and I share them to help others who want a place to practice. Suggestions and pull requests are welcome; see [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
-For a running log of what's already shipped, see
-[`CHANGELOG.md`](CHANGELOG.md).
+For a log of what has already been released, see [`CHANGELOG.md`](CHANGELOG.md).
 
 ## Near-term
 
-- [ ] Live demo recording (asciinema/GIF) embedded in the README showing
-      `vagrant up` bring-up and an AD attack chain executing
-- [ ] Expand automated test coverage to more of `sysadmin/` and `security/`
-      scripts (currently: `log-analyzer.sh`, `setup-vlans.sh`,
-      `port-scanner.py`)
+- [ ] Add a recorded demo (asciinema or GIF) to the README showing `vagrant up` provisioning and an AD attack chain in action.
+- [ ] Expand automated test coverage across more `sysadmin/` and `security/` scripts (currently: `log-analyzer.sh`, `setup-vlans.sh`, `port-scanner.py`).
 
 ## Mid-term
 
-- [ ] Additional AD CS attack scenarios beyond the current ESC1/ESC8
-      coverage
-- [ ] Ansible role automation for repeatable DevOps lab provisioning
-      (currently manual/scripted via Vagrant provisioners)
-- [ ] Windows Server hardening lab, as a defensive counterpart to the
-      AD pentest lab's offensive content
-- [ ] Expand the VLAN lab's segmentation scenarios (currently 5 VLANs;
-      exploring more realistic enterprise zoning)
+- [ ] Add more AD CS attack scenarios beyond the current ESC1 and ESC8 coverage.
+- [ ] Create Ansible roles for more repeatable DevOps lab provisioning, instead of relying mostly on Vagrant provisioners.
+- [ ] Build a Windows Server hardening lab as a defensive counterpart to the AD pentest lab.
+- [ ] Expand the VLAN lab with more realistic segmentation scenarios beyond the current 5 VLANs.
 
-## Long-term / exploratory
+## Long-term / Exploratory
 
-- [ ] Optional cloud deployment path (Terraform module) for either lab,
-      as an alternative to local libvirt — useful for people without a
-      capable local host; see
-      [`docs/optimization/minimal-resource-deployment.md`](docs/optimization/minimal-resource-deployment.md)
-      in the meantime
-- [ ] Advanced Kubernetes security labs beyond the current
-      Falco/Kyverno baseline (e.g. supply-chain attack scenarios, OPA
-      Gatekeeper policies)
-- [ ] Cross-lab scenario: a single exercise that spans both the AD
-      pentest lab and the DevOps lab's exposed services
+- [ ] Add an optional cloud deployment path with Terraform for either lab, as an alternative to local libvirt; see [`docs/optimization/minimal-resource-deployment.md`](docs/optimization/minimal-resource-deployment.md) for now.
+- [ ] Build more advanced Kubernetes security labs beyond the current Falco/Kyverno baseline, including supply-chain attack scenarios and OPA Gatekeeper policies.
+- [ ] Create a cross-lab scenario that connects the AD pentest lab with the DevOps lab’s exposed services.
 
-## Not planned
+## Not Planned
 
-- Multi-cloud parity (AWS/Azure/GCP simultaneously) — the labs are
-  designed around local KVM/libvirt as the core experience; cloud
-  support (if it happens) will start with one provider, not several
-  at once.
-- Windows-based host support — the tooling (Vagrant + libvirt + KVM)
-  assumes a Linux host; this isn't likely to change.
+- Multi-cloud parity (AWS/Azure/GCP simultaneously): the labs are designed around local KVM/libvirt as the core experience, and cloud support would start with one provider, not several at once.
+- Windows-based host support: the tooling assumes a Linux host with Vagrant, libvirt, and KVM, so this is unlikely to change.
 
 ---
 
-Have an idea that's not listed here? Open an issue or start a
-discussion — see [`CONTRIBUTING.md`](CONTRIBUTING.md) for how.
+Have an idea that is not listed here? Open an issue or start a discussion — see [`CONTRIBUTING.md`](CONTRIBUTING.md).
