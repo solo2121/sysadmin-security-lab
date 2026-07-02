@@ -79,15 +79,7 @@
 
 ## Documentation
 
-| Document | Purpose |
-|----------|---------|
-| [`docs/guides/infrastructure/`](../docs/guides/infrastructure/) | Infrastructure and lab setup guides |
-| [`docs/guides/security/`](../docs/guides/security/) | AD pentest and LLM security guides |
-| [`docs/workflows/`](../docs/workflows/) | Lab deployment and operational workflows |
-| [`docs/architecture/`](../docs/architecture/) | Architecture and security scope |
-| [`installation.md`](../installation.md) | Full host setup instructions |
-| [`troubleshooting.md`](../troubleshooting.md) | Common issues and fixes |
-| [`CHANGELOG.md`](../CHANGELOG.md) | Version history |
+For the full documentation index, see [`docs/README.md`](README.md).
 
 ---
 
