@@ -152,7 +152,7 @@ This Windows enterprise security lab is designed for Active Directory security r
 | Component | Description |
 |---|---|
 | Domain Controller | Windows Server 2022 (`lab.local`) |
-| Certificate Authority | AD CS (ESC1, ESC3, ESC4, ESC7, ESC9) |
+| Certificate Authority | AD CS (ESC1, ESC3, ESC4, ESC7, ESC8, ESC9) |
 | Member Servers | Exchange, SQL Server, SharePoint, Print Server |
 | Workstations | Windows 10 domain joined |
 | Attacker VM | Kali Linux |
@@ -286,7 +286,7 @@ vagrant up
 | Containers | Docker, Harbor |
 | Cloud | AWS Concepts, LocalStack |
 | Active Directory | Windows Server, Kerberos, LDAP |
-| AD CS | ESC1–ESC9 |
+| AD CS | ESC1, ESC3, ESC4, ESC7, ESC8, ESC9 |
 | Detection Engineering | MITRE ATT&CK, Log Analysis |
 | Security Testing | Nmap, BloodHound, Metasploit, Hashcat |
 | AI Security | Prompt Injection, Prompt Leakage, Jailbreak Testing, RAG Security |
