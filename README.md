@@ -190,6 +190,13 @@ This environment provides practical experience in cloud-native operations, autom
 
 ---
 
+## Recent Updates
+
+- **DevSecOps Lab:** Expanded with realistic attack scenarios and vulnerable deployments, added a Terraform state file with exposed secrets for IaC practice, and introduced an indirect prompt injection (RAG) scenario for AI security.
+- **Active Directory Lab:** Added modern enterprise attack scenarios, fixed CA01 DNS record configuration to support privilege escalation paths, and resolved Vagrantfile validation issues.
+
+---
+
 ## Repository Structure
 
 ```text
