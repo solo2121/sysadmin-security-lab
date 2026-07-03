@@ -840,7 +840,7 @@ Exploit misconfigured Active Directory Certificate Services (AD CS) to impersona
 
 ## Tool Description – Certipy
 
-**Certipy** (by ly4k) is the leading modern Python tool (2025–2026 standard) for enumerating, abusing, and attacking AD CS environments. It identifies vulnerable templates (ESC1–ESC16), requests rogue certificates, performs NTLM relay to AD CS (ESC8), handles shadow credentials, and supports PKINIT authentication. Preferred over older tools like Certify due to active maintenance, stealth options, and full ESC coverage.
+**Certipy** (by ly4k) is the leading modern Python tool for enumerating, abusing, and attacking AD CS environments. It identifies vulnerable templates (ESC1–ESC16), requests rogue certificates, performs NTLM relay to AD CS (ESC8), handles shadow credentials, and supports PKINIT authentication. Preferred over older tools like Certify due to active maintenance, stealth options, and full ESC coverage.
 
 **Use Certipy:**
 
