@@ -340,4 +340,4 @@ This project is licensed under the MIT License.
 
 See [LICENSE](LICENSE) for details.
 
-Copyright (c) 2025–2026 Miguel A. Carlo
+Copyright (c) 2023–2026 Miguel A. Carlo

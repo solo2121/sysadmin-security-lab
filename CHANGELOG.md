@@ -203,4 +203,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on contributing changes.
 
 [MIT License](https://github.com/solo2121/sysadmin-security-lab/blob/main/LICENSE)
 
-Copyright (c) 2025–2026 Miguel A. Carlo
+Copyright (c) 2023–2026 Miguel A. Carlo

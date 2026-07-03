@@ -63,4 +63,4 @@ Please do not report the following as security issues:
 
 ## License
 
-[MIT License](LICENSE) — Copyright (c) 2025–2026 Miguel A. Carlo
+[MIT License](LICENSE) — Copyright (c) 2023–2026 Miguel A. Carlo
