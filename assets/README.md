@@ -7,7 +7,6 @@ This directory holds static media used by the repository.
 | File | Purpose |
 |------|---------|
 | `architecture-overview.png` | Architecture diagram embedded in the root README under Architecture Overview |
-| `architecture-overview.svg` | Same diagram as an editable/scalable SVG source, kept alongside the PNG |
 
 ---
 
