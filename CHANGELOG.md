@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- `labs/infrastructure/devops-linux-lab/`: Expanded DevSecOps lab with realistic attack scenarios and intentionally vulnerable deployments.
+- `labs/infrastructure/devops-linux-lab/`: Added Terraform state file with exposed secrets for Infrastructure as Code (IaC) security practice.
+- `labs/infrastructure/devops-linux-lab/`: Added indirect prompt injection (RAG) scenario for AI/LLM security testing.
+- `labs/security/ad-pentest/`: Added modern enterprise attack scenarios to reflect current real-world Active Directory threats.
 - `tests/python/` — pytest unit tests for Python tooling logic (argument parsing, data structures).
 - `tests/bash/` — bats unit tests for Bash script helper functions and configuration tables.
 - `run-tests` CI job running pytest and bats on every push/PR.
@@ -18,6 +22,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `.secrets.baseline` — audited baseline of intentional lab credentials (AD pentest creds, Vagrantfile test passwords, LocalStack fake AWS key) so `detect-secrets` only flags genuinely new findings.
 
 ### Fixed
+- `labs/security/ad-pentest/`: Fixed CA01 DNS record configuration to properly support privilege escalation vectors.
+- `labs/security/ad-pentest/`: Removed unsupported `after` blocks in Vagrantfiles to restore `vagrant validate` functionality.
 - Broken relative links in `docs/architecture/architecture.md`, `docs/workflows/WORKFLOWS.md`, `docs/guides/infrastructure/proxmox-host-setup.md`, and `labs/security/ad-pentest/README.md` left over from the docs reorganization.
 
 ### Planned
