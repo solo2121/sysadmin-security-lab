@@ -11,23 +11,32 @@ A full enterprise-grade cloud-native lab built with Vagrant and KVM/libvirt. Des
 
 ---
 
+## Recent Additions
+
+- **Realistic Attack Scenarios:** Expanded the lab with modern, realistic attack scenarios and intentionally vulnerable deployments to bridge the gap between infrastructure engineering and security.
+- **IaC Security Practice:** Added a Terraform state file with exposed secrets to practice secret management and IaC security scanning.
+- **AI Security Testing:** Added an indirect prompt injection (RAG) scenario to practice securing AI/LLM pipelines integrated with enterprise infrastructure.
+- **Active Directory Threat Coverage:** Added modern enterprise attack scenarios to reflect current real-world Active Directory threats.
+
+---
+
 ## What Changed in v8.0.0
 
-- Added **OpenTofu** (open-source Terraform fork) alongside Terraform
-- Added **Kind lab** — Kubernetes in Docker with a fully automated multi-node cluster
-- Added **K3d lab** — K3s in Docker with automatic cluster creation
-- **No hardcoded Harbor password** — interactive prompt or `HARBOR_PASS` env var
-- Dynamic architecture detection for binary downloads (`amd64` / `arm64`)
-- `vagrant-manager.sh` — interactive TUI for managing all VMs by group
-- `validate-lab.sh` — automated health checks for the full lab stack
-- `--wait=false` on CRD deletion to prevent Argo CD finalizer hangs
-- Kyverno retry logic with namespace cleanup between attempts
+- Added **OpenTofu** (open-source Terraform fork) alongside Terraform.
+- Added **Kind lab** — Kubernetes in Docker with a fully automated multi-node cluster.
+- Added **K3d lab** — K3s in Docker with automatic cluster creation.
+- **No hardcoded Harbor password** — interactive prompt or `HARBOR_PASS` env var.
+- Dynamic architecture detection for binary downloads (`amd64` / `arm64`).
+- `vagrant-manager.sh` — interactive TUI for managing all VMs by group.
+- `validate-lab.sh` — automated health checks for the full lab stack.
+- `--wait=false` on CRD deletion to prevent Argo CD finalizer hangs.
+- Kyverno retry logic with namespace cleanup between attempts.
 
 ---
 
 ## Lab Architecture
 
-```
+```text
 Host (Linux, KVM/libvirt)
 │
 ├── K3s Kubernetes Cluster
@@ -94,11 +103,11 @@ IPs are auto-detected from your libvirt network at runtime.
 
 ## Requirements
 
-- Linux host with KVM/QEMU and hardware virtualization enabled
-- Vagrant >= 2.4 with `vagrant-libvirt` plugin
-- 32 GB RAM recommended (16 GB minimum for core cluster only)
-- 200 GB free disk space
-- Ruby >= 2.5 (for interactive password prompt)
+- Linux host with KVM/QEMU and hardware virtualization enabled.
+- Vagrant >= 2.4 with `vagrant-libvirt` plugin.
+- 32 GB RAM recommended (16 GB minimum for core cluster only).
+- 200 GB free disk space.
+- Ruby >= 2.5 (for interactive password prompt).
 
 ```bash
 sudo apt update
@@ -154,7 +163,7 @@ START_VMS=kind-lab,k3d-lab vagrant up
 
 ---
 
-## Lab Manager (Interactive TUI)
+## Lab Manager
 
 Use the included manager script instead of typing raw vagrant commands:
 
@@ -163,11 +172,11 @@ Use the included manager script instead of typing raw vagrant commands:
 ```
 
 Groups available from the menu:
-- DevOps (requires Harbor password once per session)
-- Workers
-- Ansible nodes
-- Linux labs
-- Modern labs (Kind + K3d)
+- DevOps (requires Harbor password once per session).
+- Workers.
+- Ansible nodes.
+- Linux labs.
+- Modern labs (Kind + K3d).
 
 ---
 
@@ -179,17 +188,19 @@ Groups available from the menu:
 | Argo CD | `https://MASTER_IP:30003` | admin / (see argocd-initial-admin-secret) |
 | Grafana | `https://MASTER_IP:<auto-detected-port>` | admin / admin |
 | Prometheus | kubectl port-forward | — |
-| K3s API | `https://MASTER_IP:16443` | kubeconfig at /vagrant/kubeconfig.yaml |
+| K3s API | `https://MASTER_IP:16443` | kubeconfig at `/vagrant/kubeconfig.yaml` |
 
 `MASTER_IP` is auto-detected at boot and printed to the console.
 
 Argo CD initial password:
+
 ```bash
 kubectl -n argocd get secret argocd-initial-admin-secret \
   -o jsonpath="{.data.password}" | base64 -d
 ```
 
 Port-forward alternatives:
+
 ```bash
 kubectl port-forward -n monitoring svc/prometheus-stack-grafana 3000:80
 kubectl port-forward -n argocd svc/argocd-server 8080:443
@@ -229,7 +240,7 @@ k3d cluster list
 
 ---
 
-## Linux Certification Practice
+## Linux Practice
 
 ```bash
 vagrant ssh rocky-lab    # RHCSA / RHCE
@@ -268,15 +279,15 @@ Checks: RAM, CPU, disk, installed tools, VM states, Kubernetes cluster health, n
 
 ## Deployment Workflow
 
-1. Terraform / OpenTofu provisions infrastructure definitions
-2. Vagrant bootstraps VMs with k3s and Docker
-3. Harbor installs with airgap image seeding (40+ images)
-4. K3s `registries.yaml` configured to pull from Harbor
-5. Kyverno, Falco, Cert-Manager deploy via Helm
-6. Prometheus + Grafana + Loki observability stack deploys
-7. Argo CD installs with clean CRD removal and NodePort access
-8. Kind and K3d clusters bootstrap automatically
-9. Ansible SSH keys distributed to managed nodes
+1. Terraform / OpenTofu provisions infrastructure definitions.
+2. Vagrant bootstraps VMs with k3s and Docker.
+3. Harbor installs with airgap image seeding (40+ images).
+4. K3s `registries.yaml` configured to pull from Harbor.
+5. Kyverno, Falco, Cert-Manager deploy via Helm.
+6. Prometheus + Grafana + Loki observability stack deploys.
+7. Argo CD installs with clean CRD removal and NodePort access.
+8. Kind and K3d clusters bootstrap automatically.
+9. Ansible SSH keys distributed to managed nodes.
 
 ---
 
@@ -306,23 +317,23 @@ vagrant destroy -f
 
 | Issue | Solution |
 |---|---|
-| VM fails to start | Confirm KVM is enabled in BIOS and user is in `libvirt` group |
-| Workers not joining k3s | Wait for devops-1 to fully initialize; check `/vagrant/.cluster_state.json` |
-| Harbor API never healthy | Increase memory for devops-1; check `kubectl get pods -n harbor` |
-| Kyverno install fails | Script retries 3 times with namespace cleanup; check `kubectl get pods -n kyverno` |
-| Argo CD pods stuck | CRD finalizers sometimes hang; script uses `--wait=false` to prevent this |
-| Kind cluster not created | SSH into kind-lab and run `kind create cluster --config /opt/kind/config.yaml --name lab` |
-| K3d cluster not ready | SSH into k3d-lab and check `k3d cluster list` |
-| Harbor password prompt | Set `export HARBOR_PASS='yourpassword'` before `vagrant up` |
-| Out of memory | Use `LAB_PROFILE=minimal` or `START_VMS=` to deploy only needed VMs |
+| VM fails to start | Confirm KVM is enabled in BIOS and user is in `libvirt` group. |
+| Workers not joining k3s | Wait for devops-1 to fully initialize; check `/vagrant/.cluster_state.json`. |
+| Harbor API never healthy | Increase memory for devops-1; check `kubectl get pods -n harbor`. |
+| Kyverno install fails | Script retries 3 times with namespace cleanup; check `kubectl get pods -n kyverno`. |
+| Argo CD pods stuck | CRD finalizers sometimes hang; script uses `--wait=false` to prevent this. |
+| Kind cluster not created | SSH into kind-lab and run `kind create cluster --config /opt/kind/config.yaml --name lab`. |
+| K3d cluster not ready | SSH into k3d-lab and check `k3d cluster list`. |
+| Harbor password prompt | Set `export HARBOR_PASS='yourpassword'` before `vagrant up`. |
+| Out of memory | Use `LAB_PROFILE=minimal` or `START_VMS=` to deploy only needed VMs. |
 
 ---
 
 ## Related Labs
 
-- [`../../../labs/security/ad-pentest/`](../../../labs/security/ad-pentest/) — Active Directory pentest lab
-- [`../../../labs/security/ad-pentest-vlan/`](../../../labs/security/ad-pentest-vlan/) — VLAN edition
-- [`../../../sysadmin/`](../../../sysadmin/) — Linux administration scripts
+- [`../../../labs/security/ad-pentest/`](../../../labs/security/ad-pentest/) — Active Directory pentest lab.
+- [`../../../labs/security/ad-pentest-vlan/`](../../../labs/security/ad-pentest-vlan/) — VLAN edition.
+- [`../../../sysadmin/`](../../../sysadmin/) — Linux administration scripts.
 
 ---
 
