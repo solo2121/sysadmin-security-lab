@@ -1,4 +1,4 @@
-# Assets 1111
+# Assets
 
 This directory holds static media used by the repository.
 
