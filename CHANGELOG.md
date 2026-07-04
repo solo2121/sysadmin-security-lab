@@ -10,25 +10,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- `labs/infrastructure/devops-linux-lab/`: Expanded DevSecOps lab with realistic attack scenarios and intentionally vulnerable deployments.
-- `labs/infrastructure/devops-linux-lab/`: Added Terraform state file with exposed secrets for Infrastructure as Code (IaC) security practice.
-- `labs/infrastructure/devops-linux-lab/`: Added indirect prompt injection (RAG) scenario for AI/LLM security testing.
-- `labs/security/ad-pentest/`: Added modern enterprise attack scenarios to reflect current real-world Active Directory threats.
 - `tests/python/` — pytest unit tests for Python tooling logic (argument parsing, data structures).
 - `tests/bash/` — bats unit tests for Bash script helper functions and configuration tables.
 - `run-tests` CI job running pytest and bats on every push/PR.
-- `check-doc-links` CI job that fails the build on broken internal markdown links.
-- `.pre-commit-config.yaml` — shellcheck, flake8, detect-secrets, and markdown-link-check hooks for local commit-time validation.
+- `check-doc-links` CI job that scans all markdown files for broken links and reports findings; informational only, does not fail the build (external link rot and rate limits are expected).
+- `.pre-commit-config.yaml` — shellcheck, flake8, detect-secrets, and markdown-link-check hooks for local commit-time validation. Unlike the CI job, the local `markdown-link-check` hook blocks the commit so broken internal links are caught before they're pushed.
 - `.secrets.baseline` — audited baseline of intentional lab credentials (AD pentest creds, Vagrantfile test passwords, LocalStack fake AWS key) so `detect-secrets` only flags genuinely new findings.
 
 ### Fixed
-- `labs/security/ad-pentest/`: Fixed CA01 DNS record configuration to properly support privilege escalation vectors.
-- `labs/security/ad-pentest/`: Removed unsupported `after` blocks in Vagrantfiles to restore `vagrant validate` functionality.
 - Broken relative links in `docs/architecture/architecture.md`, `docs/workflows/WORKFLOWS.md`, `docs/guides/infrastructure/proxmox-host-setup.md`, and `labs/security/ad-pentest/README.md` left over from the docs reorganization.
 
 ### Planned
 - Additional AD CS attack scenarios.
 - Ansible role automation for the DevOps lab.
+
+---
+
+## [1.9.0] - 2026-07-03 — AD Pentest Lab (Enterprise Edition)
+
+### Added
+- Modern Active Directory attack vectors and expanded AD CS attack paths (ESC1–ESC9).
+- Enhanced Linux, Windows, Cloud, and LLM/AI attack scenarios.
+
+### Fixed
+- CA01 vs `ca01-esc` inconsistency across the lab: only `ca01-esc` (172.28.128.25, CA name `LAB-ESC-CA`) is actually provisioned; docs, configs, and attack commands previously referenced a nonexistent `CA01` host at `.24`.
+- Removed stale `/etc/hosts` entries in the Vagrantfile pointing to the phantom `CA01` host.
+- Corrected resource budget calculation that double-counted a nonexistent VM (VM count 15 → 14, ~47.5GB → ~43.5GB).
+- Removed unsupported `after` blocks in the Vagrantfile to restore `vagrant validate` functionality.
+- Fixed the machine inventory table and network diagram in the lab README, the wrong IP in the attack guide's network map, and the ESC1/ESC8 example commands in the AD MITRE log-source playbook that referenced the wrong CA name and hostname.
+- Applied additional stability, security, and provisioning fixes; improved documentation and overall lab reliability.
+
+---
+
+## [8.1.0] - 2026-07-03 — DevOps / DevSecOps Lab
+
+### Added
+- Automated DevSecOps attack scenarios and intentionally vulnerable deployments.
+- Backdoored image build and Harbor push scenario.
+- Terraform state file with intentionally leaked secrets for Infrastructure as Code (IaC) security practice.
+- Indirect prompt injection (RAG) scenario for AI/LLM security testing.
 
 ---
 
