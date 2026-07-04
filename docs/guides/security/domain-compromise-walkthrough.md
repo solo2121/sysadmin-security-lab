@@ -50,8 +50,6 @@ Fourteen hosts, one domain, `lab.local`:
 
 ## Phase 1 — Recon: find out what's actually alive
 
-## Phase 1 — Recon: find out what's actually alive
-
 ```bash
 # Host sweep
 nmap -sn 172.28.128.0/24 -oN ~/lab/recon/hosts.txt
