@@ -65,15 +65,12 @@ It combines enterprise infrastructure, offensive security, defensive engineering
 
 ## Highlights
 
-- Two fully independent enterprise lab environments.
-- Automated provisioning using Vagrant, Libvirt, and KVM.
-- Enterprise Active Directory and AD CS security research.
-- Kubernetes platform engineering with GitOps workflows.
-- Infrastructure as Code using Terraform, OpenTofu, and Ansible.
-- DevSecOps tooling including Falco and Kyverno.
-- Continuous integration for automated project validation.
-- AI and LLM security testing and experimentation.
-- Comprehensive documentation covering architecture, deployment, troubleshooting, and workflows.
+- **14-host Active Directory range** with a complete, scripted attack chain from zero credentials to Domain Admin — Kerberoasting, AS-REP roasting, five AD CS escalation paths (ESC1/4/7/8/9), NTLM relay, DCSync, and Golden/Silver tickets. [See the full walkthrough →](docs/guides/security/domain-compromise-walkthrough.md)
+- **DevSecOps platform** on Kubernetes (Kind/K3d) with GitOps, OpenTofu/Terraform, Falco, and Kyverno — including a deliberately backdoored container build and a leaked-secret Terraform state file for hands-on IaC security practice.
+- **23 automated tests** (pytest + bats) and a GitHub Actions CI pipeline running shellcheck, flake8, and secret scanning on every push.
+- **AI/LLM security testing** against a live LLM endpoint — prompt injection, RAG poisoning, function-call injection, token bombing, and embedding inversion.
+- **Cloud attack simulation** against LocalStack: public S3 buckets, EC2 metadata SSRF, and IAM privilege escalation.
+- Every lab is independently versioned with its own semver and changelog, and documented down to the credential and IP address of every host.
 
 ---
 
@@ -304,6 +301,7 @@ vagrant up
 
 | Document | Purpose |
 |---|---|
+| [domain-compromise-walkthrough.md](docs/guides/security/domain-compromise-walkthrough.md) | Full attack chain: zero credentials to Domain Admin |
 | [docs/README.md](docs/README.md) | Full documentation index |
 | [PORTFOLIO.md](docs/portfolio.md) | Portfolio index and skills mapping |
 | [architecture.md](docs/architecture/architecture.md) | Infrastructure design |
