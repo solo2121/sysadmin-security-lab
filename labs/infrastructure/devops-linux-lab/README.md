@@ -2,10 +2,10 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Platform](https://img.shields.io/badge/platform-KVM%2Flibvirt-blue)](https://www.linux-kvm.org/)
-[![Version](https://img.shields.io/badge/version-8.0.0-green)](https://github.com/solo2121/sysadmin-security-lab)
+[![Version](https://img.shields.io/badge/version-8.1.0-green)](https://github.com/solo2121/sysadmin-security-lab)
 [![Vagrant](https://img.shields.io/badge/Vagrant-%3E%3D2.4-1563FF)](https://www.vagrantup.com/)
 
-**Version 8.0.0 — Enterprise DevSecOps Lab with OpenTofu, Kind, and K3d**
+**Version 8.1.0 — Enterprise DevSecOps Lab with Realistic Attack Scenarios**
 
 A full enterprise-grade cloud-native lab built with Vagrant and KVM/libvirt. Designed for hands-on learning, certification practice, and portfolio development across Kubernetes, GitOps, IaC, observability, and runtime security.
 
@@ -17,6 +17,15 @@ A full enterprise-grade cloud-native lab built with Vagrant and KVM/libvirt. Des
 - **IaC Security Practice:** Added a Terraform state file with exposed secrets to practice secret management and IaC security scanning.
 - **AI Security Testing:** Added an indirect prompt injection (RAG) scenario to practice securing AI/LLM pipelines integrated with enterprise infrastructure.
 - **Active Directory Threat Coverage:** Added modern enterprise attack scenarios to reflect current real-world Active Directory threats.
+
+---
+
+## What Changed in v8.1.0
+
+- Added automated DevSecOps attack scenarios and intentionally vulnerable deployments.
+- Added a backdoored image build and Harbor push scenario.
+- Added a Terraform state file with intentionally leaked secrets for IaC security practice.
+- Added an indirect prompt injection (RAG) scenario for AI/LLM security testing.
 
 ---
 
