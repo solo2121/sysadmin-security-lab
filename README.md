@@ -32,6 +32,7 @@ This repository provides two independent enterprise lab environments and support
 - [Skills Demonstrated](#skills-demonstrated)
 - [Documentation Hub](#documentation-hub)
 - [Security and Ethics](#security-and-ethics)
+- [Known Limitations](#known-limitations)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -323,6 +324,21 @@ This project is intended solely for education, authorized security research, and
 Only perform testing against systems you own or where you have explicit authorization.
 
 Unauthorized access, testing, or exploitation of external systems is strictly prohibited.
+
+---
+
+## Known Limitations
+
+This project is under active development. Being upfront about what it doesn't do:
+
+- **Hardware ceiling.** The full Active Directory lab needs 32GB+ RAM and 200GB+ storage. It is not designed for laptops or shared/low-resource hosts. See [minimal-resource-deployment.md](docs/optimization/minimal-resource-deployment.md) for running a smaller subset.
+- **Linux hosts only.** Both labs depend on KVM/libvirt and are not supported on macOS or native Windows.
+- **Windows evaluation licensing.** The Windows Server and Windows 10 VMs run on Microsoft's free evaluation media, which is time-limited (commonly 180 days) and not licensed for production use.
+- **Some AD lab hosts are simulated, not full installs.** `db01`, `exch01`, and `sp01` are domain-joined Windows Server 2022 hosts with product-like config files and credentials for post-exploitation practice — they do not run real SQL Server, Exchange, or SharePoint. Product-specific remote exploits (e.g. ProxyShell, ProxyLogon) will not work against them.
+- **Third-party Vagrant boxes.** Several boxes (`peru/*`, `deargle/metasploitable2`, `generic/*`) are community-maintained, not published by this project. Availability, updates, and box versions are outside this repo's control and can occasionally break a build.
+- **No blue-team/detection tooling included yet.** This is currently a red-team/offensive lab. SIEM or EDR integration to validate whether attacks are actually detected is not implemented — see [ROADMAP.md](ROADMAP.md).
+- **CI checks code, not the lab itself.** GitHub Actions validates all three Vagrantfiles (`vagrant validate`), blocks on real shellcheck errors, and runs flake8/bandit/doc-link-check informationally. It does not run `vagrant up` end-to-end, so a green CI run does not guarantee every VM provisions cleanly on every host. Secret scanning (`detect-secrets`) runs via local pre-commit hooks, not in CI — run `pre-commit run --all-files` before pushing if you haven't installed the hooks.
+- **Single-host design.** Both labs assume everything runs on one physical machine via libvirt. There is no multi-host or distributed deployment support.
 
 ---
 
