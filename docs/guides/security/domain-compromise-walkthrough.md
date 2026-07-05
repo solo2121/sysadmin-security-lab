@@ -3,7 +3,7 @@
 **Lab:** Active Directory Pentest Lab (`labs/security/ad-pentest/`)
 **Lab version:** 1.9
 **Network:** 172.28.128.0/24 (`lab.local`)
-**Full reference:** See [`attack-guide.md`](attack-guide.md) for comprehensive technique coverage and alternative attack paths.
+**Full reference:** See [`attack-guide.md`](../../../labs/security/ad-pentest/docs/attack-guide.md) for comprehensive technique coverage and alternative attack paths.
 
 This is a narrative walkthrough of one complete path from an unauthenticated
 foothold to Domain Admin, using nothing but the credentials and access

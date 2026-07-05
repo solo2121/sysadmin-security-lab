@@ -24,14 +24,22 @@ The project is intentionally local-first: labs are designed for Vagrant, KVM/QEM
 sysadmin-security-lab/
 ├── assets/
 │   ├── README.md
-│   └── sysadmin-security-lab-banner.png
+│   └── architecture-overview.png
 ├── docs/
-│   ├── architecture.md
-│   ├── LAB-DEPLOYMENT-WORKFLOW.md
-│   ├── security-scope.md
-│   ├── SETUP-WITH-EXAMPLES.md
-│   ├── WORKFLOWS.md
-│   └── guides/
+│   ├── architecture/
+│   │   ├── architecture.md
+│   │   └── security-scope.md
+│   ├── archive/
+│   │   └── reference/
+│   ├── guides/
+│   │   ├── infrastructure/
+│   │   └── security/
+│   ├── optimization/
+│   ├── workflows/
+│   │   ├── lab-deployment-workflow.md
+│   │   └── workflows.md
+│   ├── portfolio.md
+│   └── setup-with-examples.md
 ├── labs/
 │   ├── infrastructure/
 │   │   └── devops-linux-lab/
@@ -39,25 +47,31 @@ sysadmin-security-lab/
 │       ├── ad-pentest/
 │       └── ad-pentest-vlan/
 ├── security/
-│   ├── detection-engineering/
-│   ├── network-security-analysis/
-│   ├── security-testing-lab/
-│   ├── threat-reconnaissance/
-│   └── wireless-security-lab/
+│   ├── audit/
+│   ├── exploitation/
+│   ├── network/
+│   ├── reconnaissance/
+│   └── wireless/
 ├── sysadmin/
 │   ├── automation/
-│   ├── git/
 │   ├── monitoring/
 │   ├── system-hardening/
 │   └── utilities/
+├── scripts/
+│   └── check-prerequisites.sh
+├── tests/
+│   ├── bash/
+│   └── python/
 ├── CHANGELOG.md
 ├── CODE_OF_CONDUCT.md
 ├── CONTRIBUTING.md
-├── INSTALLATION.md
 ├── LICENSE
 ├── README.md
+├── ROADMAP.md
 ├── SECURITY.md
-└── TROUBLESHOOTING.md
+├── installation.md
+├── requirements-dev.txt
+└── troubleshooting.md
 ```
 
 ---
