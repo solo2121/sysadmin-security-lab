@@ -166,6 +166,8 @@ labs/security/ad-pentest-vlan/
 
 This environment includes Windows Server 2022, domain-joined workstations, AD CS, Kali Linux, LocalStack, and additional research targets.
 
+> **Windows licensing note:** The Windows Server and Windows 10 boxes used in this lab are built from Microsoft's free [Windows Server Evaluation](https://www.microsoft.com/evalcenter/evaluate-windows-server-2022) and [Windows 10/11 Evaluation](https://developer.microsoft.com/windows/downloads/virtual-machines/) media, intended for evaluation, testing, and development use. Evaluation media is time-limited (commonly 180 days for Windows Server) and is not licensed for production use. You are responsible for complying with Microsoft's licensing terms if you use this lab beyond evaluation purposes.
+
 ### Install Lab 1 dependencies
 
 ```bash
@@ -307,6 +309,15 @@ To destroy all VMs in the current lab:
 ```bash
 vagrant destroy -f
 ```
+
+**Easier option:** each lab ships an interactive manager script that lists every machine's state and can start, halt, or destroy VMs individually or all at once, without you needing to remember Vagrant machine names:
+
+```bash
+cd labs/security/ad-pentest       # or ad-pentest-vlan / infrastructure/devops-linux-lab
+./scripts/vagrant-manager.sh
+```
+
+In the Active Directory Pentest Lab manager, press `X` to destroy every VM in the lab in one step (with a confirmation prompt) and optionally clean up the lab's leftover libvirt network.
 
 You can also remove unused packages and clean up your system if needed.
 
