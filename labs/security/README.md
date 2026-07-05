@@ -56,16 +56,18 @@ Both security labs share a common **14-host topology** on the `172.28.128.0/24` 
 | metasploitable2 | 172.28.128.12 | Ubuntu 8.04 | Legacy target |
 | juice-shop | 172.28.128.15 | Node.js | Web app practice |
 | dc01 | 172.28.128.21 | Windows Server 2022 | Domain Controller |
-| db01 | 172.28.128.23 | Windows Server 2019 | SQL Server |
+| db01 | 172.28.128.23 | Windows Server 2022 | SQL Server *(simulated)* |
 | ca01-esc | 172.28.128.24 | Windows Server 2022 | AD CS (exploitable) |
 | win10 | 172.28.128.30 | Windows 10 | Workstation |
 | pnpt-internal | 172.28.128.50 | Ubuntu 22.04 | Internal server |
 | llm01 | 172.28.128.60 | Ubuntu 22.04 | LLM endpoint |
-| exch01 | 172.28.128.70 | Windows Server 2019 | Exchange |
-| sp01 | 172.28.128.71 | Windows Server 2019 | SharePoint |
+| exch01 | 172.28.128.70 | Windows Server 2022 | Exchange *(simulated)* |
+| sp01 | 172.28.128.71 | Windows Server 2022 | SharePoint *(simulated)* |
 | linux01 | 172.28.128.72 | Ubuntu 22.04 | Linux member |
-| print01 | 172.28.128.73 | Windows Server 2019 | Print Server |
+| print01 | 172.28.128.73 | Windows Server 2022 | Print Server |
 | cloud-pentest | 172.28.128.80 | Ubuntu 22.04 | LocalStack (AWS sim) |
+
+> **Note on *(simulated)* hosts:** `db01`, `exch01`, and `sp01` do not run real SQL Server, Exchange, or SharePoint installs. They are domain-joined Windows Server 2022 hosts configured with product-like artifacts (config files, weak service settings, exposed credentials) so learners can practice post-exploitation discovery and lateral movement. They are not vulnerable to product-specific remote exploits like ProxyShell or ProxyLogon.
 
 ---
 
