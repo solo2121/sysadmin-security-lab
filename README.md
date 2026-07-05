@@ -9,7 +9,7 @@
 
 A modular, enterprise-grade homelab for hands-on practice in Linux administration, Active Directory security, DevOps, and DevSecOps.
 
-This repository provides two independent enterprise lab environments and supporting tooling for infrastructure simulation, security research, automation, detection engineering, and professional portfolio development.
+This repository provides two independent enterprise lab environments, along with supporting tooling for infrastructure simulation, security research, automation, detection engineering, and professional portfolio development.
 
 **Maintained by:** Miguel A. Carlo (solo2121)  
 **Project Status:** Active Development
@@ -50,7 +50,7 @@ This repository provides two independent enterprise lab environments and support
 - **Lab 2 – DevOps / DevSecOps Lab**  
   A Linux-centric Kubernetes platform with a k3s control plane, worker nodes, container registry, observability stack, and runtime security.
 
-Each lab deploys independently through its own Vagrantfile on KVM/QEMU virtualization infrastructure. See [Architecture Documentation](docs/architecture/architecture.md) for detailed infrastructure design and networking specifications.
+Each lab deploys independently using its own Vagrantfile on KVM/QEMU virtualization infrastructure. See [Architecture Documentation](docs/architecture/architecture.md) for detailed infrastructure design and networking specifications.
 
 ---
 
@@ -58,7 +58,7 @@ Each lab deploys independently through its own Vagrantfile on KVM/QEMU virtualiz
 
 Sysadmin Security Lab is a modular enterprise homelab built for learning and practicing Linux administration, Active Directory security, cloud-native infrastructure, DevOps, and DevSecOps.
 
-The project is organized into independent virtual lab environments that can be deployed separately, allowing focused practice without affecting other environments.
+The project is organized into independent lab environments that can be deployed separately, allowing focused practice without impacting others.
 
 It combines enterprise infrastructure, offensive security, defensive engineering, cloud-native technologies, automation, Infrastructure as Code, and modern DevSecOps workflows into a single learning platform.
 
@@ -79,12 +79,12 @@ It combines enterprise infrastructure, offensive security, defensive engineering
 
 This repository is intended for:
 
-- Linux System Administrators.
-- Security Engineers.
-- Penetration Testers.
-- DevOps Engineers.
-- DevSecOps Engineers.
-- Platform Engineers.
+- Linux system administrators.
+- Security engineers.
+- Penetration testers.
+- DevOps engineers.
+- DevSecOps engineers.
+- Platform engineers.
 - Students building enterprise homelabs.
 - Professionals learning modern infrastructure and security engineering.
 
@@ -108,7 +108,7 @@ This repository demonstrates practical experience with:
 
 ## Choose Your Lab
 
-Choose the environment that matches your learning objectives.
+Choose the lab that matches your learning objectives.
 
 - **Lab 1** if you want to focus on Windows, Active Directory, and offensive security.
 - **Lab 2** if you want to focus on Kubernetes, automation, and DevSecOps.
@@ -145,7 +145,7 @@ Each lab is independent and can be deployed separately.
 **Directory:** `labs/security/ad-pentest/`  
 **Alternative VLAN deployment:** `labs/security/ad-pentest-vlan/`
 
-This Windows enterprise security lab is designed for Active Directory security research, adversary emulation, post-exploitation analysis, detection engineering, cloud attack simulation, and AI/LLM security testing.
+This Windows enterprise lab is designed for Active Directory security research, adversary emulation, post-exploitation analysis, detection engineering, cloud attack simulation, and AI/LLM security testing.
 
 | Component | Description |
 |---|---|
@@ -166,7 +166,7 @@ The VLAN edition expands the environment into segmented enterprise networks for 
 
 **Directory:** `labs/infrastructure/devops-linux-lab/`
 
-This is a Linux-centric cloud-native platform engineering environment focused on Kubernetes operations, infrastructure automation, GitOps, observability, and security engineering.
+This Linux-centric, cloud-native platform engineering environment focuses on Kubernetes operations, infrastructure automation, GitOps, observability, and security engineering.
 
 | Component | Description |
 |---|---|
@@ -190,8 +190,8 @@ This environment provides practical experience in cloud-native operations, autom
 
 ## Recent Updates
 
-- **DevSecOps Lab:** Expanded with realistic attack scenarios and vulnerable deployments, added a Terraform state file with exposed secrets for IaC practice, and introduced an indirect prompt injection (RAG) scenario for AI security.
-- **Active Directory Lab:** Added modern enterprise attack scenarios, fixed CA01 DNS record configuration to support privilege escalation paths, and resolved Vagrantfile validation issues.
+- **DevSecOps Lab:** Expanded with realistic attack scenarios and vulnerable deployments, added a Terraform state file containing exposed secrets for IaC practice, and introduced an indirect prompt injection (RAG) scenario for AI security.
+- **Active Directory Lab:** Added modern enterprise attack scenarios, fixed the CA01 DNS record configuration to support privilege escalation paths, and resolved Vagrantfile validation issues.
 
 ---
 
@@ -231,7 +231,7 @@ sysadmin-security-lab/
 
 ## Requirements
 
-Before deploying either lab:
+Before deploying either lab, ensure the following:
 
 ### Host Requirements
 
@@ -329,7 +329,7 @@ Unauthorized access, testing, or exploitation of external systems is strictly pr
 
 ## Known Limitations
 
-This project is under active development. Being upfront about what it doesn't do:
+The following limitations currently apply:
 
 - **Hardware ceiling.** The full Active Directory lab needs 32GB+ RAM and 200GB+ storage. It is not designed for laptops or shared/low-resource hosts. See [minimal-resource-deployment.md](docs/optimization/minimal-resource-deployment.md) for running a smaller subset.
 - **Linux hosts only.** Both labs depend on KVM/libvirt and are not supported on macOS or native Windows.
@@ -344,7 +344,7 @@ This project is under active development. Being upfront about what it doesn't do
 
 ## Contributing
 
-Contributions are welcome.
+Contributions are welcome and encouraged.
 
 - Open an issue before major changes.
 - Keep pull requests focused.
