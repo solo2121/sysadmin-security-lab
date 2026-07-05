@@ -12,8 +12,8 @@
 #
 # Usage:
 #   ./scripts/check-prerequisites.sh          # check everything
-#   ./scripts/check-prerequisites.sh --lab1   # also check Lab 1 plugins
-#   ./scripts/check-prerequisites.sh --lab2   # also check Lab 2 plugins
+#   ./scripts/check-prerequisites.sh --lab1   # also check AD Pentest Lab plugins (vagrant-winrm)
+#   ./scripts/check-prerequisites.sh --lab2   # also check AD Pentest VLAN Lab plugins (vagrant-winrm)
 #
 # Exit code: 0 if no FAILs (WARNs are fine), 1 if any FAIL.
 
@@ -123,7 +123,7 @@ if command -v vagrant >/dev/null 2>&1; then
     check_plugin "vagrant-libvirt"
     check_plugin "vagrant-reload"
 
-    if [ "$CHECK_LAB1" -eq 1 ]; then
+    if [ "$CHECK_LAB1" -eq 1 ] || [ "$CHECK_LAB2" -eq 1 ]; then
         check_plugin "vagrant-winrm"
     fi
 fi

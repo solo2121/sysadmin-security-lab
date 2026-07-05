@@ -147,7 +147,7 @@ Before starting either lab:
   - kerbrute, responder, hashcat
   - Installed automatically during `vagrant up`
 
-See [`../installation.md`](../installation.md) for full host setup.
+See [`../../installation.md`](../../installation.md) for full host setup.
 
 ---
 
@@ -227,7 +227,7 @@ ls -lh ~/lab/lab_report_*.{txt,json}
 - Reuse lab credentials on real systems
 - Run these techniques against systems you don't own
 
-See [`../docs/architecture/security-scope.md`](../docs/architecture/security-scope.md) for a full security boundary discussion.
+See [`../../docs/architecture/security-scope.md`](../../docs/architecture/security-scope.md) for a full security boundary discussion.
 
 ---
 
@@ -269,7 +269,7 @@ vagrant ssh kali
 pip3 install impacket certipy-ad bloodhound netexec
 ```
 
-For more, see [`../TROUBLESHOOTING.md`](../TROUBLESHOOTING.md).
+For more, see [`../../troubleshooting.md`](../../troubleshooting.md).
 
 ---
 
@@ -283,13 +283,13 @@ To improve a security lab:
 4. Run the full test suite (if available)
 5. Submit a pull request with a clear description
 
-See [`../CONTRIBUTING.md`](../CONTRIBUTING.md) for guidelines.
+See [`../../CONTRIBUTING.md`](../../CONTRIBUTING.md) for guidelines.
 
 ---
 
 ## License
 
-All labs and documentation are provided under the MIT License. See [`../LICENSE`](../LICENSE).
+All labs and documentation are provided under the MIT License. See [`../../LICENSE`](../../LICENSE).
 
 ---
 
