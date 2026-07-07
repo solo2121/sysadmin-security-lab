@@ -175,7 +175,7 @@ Phase 1: Domain Controller (Critical - must be ready first)
   └─ DC01
   
 Phase 2: Directory Services (Dependent on DC)
-  ├─ CA01 (Certificate Authority)
+  ├─ CA01-ESC (Certificate Authority - AD CS ESC1/3/4/6/7/8 vulnerabilities)
   ├─ DB01 (SQL Server)
   └─ EXCH01 (Exchange)
   
@@ -198,15 +198,15 @@ vagrant up dc01
 watch -n 10 'virsh dominfo dc01 | grep -E "State|CPU"'
 
 # 3. Check DC readiness
-vagrant ssh dc01 -c "type C:\\DC-FINAL.txt" 2>/dev/null
+vagrant winrm-command "Test-Path C:\DC-FINAL.txt" --elevated 2>/dev/null
 # Expected: Error initially, then success once ready
 
 # 4. Verify DC services when ready
 vagrant winrm-command "Get-AdDomain" --elevated
-# Expected: Domain: corp.local
+# Expected: Domain: lab.local
 
 # 5. Verify DNS
-nslookup dc01.corp.local 172.28.128.21
+nslookup dc01.lab.local 172.28.128.21
 # Expected: Address: 172.28.128.21
 
 # 6. Create deployment checkpoint
@@ -218,10 +218,10 @@ virsh snapshot-create-as --domain dc01 ready-for-clients \
 
 ```bash
 # 1. Start CA and DB (parallel)
-vagrant up ca01 db01
+vagrant up ca01-esc db01
 
 # 2. Monitor both
-watch -n 10 'virsh list | grep -E "ca01|db01"'
+watch -n 10 'virsh list | grep -E "ca01-esc|db01"'
 
 # 3. Verify services
 # Check CA:
@@ -235,7 +235,7 @@ sleep 300
 
 # 5. Checkpoint after services ready
 virsh snapshot-create-as --domain dc01 services-ready
-virsh snapshot-create-as --domain ca01 services-ready
+virsh snapshot-create-as --domain ca01-esc services-ready
 ```
 
 ### Phase 3: Client/Attacker Deployment (15-25 minutes)
@@ -266,7 +266,7 @@ vagrant up
 vagrant status
 
 # 2. Test Kali attacker connectivity
-vagrant ssh kali -c 'nslookup dc01.corp.local 172.28.128.21'
+vagrant ssh kali -c 'nslookup dc01.lab.local 172.28.128.21'
 
 # 3. Test AD queries
 vagrant ssh kali -c 'net user /domain' 2>/dev/null
@@ -348,7 +348,7 @@ chmod +x validate-lab.sh
 # Test DNS resolution
 for host in dc01 kali win10 db01; do
   echo "Testing $host..."
-  nslookup $host.corp.local 172.28.128.21 2>/dev/null | grep "Address"
+  nslookup $host.lab.local 172.28.128.21 2>/dev/null | grep "Address"
 done
 
 # Test ping connectivity
@@ -542,7 +542,7 @@ virsh net-destroy default
 virsh net-start default
 
 # Check DNS
-nslookup dc01.corp.local 172.28.128.21
+nslookup dc01.lab.local 172.28.128.21
 
 # Fix DNS on clients
 for vm in kali win10; do
