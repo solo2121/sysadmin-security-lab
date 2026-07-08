@@ -32,6 +32,7 @@ Fourteen hosts, one domain, `lab.local`:
 | metasploitable2 | 172.28.128.12 | Ubuntu 8.04 | Legacy vulnerable target |
 | juice-shop | 172.28.128.15 | Node.js | OWASP Juice Shop |
 | dc01 | 172.28.128.21 | Windows Server 2022 | Domain Controller |
+<<<<<<< HEAD
 | db01 | 172.28.128.23 | Windows Server 2022 | SQL Server *(simulated)* |
 | ca01-esc | 172.28.128.24 | Windows Server 2022 | AD CS — misconfigured |
 | win10 | 172.28.128.30 | Windows 10 | Domain workstation |
@@ -39,6 +40,15 @@ Fourteen hosts, one domain, `lab.local`:
 | llm01 | 172.28.128.60 | Ubuntu 22.04 | LLM platform |
 | exch01 | 172.28.128.70 | Windows Server 2022 | Exchange *(simulated)* |
 | sp01 | 172.28.128.71 | Windows Server 2022 | SharePoint *(simulated)* |
+=======
+| db01 | 172.28.128.23 | Windows Server 2022 | SQL Server |
+| ca01-esc | 172.28.128.25 | Windows Server 2022 | AD CS — misconfigured |
+| win10 | 172.28.128.30 | Windows 10 | Domain workstation |
+| pnpt-internal | 172.28.128.50 | Ubuntu 22.04 | Internal server |
+| llm01 | 172.28.128.60 | Ubuntu 22.04 | LLM platform |
+| exch01 | 172.28.128.70 | Windows Server 2022 | Exchange |
+| sp01 | 172.28.128.71 | Windows Server 2022 | SharePoint |
+>>>>>>> chore/repository-standardization
 | linux01 | 172.28.128.72 | Ubuntu 22.04 | Linux domain member |
 | print01 | 172.28.128.73 | Windows Server 2022 | Print Server |
 | cloud-pentest | 172.28.128.80 | Ubuntu 22.04 | LocalStack AWS simulation |
