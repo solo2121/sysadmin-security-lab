@@ -26,6 +26,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.10.0] - 2026-07-07 — AD Pentest Lab (Enterprise Edition)
+
+### Changed
+- Centralized all VM constants (IPs, memory, etc.) in the Vagrantfile.
+- Created a reusable domain-join function, removing 300+ lines of duplication.
+- Added vagrant-hostmanager integration.
+- Pinned all Ubuntu box versions.
+- Added health checks and debug mode.
+- Reduced LLM01 RAM to 4GB (was 8GB).
+- Added external config support (`config.rb`).
+- Improved error handling in all PowerShell scripts.
+- Added provisioning checkpoints.
+
+### Fixed
+- Static IP configuration now uses 5-method adapter detection.
+- Windows Defender disabled via registry-only approach.
+- AD promotion now uses explicit parameters.
+- Domain DN hardcoded for correct PowerShell interpolation.
+- DNS records hardcoded with IP addresses.
+- Silenced a harmless `Set-NetConnectionProfile` error.
+
+---
+
 ## [1.9.0] - 2026-07-03 — AD Pentest Lab (Enterprise Edition)
 
 ### Added
@@ -64,6 +87,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Correct RAM calculation banner now accounts for all VMs.
 - Vagrant plugin check for `vagrant-reload` now shows a clear error message.
 - Libvirt default prefix cleared to prevent VM name collisions.
+
+---
+
+## [8.0.0] - 2026-06-19 — DevOps / DevSecOps Lab
+
+### Added
+- OpenTofu v1.8.0 installed alongside Terraform.
+- Kind lab VM with a fully automated multi-node Kubernetes-in-Docker cluster: 1 control plane and 2 workers.
+- K3d lab VM with a fully automated K3s-in-Docker cluster: 1 server and 2 agents.
+- Interactive Harbor password prompt using `io/console`, removing hardcoded credentials.
+- Environment-based password handling using `HARBOR_PASS`.
+- Dynamic architecture detection for binary downloads (`amd64` / `arm64`).
+- `scripts/vagrant-manager.sh` for interactive management of all VMs by group.
+- `scripts/validate-lab.sh` for automated health checks across all lab services.
+- Pre-configured `kubectl` aliases on Kind and K3d VMs.
+
+### Fixed
+- Argo CD CRD deletion now uses `--wait=false` to prevent finalizer hangs.
+- Kyverno now uses 3 retries with full namespace cleanup between attempts.
+- Docker daemon is reconfigured after Harbor install to trust the registry before seeding.
+- Worker provisioner no longer uses the invalid `--flannel-backend` flag.
+- Terraform download now uses dynamic architecture detection instead of hardcoded `amd64`.
 
 ---
 
@@ -112,6 +157,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [7.1.1] - 2026-06-16 — DevOps / DevSecOps Lab
+
+### Fixed
+- Python heredoc quoting updated to prevent shell variable expansion (`<<'PYEOF'`).
+- Variables are now passed as environment variables into Python generation blocks.
+- `registries.yaml` generation syntax errors corrected.
+
+---
+
 ## [1.7.0] - 2026-06-15 — AD Pentest Lab (Flat Network)
 
 ### Added
@@ -130,41 +184,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [8.0.0] - 2026-06-19 — DevOps / DevSecOps Lab
-
-### Added
-- OpenTofu v1.8.0 installed alongside Terraform.
-- Kind lab VM with a fully automated multi-node Kubernetes-in-Docker cluster: 1 control plane and 2 workers.
-- K3d lab VM with a fully automated K3s-in-Docker cluster: 1 server and 2 agents.
-- Interactive Harbor password prompt using `io/console`, removing hardcoded credentials.
-- Environment-based password handling using `HARBOR_PASS`.
-- Dynamic architecture detection for binary downloads (`amd64` / `arm64`).
-- `scripts/vagrant-manager.sh` for interactive management of all VMs by group.
-- `scripts/validate-lab.sh` for automated health checks across all lab services.
-- Pre-configured `kubectl` aliases on Kind and K3d VMs.
-
-### Fixed
-- Argo CD CRD deletion now uses `--wait=false` to prevent finalizer hangs.
-- Kyverno now uses 3 retries with full namespace cleanup between attempts.
-- Docker daemon is reconfigured after Harbor install to trust the registry before seeding.
-- Worker provisioner no longer uses the invalid `--flannel-backend` flag.
-- Terraform download now uses dynamic architecture detection instead of hardcoded `amd64`.
-
----
-
-## [7.1.1] - 2026-06-16 — DevOps / DevSecOps Lab
-
-### Fixed
-- Python heredoc quoting updated to prevent shell variable expansion (`<<'PYEOF'`).
-- Variables are now passed as environment variables into Python generation blocks.
-- `registries.yaml` generation syntax errors corrected.
-
----
-
 ## [7.1.0] - 2026-06-15 — DevOps / DevSecOps Lab
 
 ### Changed
 - Python is now used to generate `registries.yaml` for Harbor registry configuration.
+
+---
+
+## [1.0.0] - 2026-06-13 — Initial Public Release
+
+### Added
+- Repository structure with `labs/`, `security/`, `sysadmin/`, and `docs/`.
+- Security tooling for audit, exploitation, network, reconnaissance, and wireless.
+- Sysadmin scripts for automation, monitoring, system hardening, and utilities.
+- Documentation for architecture, guides, workflows, and archive.
+- `requirements-dev.txt` for contributor Python dependencies.
+- MIT License, Code of Conduct, Security Policy, and Contributing guidelines.
 
 ---
 
@@ -187,18 +222,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Day-2 tools: k9s, kubectx, kubens, stern.
 - Idempotency markers for all provisioners to support safe re-runs.
 - Per-tool installation markers for granular retry.
-
----
-
-## [1.0.0] - 2026-06-13 — Initial Public Release
-
-### Added
-- Repository structure with `labs/`, `security/`, `sysadmin/`, and `docs/`.
-- Security tooling for audit, exploitation, network, reconnaissance, and wireless.
-- Sysadmin scripts for automation, monitoring, system hardening, and utilities.
-- Documentation for architecture, guides, workflows, and archive.
-- `requirements-dev.txt` for contributor Python dependencies.
-- MIT License, Code of Conduct, Security Policy, and Contributing guidelines.
 
 ---
 
