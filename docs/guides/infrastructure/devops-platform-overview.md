@@ -33,9 +33,7 @@
         
 - 12. Cleanup
         
-- 13. Recommended Enhancements (with Examples)
-        
-- 14. Production Evolution
+- 13. Next Steps: Beyond This Overview
         
 
 ---
@@ -496,128 +494,24 @@ vagrant destroy -f
 
 ---
 
-# 13. Recommended Enhancements
+# 13. Next Steps: Beyond This Overview
 
-## Kubernetes Enhancements
+This overview covers the core lab (Vagrant/KVM → Docker → Minikube → Jenkins →
+Prometheus/Grafana). Once that's running, the natural next steps —
+Infrastructure as Code, GitOps, container scanning, and progressive delivery —
+are covered in full, working depth in
+[`complete-devops-platform-guide.md`](complete-devops-platform-guide.md),
+including:
 
-```bash
-minikube addons enable ingress
-minikube addons enable metrics-server
-kubectl top nodes
-```
+- **Terraform** — provisioning the Kubernetes resources this lab creates
+  manually (see *Phase 3: Infrastructure as Code*)
+- **ArgoCD / GitOps** — full repo structure and Application manifests, not
+  just the concept (see *Phase 6: GitOps & Continuous Deployment*)
+- **Trivy image scanning** and **Argo Rollouts canary deployments** (see
+  *Phase 7* and *Phase 10*)
 
-Autoscaling:
-
-```bash
-kubectl autoscale deployment myapp --cpu-percent=50 --min=1 --max=5
-```
-
----
-
-## CI/CD (Jenkinsfile)
-
-```groovy
-pipeline {
-  agent any
-
-  stages {
-    stage('Clone') {
-      steps {
-        git 'https://github.com/user/repo.git'
-      }
-    }
-
-    stage('Build') {
-      steps {
-        sh 'docker build -t myapp:${BUILD_NUMBER} .'
-      }
-    }
-
-    stage('Deploy') {
-      steps {
-        sh 'kubectl apply -f k8s/'
-      }
-    }
-  }
-}
-```
-
----
-
-## Security
-
-```bash
-trivy image myapp:latest
-```
-
----
-
-## Observability
-
-- Prometheus: metrics
-    
-- Grafana: dashboards
-    
-- Node Exporter: system metrics
-    
-
----
-
-# 14. Production Evolution
-
-Target architecture:
-
-```
-GitHub
-  ↓
-Jenkins CI
-  ↓
-Trivy Scan
-  ↓
-Docker Registry
-  ↓
-Terraform (Infrastructure)
-  ↓
-Kubernetes (EKS)
-  ↓
-Argo CD (GitOps)
-  ↓
-Prometheus + Loki
-  ↓
-Grafana
-```
-
----
-
-## Terraform Example
-
-```hcl
-resource "aws_instance" "example" {
-  ami           = "ami-123456"
-  instance_type = "t2.micro"
-}
-```
-
----
-
-## GitOps (Argo CD)
-
-- Push to Git
-    
-- Argo CD syncs cluster automatically
-    
-
----
-
-## Advanced Features
-
-- Blue/Green deployments
-    
-- Canary releases
-    
-- Service mesh (Istio)
-    
-- Cluster autoscaling
+This overview intentionally stops short of those phases so it stays a quick,
+linear read; the complete guide picks up exactly where this one ends.
     
   
 

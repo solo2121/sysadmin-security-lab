@@ -30,8 +30,8 @@ you're not sure where to look.
 
 | Doc | What it covers |
 |---|---|
-| [`guides/infrastructure/devops-platform-overview.md`](guides/infrastructure/devops-platform-overview.md) | Lab 2 platform overview |
-| [`guides/infrastructure/complete-devops-platform-guide.md`](guides/infrastructure/complete-devops-platform-guide.md) | Full walkthrough of the DevOps/DevSecOps lab |
+| [`guides/infrastructure/devops-platform-overview.md`](guides/infrastructure/devops-platform-overview.md) | Quick start: Vagrant → Docker → Minikube → Jenkins → Prometheus/Grafana |
+| [`guides/infrastructure/complete-devops-platform-guide.md`](guides/infrastructure/complete-devops-platform-guide.md) | Full depth: adds Terraform, ArgoCD/GitOps, image scanning, canary deployments |
 | [`guides/infrastructure/kubernetes-security-hardening.md`](guides/infrastructure/kubernetes-security-hardening.md) | k3s cluster hardening |
 | [`guides/infrastructure/ansible-automation.md`](guides/infrastructure/ansible-automation.md) | Ansible roles used in the lab |
 | [`guides/infrastructure/vagrant-management-tutorial.md`](guides/infrastructure/vagrant-management-tutorial.md) | Vagrant commands and workflows |
