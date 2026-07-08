@@ -279,9 +279,9 @@ vagrant up
 #### Step 4: Verify Lab Components
 
 ```bash
-nslookup dc01.corp.local 172.28.128.21
+nslookup dc01.lab.local 172.28.128.21
 vagrant ssh kali
-nslookup -type=SRV _ldap._tcp.corp.local 172.28.128.21
+nslookup -type=SRV _ldap._tcp.lab.local 172.28.128.21
 curl http://172.28.128.60:8080/health
 ```
 
