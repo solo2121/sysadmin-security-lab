@@ -8,7 +8,7 @@ This directory contains enterprise-focused Active Directory penetration testing 
 
 | Lab | Path | Focus | Version | Hosts |
 |-----|------|-------|---------|-------|
-| Active Directory Pentest Lab | [`ad-pentest/`](ad-pentest/) | Complete AD attack chain from recon to Domain Admin; Kerberos attacks, AD CS exploits, lateral movement, cloud attacks, LLM security | v1.9 | 14 |
+| Active Directory Pentest Lab | [`ad-pentest/`](ad-pentest/) | Complete AD attack chain from recon to Domain Admin; Kerberos attacks, AD CS exploits, lateral movement, cloud attacks, LLM security | v1.10 | 14 |
 | VLAN Enterprise Lab | [`ad-pentest-vlan/`](ad-pentest-vlan/) | Multi-subnet enterprise topology with VLAN segmentation, routing, inter-VLAN attacks, network isolation testing | v2.1.2 | 14 |
 
 ---
@@ -122,7 +122,7 @@ See [`ad-pentest-vlan/README.md`](ad-pentest-vlan/README.md) for topology detail
 - **`docs/attack-guide.md`** — Complete attack reference (14 sections, all techniques)
 - **`docs/lab-credentials.md`** — All seeded credentials and service accounts
 - **`docs/network-map.md`** — Network topology and host details
-- **`Vagrantfile`** — Full provisioning (v1.9)
+- **`Vagrantfile`** — Full provisioning (v1.10)
 - **`scripts/lab_attack_automation.py`** — Automated attack suite (optional)
 
 ### VLAN Enterprise Lab (`ad-pentest-vlan/`)
