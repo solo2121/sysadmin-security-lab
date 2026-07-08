@@ -26,6 +26,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.1.3] - 2026-07-08 — AD Pentest VLAN Lab
+
+### Fixed
+- Static IP configuration now uses 5-method adapter detection (target IP,
+  lab subnet match, adapter name, non-NAT exclusion, and a debug fallback),
+  plus disabled Duplicate Address Detection and set `SkipAsSource=false`.
+- Windows Defender disabled via a registry-only approach (silent, reliable).
+- AD promotion (`Install-ADDSForest`) now uses explicit named parameters.
+- Domain DN and DNS A records hardcoded as literals to avoid Ruby
+  interpolation edge cases.
+- Silenced a harmless `Set-NetConnectionProfile` error on domain-joined VMs.
+- Pinned exact box versions for `metasploitable2` and `juice-shop`.
+
+---
+
 ## [1.10.0] - 2026-07-07 — AD Pentest Lab (Enterprise Edition)
 
 ### Changed
