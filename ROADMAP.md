@@ -11,7 +11,7 @@ For a log of what has already been released, see [`CHANGELOG.md`](CHANGELOG.md).
 
 ## Mid-term
 
-- [ ] Add additional AD CS attack scenarios beyond the current ESC1 and ESC8 coverage.
+- [ ] Add AD CS attack scenarios beyond the current ESC1/4/7/8/9 coverage — ESC2, ESC3, ESC6, ESC11, and ESC13 are natural next additions.
 - [ ] Create Ansible roles to improve repeatability of DevOps lab provisioning, reducing reliance on Vagrant provisioners.
 - [ ] Build a Windows Server hardening lab as a defensive counterpart to the Active Directory pentest lab.
 - [ ] Expand the VLAN lab with more realistic segmentation scenarios beyond the current five VLANs.

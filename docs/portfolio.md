@@ -1,6 +1,6 @@
 # Portfolio Index
 
-**Status:** Active &nbsp;|&nbsp; **Last Updated:** 2026-06-26
+**Status:** Active &nbsp;|&nbsp; **Last Updated:** 2026-07-08
 
 ---
 
@@ -8,7 +8,7 @@
 
 | Lab | Path | Focus |
 |-----|------|-------|
-| Active Directory Pentest Lab | [`labs/security/ad-pentest/`](../labs/security/ad-pentest/) | Kerberos attacks, ESC1–ESC9 chains, privilege escalation, and NTLM relay |
+| Active Directory Pentest Lab | [`labs/security/ad-pentest/`](../labs/security/ad-pentest/) | Kerberos attacks, AD CS ESC1/4/7/8/9 chains, privilege escalation, and NTLM relay |
 | VLAN Enterprise Lab | [`labs/security/ad-pentest-vlan/`](../labs/security/ad-pentest-vlan/) | Network segmentation, VLAN isolation, enterprise routing, and traffic analysis |
 | DevOps Linux Lab | [`labs/infrastructure/devops-linux-lab/`](../labs/infrastructure/devops-linux-lab/) | Kubernetes (k3s, Kind, K3d), Argo CD, Harbor, Terraform, OpenTofu, and the Prometheus/Grafana/Loki stack |
 
