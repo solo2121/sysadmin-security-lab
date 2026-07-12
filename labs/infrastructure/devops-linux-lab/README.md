@@ -45,6 +45,8 @@ A full enterprise-grade cloud-native lab built with Vagrant and KVM/libvirt. Des
 
 ## Lab Architecture
 
+![DevOps DevSecOps Lab network topology diagram](diagrams/devops-topology.png)
+
 ```text
 Host (Linux, KVM/libvirt)
 │
