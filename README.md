@@ -370,8 +370,8 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
 ## License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License. 
+ 
+See the [LICENSE](LICENSE) file for details.
 
-See [LICENSE](LICENSE) for details.
-
-Copyright (c) 2023–2026 Miguel A. Carlo
+Copyright © 2023–2026 Miguel A. Carlo
