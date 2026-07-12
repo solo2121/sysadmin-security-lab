@@ -7,83 +7,86 @@
 ![DevSecOps](https://img.shields.io/badge/DevSecOps-Kubernetes-purple)
 [![CI](https://github.com/solo2121/sysadmin-security-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/solo2121/sysadmin-security-lab/actions/workflows/ci.yml)
 
-**Enterprise cybersecurity homelab for isolated, reproducible, and secure-by-design training across Active Directory, segmented enterprise networks, and DevSecOps workflows.**
+**Enterprise cybersecurity homelab for isolated, reproducible environments spanning Active Directory, segmented enterprise networks, and DevSecOps workflows.**
 
 ---
-
-## Hero Overview
 
 ![Enterprise Architecture Overview](assets/architecture-overview.png)
 
-This repository models a modern enterprise security environment through **three independent labs** built for offensive security practice, infrastructure hardening, and real-world-ready technical training.
+## Overview
 
-- Isolated lab environments by design.
-- Reproducible deployments with Infrastructure as Code.
-- Enterprise-style attack surfaces and security boundaries.
-- Practical training for red team, blue team, and platform security workflows.
+Sysadmin Security Lab is a modular cybersecurity homelab designed to simulate enterprise infrastructure in a controlled environment. It provides three independent labs for offensive security practice, network segmentation exercises, and modern DevSecOps workflows.
+
+Built for reproducibility and technical depth, the project focuses on realistic attack surfaces, secure-by-design architecture, and hands-on training that maps to real enterprise environments.
 
 ---
 
-## Lab Portfolio
+## Lab Environments
 
 ### Lab 1 — Active Directory Pentest
 
 **Path:** `labs/security/ad-pentest/`
 
-A Windows enterprise environment for Active Directory security research, domain compromise, privilege escalation, and post-exploitation practice.
+A Windows enterprise lab for Active Directory enumeration, privilege escalation, and post-exploitation practice.
 
 - Domain Controller and domain-joined systems.
-- AD CS with multiple escalation paths.
+- AD CS and certificate-based attack paths.
 - Kerberos, LDAP, and NTLM attack surfaces.
 - Kali-based attacker workflow.
-- Cloud simulation via LocalStack.
+- Cloud simulation with LocalStack.
 - Optional AI/LLM security testing scenarios.
 
-**Use this lab to practice:** initial access, domain enumeration, lateral movement, and full AD attack chains.
+**Purpose:** Practice core Active Directory attack and defense workflows in an isolated environment.
 
 ### Lab 2 — AD Pentest with VLAN / Enterprise Segmentation
 
 **Path:** `labs/security/ad-pentest-vlan/`
 
-A segmented version of the AD lab that introduces enterprise-style VLAN boundaries and controlled routing between isolated network zones.
+A segmented extension of the AD lab that introduces enterprise-style VLAN boundaries and controlled routing between network zones.
 
-- Separate subnets and segmented trust boundaries.
+- Separate subnets and trust boundaries.
 - Controlled lateral movement and pivoting paths.
 - Realistic enterprise network layout.
-- Better simulation of detection and containment constraints.
+- Better simulation of containment and detection constraints.
 
-**Use this lab to practice:** attack path analysis, segmentation-aware exploitation, and enterprise network defense concepts.
+**Purpose:** Study how segmentation affects attack paths, access control, and lateral movement.
 
 ### Lab 3 — DevSecOps / DevOps
 
 **Path:** `labs/infrastructure/devops-linux-lab/`
 
-A cloud-native, Linux-focused environment for Kubernetes operations, CI/CD, GitOps, and infrastructure automation.
+A cloud-native Linux environment for Kubernetes operations, automation, and secure delivery workflows.
 
 - Kubernetes clusters with k3s, Kind, and k3d.
 - GitOps with Argo CD.
 - Registry, observability, and runtime security tooling.
-- IaC and automation with Terraform, OpenTofu, and Ansible.
+- Infrastructure as Code with Terraform, OpenTofu, and Ansible.
 - Policy and security enforcement with Kyverno and Falco.
 
-Includes intentionally vulnerable scenarios:
+Includes intentionally vulnerable scenarios for security practice:
 - Misconfigured IaC.
 - Exposed secrets.
 - Backdoored containers.
 
-**Use this lab to practice:** secure delivery pipelines, infrastructure automation, and cloud-native security operations.
+**Purpose:** Practice secure DevOps and DevSecOps workflows in a realistic platform environment.
+
+---
+
+## Why This Project Exists
+
+This repository is intended to feel like a real enterprise security platform rather than a personal demo. It is structured to support cybersecurity learning, technical portfolio development, and repeatable lab work without relying on production systems.
+
+The focus is on practical experience with isolated environments, reproducible builds, and security engineering fundamentals.
 
 ---
 
 ## Design Principles
 
-This project is built like a small enterprise security platform, not a toy lab.
-
-- **Isolation first:** each lab is independent and can be deployed separately.
-- **Reproducibility:** environments are designed to be rebuilt consistently.
-- **Enterprise realism:** architecture, naming, and workflows reflect real infrastructure patterns.
-- **Security by design:** labs are structured to support safe experimentation.
-- **Modularity:** each lab serves a distinct training objective.
+- **Isolation first:** Each lab is independent and can be deployed separately.
+- **Reproducibility:** Environments are designed to be rebuilt consistently.
+- **Enterprise realism:** Architecture, naming, and workflows mirror real infrastructure patterns.
+- **Security by design:** Labs are built for safe experimentation and structured practice.
+- **Modularity:** Each lab serves a distinct technical objective.
 
 ---
 
@@ -91,12 +94,12 @@ This project is built like a small enterprise security platform, not a toy lab.
 
 - **Virtualization:** KVM, Libvirt, Vagrant.
 - **Operating systems:** Windows Server, Windows 10, Ubuntu, Rocky Linux, AlmaLinux, openSUSE.
-- **Directory services:** Active Directory, Kerberos, LDAP, AD CS.
+- **Identity and directory services:** Active Directory, Kerberos, LDAP, AD CS.
 - **Offensive tooling:** BloodHound, Nmap, Metasploit, Hashcat.
 - **Cloud simulation:** LocalStack.
-- **Containers and Kubernetes:** Docker, k3s, Kind, k3d.
+- **Containers and orchestration:** Docker, k3s, Kind, k3d.
 - **GitOps:** Argo CD.
-- **IaC and automation:** Terraform, OpenTofu, Ansible.
+- **Infrastructure as Code:** Terraform, OpenTofu, Ansible.
 - **Observability:** Prometheus, Grafana, Loki.
 - **Security controls:** Falco, Kyverno.
 
@@ -104,15 +107,15 @@ This project is built like a small enterprise security platform, not a toy lab.
 
 ## Architecture Goals
 
-The labs are designed to support hands-on practice in the following areas:
+This project is designed to support hands-on practice in the following areas:
 
-- Offensive security practice in isolated environments.
+- Offensive security in isolated environments.
 - Active Directory attack and defense workflows.
 - VLAN segmentation and enterprise network isolation.
 - DevSecOps and DevOps delivery pipelines.
-- Infrastructure as Code and reproducible builds.
+- Infrastructure as Code and reproducible provisioning.
 - Detection engineering and security validation.
-- Realistic platform engineering and cloud-native operations.
+- Cloud-native platform engineering.
 
 ---
 
@@ -120,24 +123,19 @@ The labs are designed to support hands-on practice in the following areas:
 
 ```text
 sysadmin-security-lab/
+├── assets/
+│   └── architecture-overview.png
+├── docs/
 ├── labs/
 │   ├── security/
 │   │   ├── ad-pentest/
 │   │   └── ad-pentest-vlan/
 │   └── infrastructure/
 │       └── devops-linux-lab/
-├── docs/
 ├── scripts/
 ├── tests/
-├── assets/
 └── README.md
 ```
-
----
-
-## Why This Exists
-
-This project exists to provide a credible enterprise-style lab that supports cybersecurity training without relying on production systems. It is meant for learning, experimentation, and portfolio-grade technical work in a controlled environment.
 
 ---
 
@@ -173,7 +171,7 @@ vagrant up
 
 ## Security and Ethics
 
-This repository is intended for education, authorized testing, and defensive learning only. Do not use these techniques outside systems you own or environments where you have explicit permission.
+This repository is intended for education, authorized testing, and defensive learning only. Use these environments only on systems you own or where you have explicit permission.
 
 ---
 
