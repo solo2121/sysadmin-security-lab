@@ -13,6 +13,8 @@
 
 ## Hero Overview
 
+![Enterprise Architecture Overview](assets/architecture-overview.png)
+
 This repository models a modern enterprise security environment through **three independent labs** built for offensive security practice, infrastructure hardening, and real-world-ready technical training.
 
 - Isolated lab environments by design.
