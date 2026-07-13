@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Sysadmin Security Lab is organized as a modular DevSecOps and security-learning platform. The repository separates runnable labs, reusable tools, operational scripts, and long-form documentation so each part can be reviewed or improved independently.
+sysadmin-security-lab is organized as a modular DevSecOps and security-learning platform. The repository separates runnable labs, reusable tools, operational scripts, and long-form documentation so each part can be reviewed or improved independently.
 
 The project is intentionally local-first: labs are designed for Vagrant, KVM/QEMU, and libvirt rather than public cloud infrastructure. This keeps security testing contained and makes the environments repeatable on a workstation.
 

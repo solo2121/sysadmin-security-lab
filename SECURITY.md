@@ -1,6 +1,6 @@
 # Security Policy
 
-This document explains the security support scope for the Sysadmin Security Lab and how to report vulnerabilities responsibly.
+This document explains the security support scope for the sysadmin-security-lab and how to report vulnerabilities responsibly.
 
 ---
 

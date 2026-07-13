@@ -1,6 +1,6 @@
 # Lab Deployment Workflow Guide
 
-Detailed workflows and best practices for deploying and managing the Sysadmin Security Lab.
+Detailed workflows and best practices for deploying and managing the sysadmin-security-lab.
 
 ---
 

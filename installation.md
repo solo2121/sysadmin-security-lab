@@ -1,6 +1,6 @@
 # Installation Guide
 
-This guide explains how to prepare a Linux host and deploy the two independent lab environments in Sysadmin Security Lab.
+This guide explains how to prepare a Linux host and deploy the three independent lab environments in sysadmin-security-lab.
 
 - **Lab 1**: Active Directory Pentest Lab.
 - **Lab 2**: DevOps / DevSecOps Lab.

@@ -7,16 +7,17 @@ you're not sure where to look.
 
 | Doc | What it covers |
 |---|---|
-| [`../installation.md`](../installation.md) | Host setup, prerequisites, deploying either lab |
+| [`learning-path.md`](learning-path.md) | **Start here.** Which lab to try first, and in what order |
+| [`../installation.md`](../installation.md) | Host setup, prerequisites, deploying any of the three labs |
 | [`../troubleshooting.md`](../troubleshooting.md) | Common setup and runtime issues |
 | [`setup-with-examples.md`](setup-with-examples.md) | Worked setup examples |
-| [`optimization/minimal-resource-deployment.md`](optimization/minimal-resource-deployment.md) | Running either lab on smaller hosts |
+| [`optimization/minimal-resource-deployment.md`](optimization/minimal-resource-deployment.md) | Running any of the three labs on smaller hosts |
 
 ## Architecture
 
 | Doc | What it covers |
 |---|---|
-| [`architecture/architecture.md`](architecture/architecture.md) | Overall infrastructure design for both labs |
+| [`architecture/architecture.md`](architecture/architecture.md) | Overall infrastructure design for all three labs |
 | [`architecture/security-scope.md`](architecture/security-scope.md) | What's authorized/isolated for the offensive-security content |
 
 ## Workflows

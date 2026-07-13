@@ -1,6 +1,6 @@
 # Troubleshooting Guide
 
-Common issues and fixes for the Sysadmin Security Lab environment.
+Common issues and fixes for the sysadmin-security-lab environment.
 
 ## How to use this guide
 
