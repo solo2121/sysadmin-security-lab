@@ -1,4 +1,4 @@
-# Sysadmin Security Lab
+# sysadmin-security-lab
 
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 ![Platform](https://img.shields.io/badge/platform-Linux-blue)
@@ -37,7 +37,7 @@ Each lab deploys independently using its own Vagrantfile on KVM/QEMU virtualizat
 
 ## Overview
 
-Sysadmin Security Lab is a modular enterprise homelab built for learning and practicing Linux administration, Active Directory security, cloud-native infrastructure, DevOps, and DevSecOps.
+sysadmin-security-lab is a modular enterprise homelab built for learning and practicing Linux administration, Active Directory security, cloud-native infrastructure, DevOps, and DevSecOps.
 
 The project is organized into independent lab environments that can be deployed separately, allowing focused practice without impacting others.
 
@@ -326,6 +326,7 @@ vagrant up
 
 | Document | Purpose |
 |---|---|
+| [learning-path.md](docs/learning-path.md) | **Start here.** Which lab to try first, and in what order |
 | [domain-compromise-walkthrough.md](docs/guides/security/domain-compromise-walkthrough.md) | Full attack chain: zero credentials to Domain Admin |
 | [docs/README.md](docs/README.md) | Full documentation index |
 | [PORTFOLIO.md](docs/portfolio.md) | Portfolio index and skills mapping |

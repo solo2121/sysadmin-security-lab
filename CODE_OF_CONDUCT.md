@@ -2,7 +2,7 @@
 
 ## Our Pledge
 
-We are committed to providing a welcoming and inspiring community for everyone. We pledge that all participants in the **Sysadmin Security Lab** project and community will be treated with respect and dignity, regardless of age, body size, caste, disability, ethnicity, sex characteristics, gender identity and expression, level of experience, education, socio-economic status, nationality, personal appearance, race, religion, or sexual identity and orientation.
+We are committed to providing a welcoming and inspiring community for everyone. We pledge that all participants in the **sysadmin-security-lab** project and community will be treated with respect and dignity, regardless of age, body size, caste, disability, ethnicity, sex characteristics, gender identity and expression, level of experience, education, socio-economic status, nationality, personal appearance, race, religion, or sexual identity and orientation.
 
 We are committed to building and maintaining a safe, inclusive, and respectful community.
 

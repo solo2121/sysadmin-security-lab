@@ -1,6 +1,6 @@
 # Proxmox Host Setup for Vagrant Labs
 
-This guide walks through running the Sysadmin Security Lab on a Proxmox VE host. Since Proxmox runs KVM/QEMU natively and exposes libvirt, the Vagrantfiles work without modification — you just need to set up the host environment correctly inside a Proxmox VM.
+This guide walks through running the sysadmin-security-lab on a Proxmox VE host. Since Proxmox runs KVM/QEMU natively and exposes libvirt, the Vagrantfiles work without modification — you just need to set up the host environment correctly inside a Proxmox VM.
 
 ---
 

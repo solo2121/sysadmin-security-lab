@@ -1,6 +1,6 @@
 # Common Workflows & Procedures
 
-This document provides step-by-step workflows for common tasks in the Sysadmin Security Lab.
+This document provides step-by-step workflows for common tasks in the sysadmin-security-lab.
 
 ---
 

@@ -1,6 +1,6 @@
 # Complete Setup Guide with Examples
 
-This guide provides step-by-step examples for setting up and running the Sysadmin Security Lab, including command examples, verification steps, troubleshooting, and common workflows.
+This guide provides step-by-step examples for setting up and running the sysadmin-security-lab, including command examples, verification steps, troubleshooting, and common workflows.
 
 ---
 
