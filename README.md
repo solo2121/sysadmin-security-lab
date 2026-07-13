@@ -142,7 +142,7 @@ This Windows enterprise lab is designed for Active Directory security research, 
 | Component | Description |
 |---|---|
 | Domain Controller | Windows Server 2022 (`lab.local`) |
-| Certificate Authority | AD CS (ESC1, ESC3, ESC4, ESC7, ESC8, ESC9) |
+| Certificate Authority | AD CS (ESC1, ESC4, ESC7, ESC8, ESC9) |
 | Member Servers | Exchange, SQL Server, SharePoint, Print Server |
 | Workstations | Windows 10 domain joined |
 | Attacker VM | Kali Linux |
@@ -203,12 +203,15 @@ This environment provides practical experience in cloud-native operations, autom
 
 ## Recent Updates
 
+- **Documentation accuracy pass:** Added verified network topology diagrams for all three labs, corrected AD CS ESC-path documentation to match what's actually implemented, and fixed IP/version drift between the Vagrantfiles and their docs.
 - **DevSecOps Lab:** Expanded with realistic attack scenarios and vulnerable deployments, added a Terraform state file containing exposed secrets for IaC practice, and introduced an indirect prompt injection (RAG) scenario for AI security.
 - **Active Directory Lab:** Added modern enterprise attack scenarios, fixed the CA01 DNS record configuration to support privilege escalation paths, and resolved Vagrantfile validation issues.
 
 ---
 
 ## Repository Structure
+
+`labs/` holds the three full, deployable VM environments described above. `security/` and `sysadmin/` are separate from the labs — standalone scripts (recon, exploitation, monitoring, hardening, automation) that demonstrate scripting and tooling skills independent of any specific lab, and can be read or run on their own. See [`security/README.md`](security/README.md) and [`sysadmin/README.md`](sysadmin/README.md) for what's in each.
 
 ```text
 sysadmin-security-lab/
@@ -244,7 +247,7 @@ sysadmin-security-lab/
 
 ## Requirements
 
-Before deploying either lab, ensure the following:
+Before deploying any of the three labs, ensure the following:
 
 ### Host Requirements
 
@@ -280,6 +283,14 @@ vagrant up dc01
 vagrant up
 ```
 
+### Deploy AD Pentest VLAN / Enterprise Segmentation Lab
+
+```bash
+cd labs/security/ad-pentest-vlan
+vagrant up dc01
+vagrant up
+```
+
 ### Deploy DevOps / DevSecOps Lab
 
 ```bash
@@ -304,7 +315,7 @@ vagrant up
 | Containers | Docker, Harbor |
 | Cloud | AWS Concepts, LocalStack |
 | Active Directory | Windows Server, Kerberos, LDAP |
-| AD CS | ESC1, ESC3, ESC4, ESC7, ESC8, ESC9 |
+| AD CS | ESC1, ESC4, ESC7, ESC8, ESC9 |
 | Detection Engineering | MITRE ATT&CK, Log Analysis |
 | Security Testing | Nmap, BloodHound, Metasploit, Hashcat |
 | AI Security | Prompt Injection, Prompt Leakage, Jailbreak Testing, RAG Security |
@@ -323,7 +334,7 @@ vagrant up
 | [installation.md](installation.md) | Full installation guide |
 | [setup-with-examples.md](docs/setup-with-examples.md) | Deployment walkthrough |
 | [check-prerequisites.sh](scripts/check-prerequisites.sh) | Validate your host before deploying |
-| [minimal-resource-deployment.md](docs/optimization/minimal-resource-deployment.md) | Running either lab on smaller hosts |
+| [minimal-resource-deployment.md](docs/optimization/minimal-resource-deployment.md) | Running any of the three labs on smaller hosts |
 | [TROUBLESHOOTING.md](troubleshooting.md) | Common issues |
 | [ROADMAP.md](ROADMAP.md) | Planned improvements |
 | [CHANGELOG.md](CHANGELOG.md) | Project history |
@@ -345,13 +356,13 @@ Unauthorized access, testing, or exploitation of external systems is strictly pr
 The following limitations currently apply:
 
 - **Hardware ceiling.** The full Active Directory lab needs 32GB+ RAM and 200GB+ storage. It is not designed for laptops or shared/low-resource hosts. See [minimal-resource-deployment.md](docs/optimization/minimal-resource-deployment.md) for running a smaller subset.
-- **Linux hosts only.** Both labs depend on KVM/libvirt and are not supported on macOS or native Windows.
+- **Linux hosts only.** All three labs depend on KVM/libvirt and are not supported on macOS or native Windows.
 - **Windows evaluation licensing.** The Windows Server and Windows 10 VMs run on Microsoft's free evaluation media, which is time-limited (commonly 180 days) and not licensed for production use.
 - **Some AD lab hosts are simulated, not full installs.** `db01`, `exch01`, and `sp01` are domain-joined Windows Server 2022 hosts with product-like config files and credentials for post-exploitation practice — they do not run real SQL Server, Exchange, or SharePoint. Product-specific remote exploits (e.g. ProxyShell, ProxyLogon) will not work against them.
 - **Third-party Vagrant boxes.** Several boxes (`peru/*`, `deargle/metasploitable2`, `generic/*`) are community-maintained, not published by this project. Availability, updates, and box versions are outside this repo's control and can occasionally break a build.
 - **No blue-team/detection tooling included yet.** This is currently a red-team/offensive lab. SIEM or EDR integration to validate whether attacks are actually detected is not implemented — see [ROADMAP.md](ROADMAP.md).
 - **CI checks code, not the lab itself.** GitHub Actions validates all three Vagrantfiles (`vagrant validate`), blocks on real shellcheck errors, and runs flake8/bandit/doc-link-check informationally. It does not run `vagrant up` end-to-end, so a green CI run does not guarantee every VM provisions cleanly on every host. Secret scanning (`detect-secrets`) runs via local pre-commit hooks, not in CI — run `pre-commit run --all-files` before pushing if you haven't installed the hooks.
-- **Single-host design.** Both labs assume everything runs on one physical machine via libvirt. There is no multi-host or distributed deployment support.
+- **Single-host design.** All three labs assume everything runs on one physical machine via libvirt. There is no multi-host or distributed deployment support.
 
 ---
 
