@@ -1,4 +1,4 @@
-# sysadmin-security-lab
+# Sysadmin Security Lab
 
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 ![Platform](https://img.shields.io/badge/platform-Linux-blue)
@@ -7,12 +7,26 @@
 ![DevSecOps](https://img.shields.io/badge/DevSecOps-Lab-purple)
 [![CI](https://github.com/solo2121/sysadmin-security-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/solo2121/sysadmin-security-lab/actions/workflows/ci.yml)
 
-A modular, enterprise-grade homelab for hands-on practice in Linux administration, Active Directory security, DevOps, and DevSecOps.
+**Three fully-automated, Vagrant-provisioned lab environments for practicing Active Directory attacks, Kubernetes/DevSecOps engineering, and infrastructure security — built to be deployed, broken, and rebuilt from a single command.**
 
-This repository provides three independent enterprise lab environments, along with supporting tooling for infrastructure simulation, security research, automation, detection engineering, and professional portfolio development.
+Most security portfolios show static writeups. This one is runnable: every attack path, misconfiguration, and vulnerable service described below is live infrastructure you can stand up with `vagrant up`, not a screenshot or a claim.
 
 **Maintained by:** Miguel A. Carlo (solo2121)  
 **Project Status:** Active Development
+
+---
+
+## What this demonstrates
+
+| Domain | Concretely | Where |
+|---|---|---|
+| Active Directory attacks | Kerberoasting, AS-REP roasting, ZeroLogon, PetitPotam, NoPac, RBCD, Shadow Credentials, AD CS ESC1/4/7/8/9, zero-credential to Domain Admin | `labs/security/ad-pentest/` |
+| Network segmentation & pivoting | 5-VLAN enterprise topology, inter-segment lateral movement, controlled routing | `labs/security/ad-pentest-vlan/` |
+| Cloud & AI security | LocalStack-simulated AWS misconfig (exposed Terraform state), prompt injection, RAG poisoning | `labs/security/ad-pentest/` |
+| Kubernetes / DevSecOps | k3s cluster, Harbor + ArgoCD (GitOps), Prometheus/Grafana/Loki (observability), Falco + Kyverno (runtime security & policy enforcement) | `labs/infrastructure/devops-linux-lab/` |
+| Automation & IaC | 100% Vagrant + Ansible provisioning, no manual setup steps, 22 automated tests (pytest + bats) gating CI | repo-wide |
+
+Every item above is backed by a working script or Vagrantfile in this repo — none of it is aspirational.
 
 ---
 
