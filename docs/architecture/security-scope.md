@@ -1,5 +1,7 @@
 # Security & Authorized Use Scope
 
+This document covers legal/ethical scope — who is authorized to run this, and how. For attack surface and trust boundaries — what each lab's threat actor can and can't do — see [`threat-model.md`](threat-model.md).
+
 ## Legal & Ethical Framework
 
 This repository contains **educational security content** — offensive and defensive techniques for learning purposes only.

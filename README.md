@@ -345,6 +345,7 @@ vagrant up
 | [docs/README.md](docs/README.md) | Full documentation index |
 | [PORTFOLIO.md](docs/portfolio.md) | Portfolio index and skills mapping |
 | [architecture.md](docs/architecture/architecture.md) | Infrastructure design |
+| [threat-model.md](docs/architecture/threat-model.md) | Assets, trust boundaries, and assumed attacker per lab |
 | [security-scope.md](docs/architecture/security-scope.md) | Security boundaries |
 | [installation.md](installation.md) | Full installation guide |
 | [setup-with-examples.md](docs/setup-with-examples.md) | Deployment walkthrough |
