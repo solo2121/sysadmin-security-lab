@@ -13,6 +13,8 @@ confirm your host has the CPU, RAM, and virtualization support each lab
 needs. All three labs are Linux-host-only (KVM/libvirt) — see
 [Known Limitations](../README.md#known-limitations) before you start.
 
+Worth five minutes before you deploy anything: [`architecture/threat-model.md`](architecture/threat-model.md) explains *why* each lab is vulnerable the way it is — the assumed attacker, starting access, and goal per lab — rather than leaving you to infer it from the Vagrantfiles.
+
 ## Step 1: Pick your track
 
 You don't need to run all three labs. Pick the one that matches your goal.

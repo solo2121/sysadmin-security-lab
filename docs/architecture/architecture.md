@@ -176,6 +176,7 @@ New scripts should include:
 ## Related Documents
 
 - [`../../README.md`](../../README.md)
+- [`threat-model.md`](threat-model.md)
 - [`security-scope.md`](security-scope.md)
 - [`../workflows/workflows.md`](../workflows/workflows.md)
 - [`../setup-with-examples.md`](../setup-with-examples.md)
