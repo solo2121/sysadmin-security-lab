@@ -1,236 +1,322 @@
 # Security & Authorized Use Scope
 
-This document covers legal/ethical scope — who is authorized to run this, and how. For attack surface and trust boundaries — what each lab's threat actor can and can't do — see [`threat-model.md`](threat-model.md).
+This document defines the legal and ethical scope for this repository, including who is authorized to use the labs and under what conditions.
 
-## Legal & Ethical Framework
-
-This repository contains **educational security content** — offensive and defensive techniques for learning purposes only.
-
-**Your responsibility:** Use this content only in authorized, controlled environments (sandboxed VMs, test labs you own).
+For attack surface analysis, trust boundaries, and threat assumptions, see [`threat-model.md`](threat-model.md).
 
 ---
 
-## Authorized Uses
+# Legal & Ethical Framework
 
-### Personal Learning
-- Running labs on your own hardware or VMs
-- Pentesting your own infrastructure with written permission
-- Studying attack and defense techniques in controlled environments
-- Practicing for security certifications (OSCP, CEH, GIAC)
+This repository contains educational cybersecurity content covering both offensive and defensive security techniques.
 
-### Educational Organizations
-- University security courses
-- Bootcamp environments (with student consent)
-- Corporate security training (internal use only)
-- CTF (Capture The Flag) competitions
+All material is intended exclusively for learning, research, security training, and authorized security testing.
 
-### Professional Security Testing
-- Authorized penetration testing engagements (with written contract)
-- Red team exercises (with scope agreement)
-- Security research within lab boundaries
-- Infrastructure hardening projects
+You are responsible for ensuring that every activity performed with this repository complies with applicable laws, organizational policies, and any contractual obligations.
+
+Only use these labs in environments where you have explicit authorization.
 
 ---
 
-## Prohibited Uses
+# Authorized Uses
 
-### Illegal Activity
- - Unauthorized access to any system or network
- - Credential theft or privilege escalation on systems you don't own
- - Denial of service attacks
- - Data exfiltration or privacy violations
- - Creating ransomware or destructive payloads
+## Personal Learning
 
-### Unethical Testing
- - Testing third-party systems without explicit written permission
- - Social engineering individuals without authorization
- - Exposing vulnerabilities publicly (without coordinated disclosure)
- - Circumventing access controls on shared infrastructure
+- Running labs on your own hardware or virtual machines
+- Practicing offensive and defensive security techniques
+- Learning Linux, networking, Active Directory, and cloud security
+- Preparing for professional security certifications
+
+Examples include:
+
+- OSCP
+- PNPT
+- CRTO
+- GIAC
+- Security+
+
+## Educational Use
+
+This repository may be used by:
+
+- Universities
+- Colleges
+- Cybersecurity bootcamps
+- Internal corporate training
+- Capture The Flag (CTF) environments
+
+Educational deployments should ensure:
+
+- Students understand acceptable use requirements
+- Labs remain isolated from production networks
+- Exercises include both offensive and defensive learning objectives
+
+## Professional Security Work
+
+Authorized professional uses include:
+
+- Penetration testing with written authorization
+- Internal red team engagements
+- Purple team exercises
+- Security assessments
+- Infrastructure hardening
+- Security research performed within approved scope
 
 ---
 
-## Lab Environment Boundaries
+# Prohibited Uses
 
-### Content Included
+The following activities are strictly outside the intended scope of this repository.
 
-| Category | Included | Notes |
+## Unauthorized Access
+
+Do not use these labs to:
+
+- Access systems without permission
+- Escalate privileges on systems you do not own
+- Bypass authentication controls
+- Compromise third-party infrastructure
+- Access data belonging to others
+
+## Malicious Activity
+
+This repository must never be used for:
+
+- Malware deployment
+- Ransomware development
+- Credential theft
+- Data exfiltration
+- Denial-of-service attacks
+- Destructive payloads
+- Persistent unauthorized access
+
+## Unethical Security Testing
+
+Prohibited activities include:
+
+- Testing third-party systems without written authorization
+- Unauthorized social engineering
+- Public disclosure without responsible disclosure procedures
+- Circumventing security controls outside approved engagements
+
+---
+
+# Lab Environment Boundaries
+
+## Included Content
+
+| Category | Included | Scope |
 |----------|----------|-------|
-| **AD Attacks** | Yes | Kerberos, SMB relay, lateral movement — lab environment only |
-| **Network Exploitation** | Yes | VLAN hopping, ARP spoofing — isolated network labs only |
-| **Credential Attacks** | Yes | Brute force, hash cracking — dictionary attacks, not rainbow tables |
-| **Web Exploitation** | Yes | SQL injection, XSS — vulnerable test apps only |
-| **Post-Exploitation** | Yes | Persistence, privilege escalation — lab VMs only |
-| **Wireless Testing** | Limited | WPA2 cracking in controlled labs only; never on public networks |
+| Active Directory attacks | Yes | Lab-only environments |
+| Network exploitation | Yes | Isolated virtual networks |
+| Credential attacks | Yes | Lab accounts only |
+| Web application testing | Yes | Intentionally vulnerable applications |
+| Privilege escalation | Yes | Lab virtual machines only |
+| Post-exploitation | Yes | Educational environments only |
+| Wireless testing | Limited | Controlled WPA/WPA2 laboratory environments |
 
-### Content NOT Included
+## Excluded Content
 
-| Category | Excluded | Reason |
-|----------|----------|--------|
-| Malware samples | No | Dangerous; use VirusTotal or malware sandboxes instead |
-| Zero-day exploits | No | Unpatched vulnerabilities are out of scope |
-| Worms / self-replicating code | No | Too dangerous for educational distribution |
-| Backdoored applications | No | Supply chain attacks require responsible disclosure |
-| Keyloggers / spyware | No | Surveillance tools forbidden |
-
----
-
-## Lab Isolation Requirements
-
-Before running any lab, ensure:
-
-### Network Isolation
- - Lab VMs are on isolated virtual networks (Libvirt / Vagrant networks only)
- - No connection to corporate or shared networks
- - Lab network is NOT bridged to production infrastructure
- - Host system is protected by firewall when labs are running
-
-### Credential Management
- - No production credentials stored in lab files
- - Lab credentials are weak/throwaway (only for lab VMs)
- - `.env` files are in `.gitignore` (never commit secrets)
- - Use `ansible-vault` for sensitive playbook data
-
-### Access Control
- - Only authorized users (you) can access lab VMs
- - Lab VMs cannot be exposed to the internet
- - SSH keys for labs are local to your machine only
- - Lab data is encrypted at rest if stored on encrypted volumes
+| Category | Status | Reason |
+|----------|--------|--------|
+| Malware samples | Not included | Unsafe for general distribution |
+| Zero-day exploits | Not included | Outside repository scope |
+| Self-replicating code | Not included | Unacceptable operational risk |
+| Backdoored software | Not included | Supply chain concerns |
+| Spyware or keyloggers | Not included | Not appropriate for educational distribution |
 
 ---
 
-## Security Warnings
+# Lab Isolation Requirements
 
-### Active Directory Attacks Lab
-```
-⚠️ WARNING: This lab contains techniques for compromising Active Directory domains.
+Before running any lab, verify the following.
 
-This content is ONLY for:
-- Internal security testing within your organization
-- Educational environments with explicit authorization
-- Personal learning on non-production infrastructure
+## Network Isolation
 
-DO NOT use against:
+- Labs run only on isolated virtual networks
+- Production networks are never connected to lab environments
+- Bridged networking is disabled unless explicitly required for an authorized exercise
+- The host system remains protected by an active firewall
+
+## Credential Management
+
+- Production credentials are never stored inside the repository
+- Lab credentials are disposable and used only within the lab
+- Secrets are excluded using `.gitignore`
+- Sensitive automation data is protected using `ansible-vault` or an equivalent secret-management solution
+
+## Access Control
+
+- Only authorized users have access to the lab environment
+- Lab virtual machines are not exposed directly to the Internet
+- SSH keys remain local and are not shared
+- Sensitive lab data is encrypted when appropriate
+
+---
+
+# Security Notices
+
+## Active Directory Labs
+
+These labs demonstrate techniques commonly used during Active Directory security assessments.
+
+Authorized use includes:
+
+- Internal security testing
+- Approved red team engagements
+- Security education
+- Personal laboratory environments
+
+Do not use these techniques against:
+
 - Production Active Directory environments without written approval
-- Organizations' systems without a signed penetration testing contract
-- Any system you don't own or have explicit permission to test
-```
+- Third-party organizations
+- Systems outside your authorized scope
 
-### VLAN & Network Exploitation
-```
-⚠️ WARNING: This lab includes network isolation bypass and VLAN hopping techniques.
+---
 
-Authorized use:
-- Testing your own network infrastructure
-- Validating network segmentation controls you manage
-- Security research in isolated lab networks
+## Network Exploitation Labs
 
-Prohibited:
-- Testing shared corporate networks
-- VLAN hopping on networks you don't manage
-- Any network traffic manipulation without explicit authorization
-```
+These labs include techniques involving:
 
-### Credential Attacks
-```
-⚠️ WARNING: This lab includes brute force, credential spraying, and hash cracking.
+- VLAN segmentation
+- Layer 2 attacks
+- Network reconnaissance
+- Traffic manipulation
 
-Authorized use:
-- Testing account security on systems you manage
+Authorized use includes:
+
+- Security validation of networks you manage
+- Research in isolated environments
+- Internal security assessments
+
+Do not perform these techniques on:
+
+- Shared corporate infrastructure
+- ISP networks
+- Public networks
+- Any network outside your approved scope
+
+---
+
+## Credential Attack Labs
+
+These labs include demonstrations of:
+
+- Password spraying
+- Brute-force techniques
+- Password auditing
+- Hash cracking
+
+Authorized use includes:
+
 - Security assessments with written approval
-- Educational practice in isolated labs
+- Internal password audits
+- Laboratory environments
 
-Prohibited:
-- Attacking production systems
-- Unauthorized credential spraying
-- Distributing pre-computed hash databases
-```
+Do not perform credential attacks against:
 
----
-
-## 📋 Checklist Before Running Labs
-
-Before launching ANY security lab:
-
-- [ ] I own or have written permission to test this infrastructure
-- [ ] Lab VMs are on isolated networks (not connected to production)
-- [ ] No production credentials are in lab configuration files
-- [ ] I understand the attack/defense techniques in this lab
-- [ ] Lab data is confidential and won't be shared publicly
-- [ ] My organization's security team is aware of this testing (if applicable)
-- [ ] I will not use this lab for unauthorized access to other systems
-
-**If you cannot check all boxes, stop and seek proper authorization first.**
+- Production systems
+- Third-party services
+- Accounts you are not authorized to test
 
 ---
 
-## 🔄 Responsible Disclosure
+# Pre-Lab Checklist
 
-If you discover a vulnerability in this repository (e.g., security issue, malicious code):
+Before starting any exercise, confirm the following.
 
-1. **Do NOT open a public GitHub issue**
-2. **Report privately** to: `security@solo2121.com`
-3. **Include**:
-   - Description of the vulnerability
-   - Steps to reproduce
+- [ ] I own or have written authorization to test this environment.
+- [ ] My lab is isolated from production infrastructure.
+- [ ] No production credentials are stored in the repository.
+- [ ] I understand the techniques demonstrated in this lab.
+- [ ] Sensitive data will remain confidential.
+- [ ] My organization's security team has approved this activity when required.
+- [ ] I will not use these techniques outside authorized environments.
+
+If any item cannot be confirmed, do not proceed until appropriate authorization has been obtained.
+
+---
+
+# Responsible Disclosure
+
+If you discover a security issue in this repository:
+
+1. Do not open a public issue.
+2. Report the issue privately to `security@solo2121.com`.
+3. Include:
+   - Description of the issue
+   - Reproduction steps
    - Potential impact
-   - Your contact information
-4. **Expected response**: Within 3 business days
+   - Suggested remediation
+   - Contact information
 
-See `SECURITY.md` for full vulnerability reporting policy.
+Expected initial response: within three business days.
 
----
-
-## 🏫 Teaching This Content
-
-If you're an educator using this repository:
-
-### Required
-- ✅ Students sign acceptable use policy before accessing labs
-- ✅ Labs are isolated from institutional networks
-- ✅ Clear learning objectives for each exercise
-- ✅ Assessment focuses on defense/remediation, not just attacks
-- ✅ Content is covered in classroom context (not independent)
-
-### Recommended
-- 🎯 Combine attack labs with corresponding defense labs
-- 🎯 Use labs for red team / blue team exercises
-- 🎯 Teach threat modeling and risk assessment alongside techniques
-- 🎯 Require students to demonstrate ethical reasoning
-- 🎯 Document attendance and training records
-
-### Not Allowed
-- ❌ Providing lab access without supervision
-- ❌ Using labs to teach only offensive techniques (no defense component)
-- ❌ Allowing labs to be used for unauthorized testing
-- ❌ Sharing lab VMs or credentials with external parties
+See `SECURITY.md` for the complete disclosure policy.
 
 ---
 
-## 📚 References
+# Educational Use Guidelines
 
-- **Ethical Hacking**: EC-Council Code of Ethics
-- **Penetration Testing**: PTES (Penetration Testing Execution Standard)
-- **Responsible Disclosure**: HackerOne & OWASP guidelines
-- **Security Training**: SANS Institute ethical guidelines
-- **Legal Framework**: Computer Fraud and Abuse Act (CFAA), local cybercrime laws
+Educators using this repository should ensure the following.
+
+## Required
+
+- Students understand acceptable use requirements.
+- Labs remain isolated from institutional networks.
+- Every exercise has clearly defined learning objectives.
+- Defensive concepts accompany offensive techniques.
+- Activities occur under instructor supervision.
+
+## Recommended
+
+- Pair offensive labs with defensive exercises.
+- Include threat modeling and risk assessment.
+- Encourage responsible disclosure practices.
+- Document participation and completion records.
+- Reinforce ethical decision-making throughout the curriculum.
+
+## Not Permitted
+
+- Unsupervised access to laboratory environments
+- Teaching offensive techniques without defensive context
+- Using the repository for unauthorized testing
+- Sharing lab credentials or virtual machines with unauthorized individuals
 
 ---
 
-## Questions?
+# References
 
-If you're unsure about authorized use, **ask first**:
-- Contact repository maintainer at `security@solo2121.com`
-- Consult your organization's security or legal team
-- Review local cybercrime laws
+The following industry resources provide additional guidance.
 
-**When in doubt, don't.**
+- EC-Council Code of Ethics
+- Penetration Testing Execution Standard (PTES)
+- OWASP Responsible Disclosure Guidance
+- SANS Ethical Security Training Guidelines
+- Computer Fraud and Abuse Act (CFAA)
+- Applicable local cybersecurity and computer misuse laws
 
 ---
 
-## Acknowledgment
+# Questions
 
-By using this repository, you acknowledge:
-- You understand the security implications
-- You will use this content ethically and legally
-- You take responsibility for your actions
-- You will report security issues responsibly
+If you are uncertain whether a planned activity is authorized:
+
+- Contact the repository maintainer at `security@solo2121.com`.
+- Consult your organization's security or legal team.
+- Review applicable laws and organizational policies.
+
+When authorization is unclear, do not proceed.
+
+---
+
+# Acknowledgment
+
+By using this repository, you acknowledge that:
+
+- You understand the security implications of the included material.
+- You will use this repository only in authorized environments.
+- You accept responsibility for your actions.
+- You will comply with applicable laws and organizational policies.
+- You will report any security issues responsibly.
