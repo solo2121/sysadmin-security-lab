@@ -26,6 +26,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.2.0] - 2026-07-14 — AD Pentest VLAN Lab
+
+### Changed
+- Vagrantfile header now documents OPNsense (`harmonnine/opnsense-kvm`) as
+  the intended firewall/router for VLAN segmentation, replacing the
+  earlier planned-but-never-implemented pfSense reference. VM definition,
+  interface mapping, DHCP, and firewall provisioning are not yet
+  implemented — lab topology and VM count (14) are unchanged from v2.1.3.
+
+---
+
 ## [2.1.3] - 2026-07-08 — AD Pentest VLAN Lab
 
 ### Fixed
