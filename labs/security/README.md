@@ -48,6 +48,8 @@ arp-scan 172.28.128.0/24
 
 ## Lab Architecture
 
+![VLAN Enterprise Lab Topology](ad-pentest-vlan/diagrams/vlan-topology.png)
+
 Both security labs share a common **14-host topology** on the `172.28.128.0/24` network:
 
 | Host | IP | OS | Lab Use |
@@ -56,11 +58,6 @@ Both security labs share a common **14-host topology** on the `172.28.128.0/24` 
 | metasploitable2 | 172.28.128.12 | Ubuntu 8.04 | Legacy target |
 | juice-shop | 172.28.128.15 | Node.js | Web app practice |
 | dc01 | 172.28.128.21 | Windows Server 2022 | Domain Controller |
-| db01 | 172.28.128.23 | Windows Server 2022 | SQL Server *(simulated)* |
-| ca01-esc | 172.28.128.24 | Windows Server 2022 | AD CS (exploitable) |
-| win10 | 172.28.128.30 | Windows 10 | Workstation |
-| pnpt-internal | 172.28.128.50 | Ubuntu 22.04 | Internal server |
-| llm01 | 172.28.128.60 | Ubuntu 22.04 | LLM endpoint |
 | db01 | 172.28.128.23 | Windows Server 2022 | SQL Server |
 | ca01-esc | 172.28.128.25 | Windows Server 2022 | AD CS (exploitable) |
 | win10 | 172.28.128.30 | Windows 10 | Workstation |
