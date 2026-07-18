@@ -8,8 +8,8 @@ This directory contains enterprise-focused Active Directory penetration testing 
 
 | Lab | Path | Focus | Version | Hosts |
 |-----|------|-------|---------|-------|
-| Active Directory Pentest Lab | [`ad-pentest/`](ad-pentest/) | Complete AD attack chain from recon to Domain Admin; Kerberos attacks, AD CS exploits, lateral movement, cloud attacks, LLM security | v1.10 | 14 |
-| VLAN Enterprise Lab | [`ad-pentest-vlan/`](ad-pentest-vlan/) | Multi-subnet enterprise topology with VLAN segmentation, routing, inter-VLAN attacks, network isolation testing | v2.1.4 | 14 |
+| Active Directory Pentest Lab | [`ad-pentest/`](ad-pentest/) | Complete AD attack chain from recon to Domain Admin; Kerberos attacks, AD CS exploits, lateral movement, cloud attacks, LLM security | v1.10 | 12 |
+| VLAN Enterprise Lab | [`ad-pentest-vlan/`](ad-pentest-vlan/) | Multi-subnet enterprise topology with VLAN segmentation, routing, inter-VLAN attacks, network isolation testing | v2.1.4 | 12 |
 
 ---
 
@@ -48,9 +48,7 @@ arp-scan 172.28.128.0/24
 
 ## Lab Architecture
 
-![VLAN Enterprise Lab Topology](ad-pentest-vlan/diagrams/vlan-topology.png)
-
-Both security labs share a common **14-host topology** on the `172.28.128.0/24` network:
+Both security labs share a common **12-host topology** on the `172.28.128.0/24` network:
 
 | Host | IP | OS | Lab Use |
 |------|----|----|---------|
