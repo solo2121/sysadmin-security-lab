@@ -1,23 +1,33 @@
 # Installation Guide
 
-This guide explains how to prepare a Linux host and deploy the three independent lab environments in sysadmin-security-lab.
+This guide provides comprehensive instructions for setting up a Linux host to deploy the lab environments in this repository. The labs are provisioned using Vagrant with the KVM/libvirt provider.
 
-- **Lab 1**: Active Directory Pentest Lab.
-- **Lab 2**: DevOps / DevSecOps Lab.
+---
 
-The labs are designed to run on a Linux host using Vagrant, Libvirt, and KVM/QEMU.
+## Table of Contents
+
+- [Prerequisites](#prerequisites)
+- [Step 1: Host System Setup](#step-1-host-system-setup)
+- [Step 2: Install Vagrant](#step-2-install-vagrant)
+- [Step 3: Install Vagrant Plugins](#step-3-install-vagrant-plugins)
+- [Step 4: Deploy a Lab Environment](#step-4-deploy-a-lab-environment)
+- [Verification and Cleanup](#verification-and-cleanup)
+- [Troubleshooting](#troubleshooting)
 
 ---
 
 ## Prerequisites
 
-Before installing anything, make sure your host system meets the basic requirements.
+### Automated Prerequisite Check
 
-**Quick check:** run [`scripts/check-prerequisites.sh`](scripts/check-prerequisites.sh)
-from the repo root to validate KVM, libvirt, Vagrant, required plugins,
-disk/RAM, and network reachability in one pass:
+Before proceeding, run the `check-prerequisites.sh` script from the repository root. It validates your system's configuration for KVM, libvirt, Vagrant, required plugins, and resource availability without making any changes.
 
 ```bash
+# First, clone the repository if you haven't already
+git clone https://github.com/solo2121/sysadmin-security-lab.git
+cd sysadmin-security-lab
+
+# Run the check
 ./scripts/check-prerequisites.sh --all
 ```
 
