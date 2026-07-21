@@ -2,6 +2,10 @@
 #
 # Script: BATS tests for setup-vlans.sh
 # Author: Miguel A. Carlo
+# Description:
+#   Unit tests for the VLAN setup script. These tests source the target
+#   script and exercise its helper functions (logging, error handling)
+#   and configuration variables without requiring network or root privileges.
 # Description: Unit tests for the VLAN setup script.
 #   These tests source the target script (`setup-vlans.sh`) and exercise
 #   its helper functions (e.g., logging, error handling) and validate the
