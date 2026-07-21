@@ -11,12 +11,8 @@
 
 SCRIPT="${BATS_TEST_DIRNAME}/../../labs/security/ad-pentest-vlan/scripts/setup-vlans.sh"
 
-load_script() {
-    source "$SCRIPT"
-}
-
 setup() {
-    load_script
+    source "$SCRIPT"
 }
 
 @test "script defines the expected logging functions" {
@@ -62,6 +58,7 @@ setup() {
 }
 
 @test "VLAN_CONFIG defines all five expected VLANs" {
+    declare -p VLAN_CONFIG >/dev/null
     [ "${#VLAN_CONFIG[@]}" -eq 5 ]
     [[ -n "${VLAN_CONFIG[10]:-}" ]]
     [[ -n "${VLAN_CONFIG[20]:-}" ]]
@@ -71,6 +68,7 @@ setup() {
 }
 
 @test "VLAN_CONFIG entries follow the bridge:gateway:description format" {
+    declare -p VLAN_CONFIG >/dev/null
     for vlan_id in "${!VLAN_CONFIG[@]}"; do
         entry="${VLAN_CONFIG[$vlan_id]}"
         IFS=':' read -r bridge gateway description <<< "$entry"
