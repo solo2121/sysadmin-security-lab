@@ -37,10 +37,10 @@ This repository is designed to be runnable, not static. The lab environments, wo
 - **Lab 1 – Active Directory Pentest Lab** (`labs/security/ad-pentest/`)
   A Windows enterprise security lab for Active Directory research, adversary emulation, post-exploitation analysis, and cloud-related security scenarios.
 
-- **Lab 1b – Active Directory Pentest Lab, VLAN edition** (`labs/security/ad-pentest-vlan/`)
+- **Lab 2 – Active Directory Pentest Lab, VLAN edition** (`labs/security/ad-pentest-vlan/`)
   A segmented version of the Active Directory lab with VLAN boundaries and controlled routing for network-focused testing.
 
-- **Lab 2 – DevOps / DevSecOps Lab** (`labs/infrastructure/devops-linux-lab/`)
+- **Lab 3 – DevOps / DevSecOps Lab** (`labs/infrastructure/devops-linux-lab/`)
   A Linux-centric platform engineering lab focused on Kubernetes, GitOps, observability, runtime security, policy enforcement, and automation.
 
 Each lab deploys independently using its own Vagrantfile on KVM/QEMU virtualization infrastructure. See the [architecture documentation](docs/architecture/architecture.md) for the detailed design, topology, and networking model.
