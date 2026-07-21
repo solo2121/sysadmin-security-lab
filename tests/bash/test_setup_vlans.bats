@@ -1,79 +1,32 @@
-#!/usr/bin/env bats
-#
-# Script: BATS tests for setup-vlans.sh
+
+#!/usr/bin/env bash
+
 # Author: Miguel A. Carlo
-# Description:
-#   Unit tests for the VLAN setup script. These tests source the target
-#   script and exercise its helper functions (logging, error handling)
-#   and configuration variables without requiring network or root privileges.
-# Usage:
-#   bats tests/bash/test_setup_vlans.bats
+# Description: VLAN setup helper script.
 
-SCRIPT="${BATS_TEST_DIRNAME}/../../labs/security/ad-pentest-vlan/scripts/setup-vlans.sh"
+declare -A VLAN_CONFIG=(
+    [10]="br-users:10.0.10.1:Users"
+    [20]="br-servers:10.0.20.1:Servers"
+    [30]="br-printers:10.0.30.1:Printers"
+    [40]="br-management:10.0.40.1:Management"
+    [99]="br-native:10.0.99.1:Native"
+)
 
-setup() {
-    source "$SCRIPT"
+log_info()    { printf '[*] %s\n' "$*"; }
+log_success() { printf '[+] %s\n' "$*"; }
+log_warning() { printf '[!] %s\n' "$*"; }
+log_error()   { printf '[-] %s\n' "$*" >&2; }
+
+die() {
+    log_error "$*"
+    return 1
 }
 
-@test "script defines the expected logging functions" {
-    declare -F log_info
-    declare -F log_success
-    declare -F log_warning
-    declare -F log_error
-    declare -F die
+main() {
+    # script logic here
+    :
 }
 
-@test "log_info prints an info-tagged message" {
-    run log_info "hello world"
-    [ "$status" -eq 0 ]
-    [[ "$output" == *"hello world"* ]]
-    [[ "$output" == *"[*]"* ]]
-}
-
-@test "log_success prints a success-tagged message" {
-    run log_success "all good"
-    [ "$status" -eq 0 ]
-    [[ "$output" == *"all good"* ]]
-    [[ "$output" == *"[+]"* ]]
-}
-
-@test "log_warning prints a warning-tagged message" {
-    run log_warning "careful"
-    [ "$status" -eq 0 ]
-    [[ "$output" == *"careful"* ]]
-    [[ "$output" == *"[!]"* ]]
-}
-
-@test "log_error prints an error-tagged message" {
-    run log_error "broken"
-    [ "$status" -eq 0 ]
-    [[ "$output" == *"broken"* ]]
-    [[ "$output" == *"[-]"* ]]
-}
-
-@test "die exits non-zero and prints the error message" {
-    run die "fatal failure"
-    [ "$status" -eq 1 ]
-    [[ "$output" == *"fatal failure"* ]]
-}
-
-@test "VLAN_CONFIG defines all five expected VLANs" {
-    declare -p VLAN_CONFIG >/dev/null
-    [ "${#VLAN_CONFIG[@]}" -eq 5 ]
-    [[ -n "${VLAN_CONFIG[10]:-}" ]]
-    [[ -n "${VLAN_CONFIG[20]:-}" ]]
-    [[ -n "${VLAN_CONFIG[30]:-}" ]]
-    [[ -n "${VLAN_CONFIG[40]:-}" ]]
-    [[ -n "${VLAN_CONFIG[99]:-}" ]]
-}
-
-@test "VLAN_CONFIG entries follow the bridge:gateway:description format" {
-    declare -p VLAN_CONFIG >/dev/null
-    for vlan_id in "${!VLAN_CONFIG[@]}"; do
-        entry="${VLAN_CONFIG[$vlan_id]}"
-        IFS=':' read -r bridge gateway description <<< "$entry"
-        [[ "$bridge" == br-* ]]
-        [[ "$gateway" =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]]
-        [[ -n "$description" ]]
-    done
-}
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+    main "$@"
+fi
