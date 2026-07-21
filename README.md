@@ -220,16 +220,15 @@ sysadmin-security-lab/
 │       ├── ad-pentest/
 │       └── ad-pentest-vlan/
 ├── scripts/
-├── security/
-├── sysadmin/
+├── tools/
+│   ├── security/
+│   └── sysadmin/
 ├── tests/
 ├── CHANGELOG.md
 ├── CONTRIBUTING.md
 ├── CODE_OF_CONDUCT.md
-├── installation.md
 ├── LICENSE
 ├── SECURITY.md
-├── troubleshooting.md
 └── README.md
 ```
 
@@ -261,7 +260,7 @@ cd sysadmin-security-lab
 
 ### 2. Install dependencies
 
-Follow the [Installation Guide](installation.md) for host setup, Vagrant, libvirt, and required plugins.
+Follow the [Installation Guide](docs/setup/installation.md) for host setup, Vagrant, libvirt, and required plugins.
 
 ### 3. Deploy Lab 1
 
@@ -321,12 +320,12 @@ vagrant up
 | [architecture.md](docs/architecture/architecture.md) | Infrastructure design |
 | [threat-model.md](docs/architecture/threat-model.md) | Assets, trust boundaries, and attacker assumptions |
 | [security-scope.md](docs/architecture/security-scope.md) | Security boundaries |
-| [installation.md](installation.md) | Host installation and setup |
+| [installation.md](docs/setup/installation.md) | Host installation and setup |
 | [setup-with-examples.md](docs/setup-with-examples.md) | Deployment walkthrough |
 | [check-prerequisites.sh](scripts/check-prerequisites.sh) | Host validation before deployment |
 | [minimal-resource-deployment.md](docs/optimization/minimal-resource-deployment.md) | Reduced-resource lab profiles |
-| [troubleshooting.md](troubleshooting.md) | Common issues and fixes |
-| [ROADMAP.md](ROADMAP.md) | Planned improvements |
+| [troubleshooting.md](docs/setup/troubleshooting.md) | Common issues and fixes |
+| [roadmap.md](docs/roadmap.md) | Planned improvements |
 | [CHANGELOG.md](CHANGELOG.md) | Project history |
 
 ---
