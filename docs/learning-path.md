@@ -7,7 +7,7 @@ and which docs to read at each step. Full reference material lives in the
 
 ## Step 0: Prerequisites
 
-Before deploying anything, read [`installation.md`](../installation.md) and
+Before deploying anything, read [`installation.md`](setup/installation.md) and
 run [`scripts/check-prerequisites.sh`](../scripts/check-prerequisites.sh) to
 confirm your host has the CPU, RAM, and virtualization support each lab
 needs. All three labs are Linux-host-only (KVM/libvirt) — see
@@ -76,6 +76,6 @@ and every guide referenced above.
 
 ## If you get stuck
 
-Check [`troubleshooting.md`](../troubleshooting.md) first, then
+Check [`troubleshooting.md`](setup/troubleshooting.md) first, then
 [open an issue](https://github.com/solo2121/sysadmin-security-lab/issues) if
 your problem isn't covered.

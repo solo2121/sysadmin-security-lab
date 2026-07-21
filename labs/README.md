@@ -26,7 +26,7 @@ Recommended host setup:
 - 8 GB RAM minimum, 16 GB or more recommended.
 - 50 GB free disk minimum, 100 GB or more recommended.
 
-See [`../installation.md`](../installation.md) for full setup instructions.
+See [`../docs/setup/installation.md`](../docs/setup/installation.md) for full setup instructions.
 
 ---
 
@@ -113,4 +113,4 @@ Common checks:
 - Check `virsh list --all` if VMs are stuck or partially created.
 - Destroy and rebuild only lab resources you are sure you no longer need.
 
-For more help, see [`../troubleshooting.md`](../troubleshooting.md).
+For more help, see [`../docs/setup/troubleshooting.md`](../docs/setup/troubleshooting.md).
