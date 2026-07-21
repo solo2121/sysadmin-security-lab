@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 #
-# Modern Linux Log Analyzer
+# Script: Modern Linux Log Analyzer
+# Author: Miguel A. Carlo
+# Description:
+#   A utility to find and analyze Linux system logs for errors.
+#   It identifies the first available log file from a predefined list,
+#   then extracts, summarizes, and counts error-related entries.
 #
 # Functions:
 #   find_first_log
@@ -43,12 +48,10 @@ die() {
 
 
 find_first_log() {
-
     local paths=("$@")
 
     for logfile in "${paths[@]}"; do
-
-        if [[ -r "$logfile" ]]; then
+        if [[ -f "$logfile" && -r "$logfile" ]]; then
             echo "$logfile"
             return 0
         fi
@@ -60,13 +63,11 @@ find_first_log() {
 
 
 summarize_errors() {
-
     local logfile="$1"
 
-    if [[ ! -f "$logfile" ]]; then
+    if [[ ! -f "$logfile" ]] || [[ ! -r "$logfile" ]]; then
         return 0
     fi
-
 
     grep -i "error\|failed\|critical" "$logfile" \
         | sed -E 's/^.*(error|failed|critical)/\1/' \
@@ -78,24 +79,19 @@ summarize_errors() {
 
 
 analyze_log_file() {
-
     local logfile="$1"
 
-
-    if [[ ! -f "$logfile" ]]; then
+    if [[ ! -f "$logfile" ]] || [[ ! -r "$logfile" ]]; then
+        log_warning "Log file not found or not readable: $logfile"
         return 1
     fi
 
-
     log_info "Analyzing $logfile"
-
     summarize_errors "$logfile"
-
 }
 
 
 main() {
-
     local logfile
 
     logfile=$(find_first_log \
@@ -104,9 +100,9 @@ main() {
         "/var/log/auth.log"
     ) || die "No readable log file found"
 
-
-    analyze_log_file "$logfile"
-
+    if [[ -n "$logfile" ]]; then
+        analyze_log_file "$logfile"
+    fi
 }
 
 

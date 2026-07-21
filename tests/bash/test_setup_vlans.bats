@@ -1,13 +1,12 @@
 #!/usr/bin/env bats
 #
-# Unit tests for labs/security/ad-pentest-vlan/scripts/setup-vlans.sh
-#
-# These tests source the script (which is guarded so it does not run
-# main() automatically) and exercise the pure helper functions: logging
-# output formatting and the die() error/exit-code contract. No network
-# or root privileges are required.
-#
-# Run with:
+# Script: BATS tests for setup-vlans.sh
+# Author: Miguel A. Carlo
+# Description:
+#   Unit tests for the VLAN setup script. These tests source the target
+#   script and exercise its helper functions (logging, error handling)
+#   and configuration variables without requiring network or root privileges.
+# Usage:
 #   bats tests/bash/test_setup_vlans.bats
 
 SCRIPT="${BATS_TEST_DIRNAME}/../../labs/security/ad-pentest-vlan/scripts/setup-vlans.sh"
