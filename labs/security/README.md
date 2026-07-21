@@ -152,7 +152,7 @@ Before starting either lab:
   - `impacket`, `certipy-ad`, `bloodhound-python`, `netexec`
   - `kerbrute`, `responder`, `hashcat`
 
-See [`../../installation.md`](../../installation.md) for detailed host setup instructions.
+See [`../../docs/setup/installation.md`](../../docs/setup/installation.md) for detailed host setup instructions.
 
 ---
 
@@ -270,7 +270,7 @@ vagrant ssh kali
 pip3 install impacket certipy-ad bloodhound netexec
 ```
 
-For more host-level troubleshooting, see [`../../troubleshooting.md`](../../troubleshooting.md).
+For more host-level troubleshooting, see [`../../docs/setup/troubleshooting.md`](../../docs/setup/troubleshooting.md).
 
 ---
 

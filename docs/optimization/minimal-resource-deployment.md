@@ -110,6 +110,6 @@ not for the core AD kill chain.
 
 ## Related documentation
 
-- [`installation.md`](../../installation.md) — full setup instructions
+- [`installation.md`](../setup/installation.md) — full setup instructions
 - [`scripts/check-prerequisites.sh`](../../scripts/check-prerequisites.sh) — validates your host before you start
-- [`troubleshooting.md`](../../troubleshooting.md) — common setup issues
+- [`troubleshooting.md`](../setup/troubleshooting.md) — common setup issues
