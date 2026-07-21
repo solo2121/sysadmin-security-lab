@@ -6,21 +6,18 @@
 #   Unit tests for the VLAN setup script. These tests source the target
 #   script and exercise its helper functions (logging, error handling)
 #   and configuration variables without requiring network or root privileges.
-# Description: Unit tests for the VLAN setup script.
-#   These tests source the target script (`setup-vlans.sh`) and exercise
-#   its helper functions (e.g., logging, error handling) and validate the
-#   structure of its configuration variables (e.g., `VLAN_CONFIG`) without
-#   requiring network or root privileges.
 # Usage:
 #   bats tests/bash/test_setup_vlans.bats
 
 SCRIPT="${BATS_TEST_DIRNAME}/../../labs/security/ad-pentest-vlan/scripts/setup-vlans.sh"
 
-# Sourced at file scope (not inside a function) so that array variables
-# like VLAN_CONFIG, which the script declares with `declare -A`, remain
-# visible across all @test blocks instead of being scoped local to a
-# setup() function.
-source "$SCRIPT"
+load_script() {
+    source "$SCRIPT"
+}
+
+setup() {
+    load_script
+}
 
 @test "script defines the expected logging functions" {
     declare -F log_info
@@ -65,7 +62,6 @@ source "$SCRIPT"
 }
 
 @test "VLAN_CONFIG defines all five expected VLANs" {
-    source "$SCRIPT"
     [ "${#VLAN_CONFIG[@]}" -eq 5 ]
     [[ -n "${VLAN_CONFIG[10]:-}" ]]
     [[ -n "${VLAN_CONFIG[20]:-}" ]]
@@ -75,7 +71,6 @@ source "$SCRIPT"
 }
 
 @test "VLAN_CONFIG entries follow the bridge:gateway:description format" {
-    source "$SCRIPT"
     for vlan_id in "${!VLAN_CONFIG[@]}"; do
         entry="${VLAN_CONFIG[$vlan_id]}"
         IFS=':' read -r bridge gateway description <<< "$entry"
