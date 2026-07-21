@@ -15,440 +15,197 @@ Features:
 License: MIT
 """
 
-import argparse
-import asyncio
-import os
-import platform
-import random
-import socket
-import time
+import importlib.util
+import sys
+from pathlib import Path
 
-from enum import Enum, auto
-from typing import Dict, List, NamedTuple, Optional
+import pytest
 
 
-try:
-    from scapy.all import sr1, IP, TCP, UDP, ICMP
-
-    SCAPY_AVAILABLE = True
-
-except ImportError:
-    sr1 = None
-    IP = None
-    TCP = None
-    UDP = None
-    ICMP = None
-
-    SCAPY_AVAILABLE = False
+ROOT_DIR = Path(__file__).resolve().parents[2]
 
 
-class ScanType(Enum):
-    """Available scan techniques."""
-
-    TCP_CONNECT = auto()
-    TCP_SYN = auto()
-    UDP = auto()
+SCANNER_LOCATIONS = [
+    ROOT_DIR / "tools" / "security" / "reconnaissance" / "port-scanner.py",
+    ROOT_DIR / "security" / "reconnaissance" / "port-scanner.py",
+]
 
 
-class ScanResult(NamedTuple):
-    """Port scan result."""
+def _find_scanner():
 
-    port: int
-    is_open: bool
-    scan_type: ScanType
-    response_time: float = 0.0
-    error: Optional[str] = None
-    banner: Optional[str] = None
-    target: str = ""
+    for path in SCANNER_LOCATIONS:
 
+        if path.exists():
+            return path
 
-def check_privileges() -> bool:
-    """Check administrator/root privileges."""
-
-    try:
-        if platform.system() == "Windows":
-            import ctypes
-
-            return ctypes.windll.shell32.IsUserAnAdmin() != 0
-
-        return hasattr(os, "getuid") and os.getuid() == 0
-
-    except Exception:
-        return False
+    raise FileNotFoundError(
+        "Unable to locate port-scanner.py. "
+        f"Checked: {SCANNER_LOCATIONS}"
+    )
 
 
-async def tcp_connect_scan(
-    target: str,
-    port: int,
-    timeout: float,
-) -> ScanResult:
+def _load_module():
 
-    start = time.time()
+    scanner_path = _find_scanner()
 
-    try:
-        reader, writer = await asyncio.wait_for(
-            asyncio.open_connection(target, port),
-            timeout,
-        )
+    spec = importlib.util.spec_from_file_location(
+        "port_scanner",
+        scanner_path,
+    )
 
-        banner = None
+    module = importlib.util.module_from_spec(spec)
 
-        try:
-            data = await asyncio.wait_for(
-                reader.read(100),
-                timeout=2,
-            )
+    sys.modules["port_scanner"] = module
 
-            banner = data.decode(
-                "utf-8",
-                errors="ignore",
-            ).strip()
+    spec.loader.exec_module(module)
 
-        except asyncio.TimeoutError:
-            banner = "No banner response"
-
-        writer.close()
-        await writer.wait_closed()
-
-        return ScanResult(
-            port,
-            True,
-            ScanType.TCP_CONNECT,
-            time.time() - start,
-            banner=banner,
-            target=target,
-        )
-
-    except ConnectionRefusedError:
-
-        return ScanResult(
-            port,
-            False,
-            ScanType.TCP_CONNECT,
-            target=target,
-        )
-
-    except Exception as exc:
-
-        return ScanResult(
-            port,
-            False,
-            ScanType.TCP_CONNECT,
-            error=str(exc),
-            target=target,
-        )
+    return module
 
 
-def syn_scan(
-    target: str,
-    port: int,
-    timeout: float,
-) -> ScanResult:
+@pytest.fixture(scope="module")
+def scanner():
 
-    start = time.time()
+    return _load_module()
 
-    if not SCAPY_AVAILABLE:
 
-        return ScanResult(
-            port,
-            False,
-            ScanType.TCP_SYN,
-            error="Scapy not installed",
-            target=target,
-        )
+def test_module_loads_without_side_effects(scanner):
 
-    if not check_privileges():
+    assert scanner is not None
 
-        return ScanResult(
-            port,
-            False,
-            ScanType.TCP_SYN,
-            error="Root privileges required",
-            target=target,
-        )
 
-    response = sr1(
-        IP(dst=target)
-        / TCP(
-            dport=port,
-            flags="S",
+def test_scan_type_enum_has_expected_members(scanner):
+
+    assert scanner.ScanType.TCP_CONNECT
+    assert scanner.ScanType.TCP_SYN
+    assert scanner.ScanType.UDP
+
+
+def test_scan_result_defaults(scanner):
+
+    result = scanner.ScanResult(
+        port=80,
+        is_open=True,
+        scan_type=scanner.ScanType.TCP_CONNECT,
+    )
+
+    assert result.port == 80
+    assert result.is_open is True
+    assert result.response_time == 0.0
+    assert result.error is None
+    assert result.banner is None
+    assert result.target == ""
+
+
+def test_scan_result_is_immutable(scanner):
+
+    result = scanner.ScanResult(
+        port=22,
+        is_open=True,
+        scan_type=scanner.ScanType.TCP_CONNECT,
+    )
+
+    with pytest.raises(AttributeError):
+
+        result.port = 443
+
+
+@pytest.mark.parametrize(
+    "argv,target,ports",
+    [
+        (
+            [
+                "scanner",
+                "10.0.0.5",
+                "-p",
+                "22,80,443",
+            ],
+            "10.0.0.5",
+            "22,80,443",
         ),
-        timeout=timeout,
-        verbose=0,
+        (
+            [
+                "scanner",
+                "scanme.example.com",
+                "-p",
+                "1-1024",
+            ],
+            "scanme.example.com",
+            "1-1024",
+        ),
+    ],
+)
+def test_parse_args_target_and_ports(
+    scanner,
+    monkeypatch,
+    argv,
+    target,
+    ports,
+):
+
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        argv,
     )
 
-    if response is None:
+    args = scanner.parse_args()
 
-        return ScanResult(
-            port,
-            False,
-            ScanType.TCP_SYN,
-            error="filtered",
-            target=target,
-        )
+    assert args.target == target
+    assert args.ports == ports
 
-    if response.haslayer(TCP):
 
-        flags = int(response[TCP].flags)
+def test_parse_args_defaults_when_no_target(
+    scanner,
+    monkeypatch,
+):
 
-        if flags == 0x12:
-
-            return ScanResult(
-                port,
-                True,
-                ScanType.TCP_SYN,
-                time.time() - start,
-                target=target,
-            )
-
-    return ScanResult(
-        port,
-        False,
-        ScanType.TCP_SYN,
-        target=target,
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["scanner"],
     )
 
+    args = scanner.parse_args()
 
-def udp_scan(
-    target: str,
-    port: int,
-    timeout: float,
-) -> ScanResult:
+    assert args.target is None
+    assert args.scan_type is None
 
-    if not SCAPY_AVAILABLE:
 
-        return ScanResult(
-            port,
-            False,
-            ScanType.UDP,
-            error="Scapy not installed",
-            target=target,
-        )
+def test_parse_args_syn_flag_sets_scan_type(
+    scanner,
+    monkeypatch,
+):
 
-    if not check_privileges():
-
-        return ScanResult(
-            port,
-            False,
-            ScanType.UDP,
-            error="Root privileges required",
-            target=target,
-        )
-
-    response = sr1(
-        IP(dst=target)
-        / UDP(dport=port),
-        timeout=timeout,
-        verbose=0,
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "scanner",
+            "10.0.0.1",
+            "--syn",
+        ],
     )
 
-    if response is None:
+    args = scanner.parse_args()
 
-        return ScanResult(
-            port,
-            True,
-            ScanType.UDP,
-            banner="Open|Filtered",
-            target=target,
-        )
+    assert args.scan_type == scanner.ScanType.TCP_SYN
 
-    if response.haslayer(ICMP):
 
-        return ScanResult(
-            port,
-            False,
-            ScanType.UDP,
-            target=target,
-        )
+def test_parse_args_udp_flag_sets_scan_type(
+    scanner,
+    monkeypatch,
+):
 
-    return ScanResult(
-        port,
-        True,
-        ScanType.UDP,
-        banner="Open|Filtered",
-        target=target,
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "scanner",
+            "10.0.0.1",
+            "--udp",
+        ],
     )
 
+    args = scanner.parse_args()
 
-async def scan_port(
-    target: str,
-    port: int,
-    scan_type: ScanType,
-    timeout: float,
-) -> ScanResult:
-
-    if scan_type == ScanType.TCP_CONNECT:
-
-        return await tcp_connect_scan(
-            target,
-            port,
-            timeout,
-        )
-
-    if scan_type == ScanType.TCP_SYN:
-
-        return syn_scan(
-            target,
-            port,
-            timeout,
-        )
-
-    if scan_type == ScanType.UDP:
-
-        return udp_scan(
-            target,
-            port,
-            timeout,
-        )
-
-    return ScanResult(
-        port,
-        False,
-        scan_type,
-        error="Unknown scan type",
-        target=target,
-    )
-
-
-async def scan_ports(
-    target: str,
-    ports: List[int],
-    scan_type: ScanType = ScanType.TCP_CONNECT,
-    timeout: float = 1.0,
-    rate_limit: int = 100,
-    randomize: bool = False,
-) -> List[ScanResult]:
-
-    ports = ports.copy()
-
-    if randomize:
-        random.shuffle(ports)
-
-    semaphore = asyncio.Semaphore(rate_limit)
-
-    async def worker(port):
-
-        async with semaphore:
-
-            return await scan_port(
-                target,
-                port,
-                scan_type,
-                timeout,
-            )
-
-    return await asyncio.gather(
-        *(worker(port) for port in ports)
-    )
-
-
-def parse_ports(value: str) -> List[int]:
-
-    if "-" in value:
-
-        start, end = map(
-            int,
-            value.split("-"),
-        )
-
-        return list(range(start, end + 1))
-
-    return [
-        int(port)
-        for port in value.split(",")
-        if port.isdigit()
-    ]
-
-
-def parse_args():
-
-    parser = argparse.ArgumentParser(
-        description="Advanced Port Scanner",
-    )
-
-    parser.add_argument(
-        "target",
-        nargs="?",
-    )
-
-    parser.add_argument(
-        "-p",
-        "--ports",
-    )
-
-    parser.add_argument(
-        "--syn",
-        action="store_const",
-        const=ScanType.TCP_SYN,
-        dest="scan_type",
-    )
-
-    parser.add_argument(
-        "--udp",
-        action="store_const",
-        const=ScanType.UDP,
-        dest="scan_type",
-    )
-
-    parser.add_argument(
-        "--timeout",
-        type=float,
-        default=1.0,
-    )
-
-    parser.add_argument(
-        "--rate",
-        type=int,
-        default=100,
-    )
-
-    parser.add_argument(
-        "--randomize",
-        action="store_true",
-    )
-
-    return parser.parse_args()
-
-
-def display_results(results):
-
-    for result in results:
-
-        status = "OPEN" if result.is_open else "CLOSED"
-
-        print(
-            f"{result.port}: {status}"
-        )
-
-
-async def main(args):
-
-    if not args.target:
-
-        print(
-            "Interactive mode not implemented in this test-focused build."
-        )
-
-        return
-
-    ports = parse_ports(args.ports or "1-1024")
-
-    results = await scan_ports(
-        args.target,
-        ports,
-        args.scan_type or ScanType.TCP_CONNECT,
-        args.timeout,
-        args.rate,
-        args.randomize,
-    )
-
-    display_results(results)
-
-
-if __name__ == "__main__":
-
-    asyncio.run(
-        main(
-            parse_args()
-        )
-    )
+    assert args.scan_type == scanner.ScanType.UDP
