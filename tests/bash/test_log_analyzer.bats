@@ -1,114 +1,86 @@
-#!/usr/bin/env bash
+#!/usr/bin/env bats
 #
-# Script: Modern Linux Log Analyzer
-# Author: Miguel A. Carlo
-# Description:
-#   A utility to find and analyze Linux system logs for errors.
-#   It identifies the first available log file from a predefined list,
-#   then extracts, summarizes, and counts error-related entries.
+# Unit tests for tools/sysadmin/monitoring/log-analyzer.sh
 #
-# Functions:
-#   find_first_log
-#   summarize_errors
-#   analyze_log_file
-#
-# Designed for:
-#   - CI testing
-#   - Security labs
-#   - Linux troubleshooting
-#
+# Scope:
+#   These tests source the real script (guarded against auto-execution
+#   by its own `[[ "${BASH_SOURCE[0]}" == "${0}" ]]` check, line 199) and
+#   exercise the pure, non-interactive functions: find_first_log() and
+#   summarize_errors(). They deliberately do NOT call analyze_log_file,
+#   main_menu, search_all_logs, realtime_monitoring_menu, or
+#   analyze_custom_log — those call `read -r -p` and would block waiting
+#   on stdin, or (realtime_monitoring_menu) tail -f forever. Out of scope
+#   for a non-interactive CI unit test.
 
-set -o pipefail
+SCRIPT_PATH="${BATS_TEST_DIRNAME}/../../tools/sysadmin/monitoring/log-analyzer.sh"
 
+setup() {
+    # shellcheck disable=SC1090
+    source "$SCRIPT_PATH"
 
-log_info() {
-    echo "[*] $*"
+    # log-analyzer.sh sets `set -Eeuo pipefail` for its own execution.
+    # Restore normal test semantics right after sourcing so it can't
+    # silently change how these assertions behave.
+    set +Eeuo pipefail
+
+    TEST_TMPDIR="$(mktemp -d)"
 }
 
-
-log_success() {
-    echo "[+] $*"
+teardown() {
+    rm -rf "$TEST_TMPDIR"
 }
 
-
-log_warning() {
-    echo "[!] $*"
+@test "log-analyzer.sh sources without executing main_menu" {
+    declare -f main_menu >/dev/null
+    declare -f find_first_log >/dev/null
 }
 
+@test "find_first_log returns the first readable path" {
+    echo "log contents" > "$TEST_TMPDIR/second.log"
 
-log_error() {
-    echo "[-] $*"
+    run find_first_log "$TEST_TMPDIR/does-not-exist.log" "$TEST_TMPDIR/second.log"
+
+    [ "$status" -eq 0 ]
+    [ "$output" = "$TEST_TMPDIR/second.log" ]
 }
 
+@test "find_first_log skips unreadable paths and picks the next readable one" {
+    echo "first"  > "$TEST_TMPDIR/first.log"
+    echo "second" > "$TEST_TMPDIR/second.log"
+    chmod 000 "$TEST_TMPDIR/first.log"
 
-die() {
-    log_error "$1"
-    return 1
+    run find_first_log "$TEST_TMPDIR/first.log" "$TEST_TMPDIR/second.log"
+
+    [ "$status" -eq 0 ]
+    [ "$output" = "$TEST_TMPDIR/second.log" ]
+
+    chmod 644 "$TEST_TMPDIR/first.log"
 }
 
+@test "find_first_log returns failure when no path is readable" {
+    run find_first_log "$TEST_TMPDIR/nope-a.log" "$TEST_TMPDIR/nope-b.log"
 
-find_first_log() {
-    local paths=("$@")
-
-    for logfile in "${paths[@]}"; do
-        if [[ -f "$logfile" && -r "$logfile" ]]; then
-            echo "$logfile"
-            return 0
-        fi
-
-    done
-
-    return 1
+    [ "$status" -eq 1 ]
 }
 
+@test "summarize_errors counts and ranks repeated error lines" {
+    cat > "$TEST_TMPDIR/sample.log" <<'LOG'
+Jan 01 00:00:01 host app: connection failed
+Jan 01 00:00:02 host app: connection failed
+Jan 01 00:00:03 host app: authentication denied
+LOG
 
-summarize_errors() {
-    local logfile="$1"
+    run summarize_errors "$TEST_TMPDIR/sample.log"
 
-    if [[ ! -f "$logfile" ]] || [[ ! -r "$logfile" ]]; then
-        return 0
-    fi
-
-    grep -i "error\|failed\|critical" "$logfile" \
-        | sed -E 's/^.*(error|failed|critical)/\1/' \
-        | sort \
-        | uniq -c \
-        | sort -nr
-
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"2 "*"failed"* ]]
+    [[ "$output" == *"denied"* ]]
 }
 
+@test "summarize_errors handles a file with no matching lines" {
+    echo "Jan 01 00:00:01 host app: all systems nominal" > "$TEST_TMPDIR/clean.log"
 
-analyze_log_file() {
-    local logfile="$1"
+    run summarize_errors "$TEST_TMPDIR/clean.log"
 
-    if [[ ! -f "$logfile" ]] || [[ ! -r "$logfile" ]]; then
-        log_warning "Log file not found or not readable: $logfile"
-        return 1
-    fi
-
-    log_info "Analyzing $logfile"
-    summarize_errors "$logfile"
+    [ "$status" -eq 0 ]
 }
-
-
-main() {
-    local logfile
-
-    logfile=$(find_first_log \
-        "/var/log/syslog" \
-        "/var/log/messages" \
-        "/var/log/auth.log"
-    ) || die "No readable log file found"
-
-    if [[ -n "$logfile" ]]; then
-        analyze_log_file "$logfile"
-    fi
-}
-
-
-#
-# Prevent execution when sourced by BATS
-#
-if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
-    main "$@"
-fi
