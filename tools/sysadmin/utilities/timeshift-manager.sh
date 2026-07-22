@@ -68,15 +68,30 @@ check_dependencies() {
 
 # Get snapshot count
 get_snapshot_count() {
-    timeshift --list 2>/dev/null | awk '/^[0-9]+[[:space:]]+>/ {count++} END {print count+0}' || echo "0"
+    # Grep for lines that start with a number, whitespace, and '>', which is the
+    # format for a snapshot entry in `timeshift --list`.
+    timeshift --list 2>/dev/null | grep -c '^[0-9]\+[[:space:]]\+>' || echo "0"
 }
 
 # Get snapshot names
 get_snapshots() {
-    local count
-    count=$(get_snapshot_count)
-    [[ $count -eq 0 ]] && echo "" && return
-    timeshift --list 2>/dev/null | awk '/^[0-9]+[[:space:]]+>/ {print $3}'
+    # Extract just the snapshot name (third column) from the list.
+    timeshift --list 2>/dev/null | awk '/^[0-9]+[[:space:]]+>/ {print $3}' || true
+}
+
+# Reusable snapshot list display
+_display_snapshot_list() {
+    local snapshots
+    snapshots=$(get_snapshots)
+    if [[ -z "$snapshots" ]]; then
+        print_warning "No snapshots available"
+        return 1
+    fi
+
+    echo -e "\n${CYAN}Available Snapshots:${NC}"
+    # Use process substitution to read lines into an array for indexed access
+    mapfile -t snapshot_array <<< "$snapshots"
+    return 0
 }
 
 pause_for_input() { echo; read -rp "Press Enter to continue..." _; }
@@ -96,21 +111,13 @@ create_snapshot() {
 
 delete_snapshot() {
     print_header "Delete Snapshot"
-    local snapshots
-    snapshots=$(get_snapshots)
-    if [[ -z "$snapshots" ]]; then
-        print_warning "No snapshots available"
+    local -a snapshot_array=() # Ensure it's an array
+    if ! _display_snapshot_list; then
         pause_for_input
         return
     fi
-    echo -e "\n${CYAN}Available Snapshots:${NC}"
-    local -a snapshot_array=()
-    local counter=1
-    while IFS= read -r snap; do
-        echo -e "  ${WHITE}$counter)${NC} $snap"
-        snapshot_array[counter]="$snap"
-        ((counter++))
-    done <<< "$snapshots"
+
+    for i in "${!snapshot_array[@]}"; do echo -e "  ${WHITE}$((i+1)))${NC} ${snapshot_array[i]}"; done
     echo -e "  ${WHITE}0)${NC} Cancel"
     while true; do
         read -rp "Select snapshot to delete [0-$((counter-1))]: " choice
@@ -121,7 +128,7 @@ delete_snapshot() {
             print_error "Invalid choice"
         fi
     done
-    local target="${snapshot_array[choice]}"
+    local target="${snapshot_array[choice-1]}"
     print_warning "This action cannot be undone! Target: ${RED}$target${NC}"
     read -rp "Type 'DELETE' to confirm: " confirm
     [[ "$confirm" != "DELETE" ]] && print_status "Cancelled" && return
@@ -135,21 +142,13 @@ delete_snapshot() {
 
 restore_snapshot() {
     print_header "Restore Snapshot"
-    local snapshots
-    snapshots=$(get_snapshots)
-    if [[ -z "$snapshots" ]]; then
-        print_warning "No snapshots available"
+    local -a snapshot_array=() # Ensure it's an array
+    if ! _display_snapshot_list; then
         pause_for_input
         return
     fi
-    echo -e "\n${CYAN}Available Snapshots:${NC}"
-    local -a snapshot_array=()
-    local counter=1
-    while IFS= read -r snap; do
-        echo -e "  ${WHITE}$counter)${NC} $snap"
-        snapshot_array[counter]="$snap"
-        ((counter++))
-    done <<< "$snapshots"
+
+    for i in "${!snapshot_array[@]}"; do echo -e "  ${WHITE}$((i+1)))${NC} ${snapshot_array[i]}"; done
     echo -e "  ${WHITE}0)${NC} Cancel"
     while true; do
         read -rp "Select snapshot to restore [0-$((counter-1))]: " choice
@@ -160,7 +159,7 @@ restore_snapshot() {
             print_error "Invalid choice"
         fi
     done
-    local target="${snapshot_array[choice]}"
+    local target="${snapshot_array[choice-1]}"
     echo -e "\n${RED}${BOLD}CRITICAL WARNING!${NC} Restoring will erase current system state."
     read -rp "Type 'RESTORE' to confirm: " confirm
     [[ "$confirm" != "RESTORE" ]] && print_status "Cancelled" && return
@@ -175,19 +174,12 @@ restore_snapshot() {
 
 list_snapshots() {
     print_header "Available Snapshots"
-    local snaps
-    snaps=$(get_snapshots)
-    if [[ -z "$snaps" ]]; then
-        print_warning "No snapshots found"
-    else
-        local count=1
-        while IFS= read -r snap; do
-            echo -e "${WHITE}$count.${NC} ${GREEN}$snap${NC}"
-            ((count++))
-        done <<< "$snaps"
-        echo -e "\n${CYAN}Detailed list:${NC}"
-        timeshift --list || true
+    # The --list command provides all necessary detail.
+    # We just need to check if it produces any output.
+    if ! timeshift --list | grep -q '>'; then
+        print_warning "No snapshots found."
     fi
+
     pause_for_input
 }
 
