@@ -6,16 +6,17 @@ A lightweight reconnaissance tool for authorized security testing.
 
 Features:
 - TCP connect scanning
-- TCP SYN scan mode support
-- UDP scan mode support
 - Async concurrent scanning
 - Banner grabbing
 - Service identification
 - JSON output
 - CLI support
-- CI/test friendly import behavior
 
-Author: solo21
+Note: --syn and --udp are accepted on the CLI but not yet implemented;
+the scanner currently falls back to TCP connect scanning for both and
+says so at runtime.
+
+Author: solo2121
 Version: 2.1
 License: MIT
 """
@@ -283,6 +284,15 @@ async def async_main(args) -> None:
         )
 
         return
+
+    if args.scan_type != ScanType.TCP_CONNECT:
+
+        print(
+            f"[!] {args.scan_type.value.upper()} scanning is not yet "
+            "implemented; falling back to TCP connect scanning."
+        )
+
+        args.scan_type = ScanType.TCP_CONNECT
 
     ports = parse_ports(
         args.ports or "1-1024"
