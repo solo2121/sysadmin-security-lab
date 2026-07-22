@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **CI:** Added caching for apt packages and Vagrant plugins to the `validate-vagrantfiles` job, significantly reducing its runtime.
 - `tests/python/` — pytest unit tests for Python tooling logic (argument parsing, data structures).
 - `tests/bash/` — bats unit tests for Bash script helper functions and configuration tables.
 - `run-tests` CI job running pytest and bats on every push/PR.
