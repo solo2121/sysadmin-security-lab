@@ -7,8 +7,8 @@
 # plugins, available disk/RAM, and basic network/DNS reachability.
 #
 # Every check prints PASS / WARN / FAIL and, on failure, an actionable fix
-# command lifted directly from installation.md — this script does not
-# install anything on its own, it only diagnoses.
+# command lifted directly from docs/setup/installation.md — this script does
+# not install anything on its own, it only diagnoses.
 #
 # Usage:
 #   ./scripts/check-prerequisites.sh          # check everything
@@ -104,7 +104,7 @@ if command -v vagrant >/dev/null 2>&1; then
     pass "vagrant is installed (v${VAGRANT_VERSION:-unknown})"
 else
     fail "vagrant not found" \
-        "See installation.md section 2 (Install Vagrant) for your distro"
+        "See docs/setup/installation.md section 2 (Install Vagrant) for your distro"
 fi
 
 if command -v vagrant >/dev/null 2>&1; then
