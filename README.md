@@ -7,9 +7,9 @@
 ![DevSecOps](https://img.shields.io/badge/DevSecOps-Lab-purple)
 [![CI](https://github.com/solo2121/sysadmin-security-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/solo2121/sysadmin-security-lab/actions/workflows/ci.yml)
 
-**Sysadmin Security Lab is a modular, Vagrant-provisioned homelab for Active Directory security, network segmentation, Kubernetes / DevSecOps engineering, Linux administration, and infrastructure automation on a Linux host.**
+**Sysadmin Security Lab is a modular, Vagrant-provisioned lab repository for practicing Active Directory security, network segmentation, Kubernetes / DevSecOps engineering, Linux administration, and infrastructure automation on a Linux host.**
 
-Designed to be runnable, not just documented, the lab environments, workflows, and examples can be deployed locally with Vagrant and KVM/libvirt.
+This repository is designed to be runnable, not static. The lab environments, workflows, and examples are implemented in the repository and can be deployed locally with Vagrant and KVM/libvirt.
 
 **Maintained by:** Miguel A. Carlo (solo2121)  
 **Project status:** Active development
@@ -32,20 +32,18 @@ Designed to be runnable, not just documented, the lab environments, workflows, a
 
 ![Enterprise Infrastructure Architecture](assets/architecture-overview.png)
 
-The repository is organized into independent lab environments that can be deployed separately. Each lab uses its own Vagrantfile on KVM/QEMU virtualization infrastructure, which keeps the environments focused and easier to manage.
-
-See the [architecture documentation](docs/architecture/architecture.md) for the detailed design, topology, and networking model.
-
 ### Independent lab environments
 
-- **Lab 1 – Active Directory Pentest Lab** (`labs/security/ad-pentest/`)  
+- **Lab 1 – Active Directory Pentest Lab** (`labs/security/ad-pentest/`)
   A Windows enterprise security lab for Active Directory research, adversary emulation, post-exploitation analysis, and cloud-related security scenarios.
 
-- **Lab 1b – Active Directory Pentest Lab, VLAN edition** (`labs/security/ad-pentest-vlan/`)  
+- **Lab 2 – Active Directory Pentest Lab, VLAN edition** (`labs/security/ad-pentest-vlan/`)
   A segmented version of the Active Directory lab with VLAN boundaries and controlled routing for network-focused testing.
 
-- **Lab 2 – DevOps / DevSecOps Lab** (`labs/infrastructure/devops-linux-lab/`)  
+- **Lab 3 – DevOps / DevSecOps Lab** (`labs/infrastructure/devops-linux-lab/`)
   A Linux-centric platform engineering lab focused on Kubernetes, GitOps, observability, runtime security, policy enforcement, and automation.
+
+Each lab deploys independently using its own Vagrantfile on KVM/QEMU virtualization infrastructure. See the [architecture documentation](docs/architecture/architecture.md) for the detailed design, topology, and networking model.
 
 ---
 
@@ -53,7 +51,7 @@ See the [architecture documentation](docs/architecture/architecture.md) for the 
 
 Sysadmin Security Lab is a modular enterprise homelab for Linux administration, Active Directory security, cloud-native infrastructure, DevOps, and DevSecOps.
 
-The repository is structured so each lab can be deployed independently, making it easier to focus on one domain at a time without affecting the others.
+The repository is organized into independent lab environments that can be deployed separately, which makes it easier to focus on one domain at a time without affecting the others.
 
 It combines enterprise infrastructure, offensive security practice, defensive engineering concepts, cloud-native technologies, automation, Infrastructure as Code, and modern DevSecOps workflows in a single learning platform.
 
@@ -164,6 +162,8 @@ This Windows enterprise lab is designed for Active Directory security research, 
 | Legacy targets | Metasploitable2, OWASP Juice Shop |
 
 The VLAN edition expands the environment into segmented enterprise networks for advanced attack-path and lateral-movement testing.
+
+---
 
 ## Lab 2 details
 
