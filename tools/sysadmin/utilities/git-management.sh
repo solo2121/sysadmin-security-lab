@@ -42,19 +42,19 @@ bind 'TAB:menu-complete' || true
 
 show_menu() {
     clear
-    printf "%s\n" "==================================" \
-                  "        Git Management Menu" \
-                  "==================================" \
-                  "1. Check Git Status" \
-                  "2. Add Files to Staging" \
-                  "3. Commit Changes" \
-                  "4. Push to Remote" \
-                  "5. Fetch from Remote" \
-                  "6. Pull from Remote" \
-                  "7. View Git Log" \
-                  "8. View Branches" \
-                  "9. Exit" \
-                  "=================================="
+    echo "=================================="
+    echo "        Git Management Menu"
+    echo "=================================="
+    echo "1. Check Git Status"
+    echo "2. Add Files to Staging"
+    echo "3. Commit Changes"
+    echo "4. Push to Remote"
+    echo "5. Fetch from Remote"
+    echo "6. Pull from Remote"
+    echo "7. View Git Log"
+    echo "8. View Branches"
+    echo "9. Exit"
+    echo "=================================="
 }
 
 check_git_repo() {
@@ -65,37 +65,32 @@ check_git_repo() {
 }
 
 git_status() {
-    printf "\nGit Status:\n"
-    printf "%s\n" "----------"
+    echo -e "\nGit Status:\n----------"
     git status
 }
 
 add_files() {
-    printf "\nCurrent status:\n"
+    echo -e "\nCurrent status:"
     git status --short
-    printf "\n"
+    echo
 
-    read -rp "Add all files? (y/n) or specify files: " choice
+    read -rp "Add all unstaged files? (y/n): " choice
     case "$choice" in
         [yY]|[yY][eE][sS])
             git add .
-            printf "All files added to staging area.\n"
+            echo "All files added to staging area."
             ;;
-        *)
-            read -rp "Enter file names to add (space-separated), or press Enter to cancel: " -a files_to_add
-            # If user typed file names in the first prompt, append them
-            if [[ "$choice" != [nN] && "$choice" != [nN][oO] ]]; then
-                local -a typed_files
-                read -ra typed_files <<<"$choice"
-                files_to_add+=("${typed_files[@]}")
-            fi
+        [nN]|[nN][oO])
+            read -rp "Enter specific file names to add (space-separated), or press Enter to cancel: " -a files_to_add
             if (( ${#files_to_add[@]} > 0 )); then
                 git add "${files_to_add[@]}"
-                printf "Added: %s\n" "${files_to_add[*]}"
+                echo "Added: ${files_to_add[*]}"
             else
-                printf "No files added.\n"
-                return 1
+                echo "No files added."
             fi
+            ;;
+        *)
+            echo "Invalid choice. No files added."
             ;;
     esac
 }
@@ -104,21 +99,21 @@ commit_changes() {
     printf "\nStaged files:\n"
     git diff --cached --name-only || true
     printf "\n"
-
-    printf "Enter commit details (following CONTRIBUTING.md standards):\n"
-    printf "Common types: feat, fix, docs, style, refactor, test, chore\n"
+    
+    echo "Enter commit details (following CONTRIBUTING.md standards):"
+    echo "Common types: feat, fix, docs, style, refactor, test, chore"
 
     read -rp "Type (e.g., feat): " type
     read -rp "Scope (optional, e.g., git-tool): " scope
     read -rp "Description: " description
 
     if [[ -z "$type" || -z "$description" ]]; then
-        printf "Error: Type and Description are required.\n" >&2
-        return 1
+        echo "Error: Type and Description are required. Commit canceled." >&2
+        return 0 # Return to menu, do not exit script
     fi
 
     local commit_msg="$type: $description"
-    [[ -n "$scope" ]] && commit_msg="$type($scope): $description"
+    [[ -n "$scope" ]] && commit_msg="$type($scope): $description" || true
 
     if ! git commit -m "$commit_msg"; then
         printf "Commit failed!\n" >&2
@@ -133,25 +128,28 @@ push_changes() {
 
     if [[ -z "$current_branch" ]]; then
         printf "Error: Could not determine current branch.\n" >&2
-        return 1
+        return 0 # Return to menu
     fi
 
     if [[ "$current_branch" == "main" || "$current_branch" == "master" ]]; then
         printf "Warning: You are attempting to push directly to the protected branch '%s'.\n" "$current_branch"
         read -rp "This is generally not recommended. Continue? (y/n): " proceed
-        [[ "$proceed" =~ ^[yY]$ ]] || return 1
+        [[ "$proceed" =~ ^[yY]$ ]] || { echo "Push canceled."; return 0; }
     fi
 
     printf "\nPushing changes to remote repository...\n"
     read -rp "Enter branch to push to (default: $current_branch): " branch
     branch=${branch:-$current_branch}
 
-    if [[ -z "$branch" ]]; then
-        printf "Error: Branch name cannot be empty.\n" >&2
-        return 1
+    # Check if there is anything to push
+    if ! git diff --quiet --exit-code "origin/$branch" HEAD; then
+        echo "Pushing to origin/$branch..."
+    else
+        echo "No changes to push on branch '$branch'."
+        return 0
     fi
 
-    if ! git push origin "$branch"; then
+    if ! git push origin "$branch" 2>&1; then
         printf "Push to branch '%s' failed! Check for remote changes or authentication issues.\n" "$branch" >&2
         return 1
     fi
@@ -162,7 +160,7 @@ push_changes() {
 fetch_changes() {
     printf "\nFetching changes from remote repository...\n"
     if ! git fetch; then
-        printf "Fetch failed!\n" >&2
+        echo "Fetch failed!" >&2
         return 1
     fi
     printf "Fetch completed!\n\n"
@@ -190,7 +188,7 @@ pull_changes() {
 
     if [[ -z "$current_branch" ]]; then
         printf "Error: Could not determine current branch.\n" >&2
-        return 1
+        return 0 # Return to menu
     fi
 
     printf "\nPulling changes from remote repository...\n"
@@ -202,9 +200,8 @@ pull_changes() {
 }
 
 view_log() {
-    printf "\nGit Log (last 10 commits):\n"
-    printf "%s\n" "-------------------------"
-    git log --oneline -10
+    echo -e "\nGit Log (last 10 commits):\n-------------------------"
+    git log --oneline -10 || true
     printf "\n"
 
     read -rp "View detailed log? (y/n): " detail
@@ -215,12 +212,10 @@ view_log() {
 }
 
 view_branches() {
-    printf "\nLocal branches:\n"
-    printf "%s\n" "---------------"
+    echo -e "\nLocal branches:\n---------------"
     git branch
-    printf "\nRemote branches:\n"
-    printf "%s\n" "----------------"
-    git branch -r
+    echo -e "\nRemote branches:\n----------------"
+    git branch -r || true
 }
 
 wait_for_input() {
