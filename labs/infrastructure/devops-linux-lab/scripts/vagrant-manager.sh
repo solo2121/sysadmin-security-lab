@@ -113,7 +113,7 @@ vagrant_cmd() {
 }
 
 vagrant_status() {
-    HARBOR_PASS="${HARBOR_PASS:-}" vagrant status --machine-readable </dev/null 2>/dev/null || true
+    vagrant status --machine-readable </dev/null 2>/dev/null || true
 }
 
 # SSH doesn't need the password wrapper
