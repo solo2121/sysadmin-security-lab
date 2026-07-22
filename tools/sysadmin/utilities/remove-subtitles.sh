@@ -7,6 +7,9 @@
 #              presenting a confirmation prompt.
 # ============================================================
 
+set -euo pipefail
+shopt -s nocasematch
+
 # Function to display usage
 usage() {
     echo "Usage: $0 [directory]"
@@ -38,18 +41,25 @@ fi
 
 # Find and list files that would be deleted
 echo "The following files will be deleted:"
-find "$TARGET_DIR" -type f \( -name "*.srt" -o -name "*.vtt" \) -print
+mapfile -t files_to_delete < <(find "$TARGET_DIR" -type f \( -iname "*.srt" -o -iname "*.vtt" \) -print0 | xargs -0 -I {} echo "{}")
+
+if [ ${#files_to_delete[@]} -eq 0 ]; then
+    echo "No subtitle files found."
+    exit 0
+fi
+
+printf "%s\n" "${files_to_delete[@]}"
 
 # Ask for confirmation
-read -p "Are you sure you want to delete these files? [y/N] " -n 1 -r
 echo
-if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+read -rp "Are you sure you want to delete these files? [y/N] " confirm
+if [[ "$confirm" != "y" ]]; then
     echo "Operation cancelled."
     exit 0
 fi
 
 # Delete files
 echo "Deleting files..."
-find "$TARGET_DIR" -type f \( -name "*.srt" -o -name "*.vtt" \) -delete
+find "$TARGET_DIR" -type f \( -iname "*.srt" -o -iname "*.vtt" \) -delete
 
 echo "Deletion complete."
