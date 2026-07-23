@@ -1,10 +1,10 @@
 # Sysadmin Security Lab
 
-[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)  
-![Platform](https://img.shields.io/badge/platform-Linux-blue)  
-![Vagrant](https://img.shields.io/badge/Vagrant-Lab-orange)  
-![Security](https://img.shields.io/badge/Security-Research-red)  
-![DevSecOps](https://img.shields.io/badge/DevSecOps-Lab-purple)  
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE) 
+![Platform](https://img.shields.io/badge/platform-Linux-blue) 
+![Vagrant](https://img.shields.io/badge/Vagrant-Lab-orange) 
+![Security](https://img.shields.io/badge/Security-Research-red) 
+![DevSecOps](https://img.shields.io/badge/DevSecOps-Lab-purple) 
 [![CI](https://github.com/solo2121/sysadmin-security-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/solo2121/sysadmin-security-lab/actions/workflows/ci.yml)
 
 **Sysadmin Security Lab is a modular, Vagrant-provisioned security and infrastructure engineering lab repository for practicing Active Directory security, network segmentation, Kubernetes, DevSecOps workflows, Linux administration, and infrastructure automation on Linux hosts.**
