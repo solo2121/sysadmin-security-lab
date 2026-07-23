@@ -80,7 +80,7 @@ cleanup() {
     local exit_code=$?
     print_status "Cleaning up..."
     rm -f "${TMP_FILE:-}" 2>/dev/null || true
-    return $exit_code
+    return "$exit_code"
 }
 
 # Set trap for cleanup on script exit
@@ -180,11 +180,11 @@ Usage: $SCRIPT_NAME [OPTIONS]
 Modern rootkit scanner script using rkhunter and chkrootkit.
 
 OPTIONS:
-    -h, --help          Show this help message
-    -r, --rkhunter-only Run only rkhunter scan
-    -c, --chkrootkit-only Run only chkrootkit scan
-    -q, --quiet         Run in quiet mode (minimal output)
-    -v, --verbose       Run in verbose mode
+    -h, --help             Show this help message
+    -r, --rkhunter-only    Run only rkhunter scan
+    -c, --chkrootkit-only  Run only chkrootkit scan
+    -q, --quiet            Run in quiet mode (minimal output)
+    -v, --verbose          Run in verbose mode
 
 EXAMPLES:
     $SCRIPT_NAME                    # Run both scanners
@@ -201,8 +201,8 @@ EOF
 
 # Main function
 main() {
-    local run_rkhunter=true
-    local run_chkrootkit=true
+    local do_rkhunter=true
+    local do_chkrootkit=true
     local quiet_mode=false
     local verbose_mode=false
 
@@ -214,11 +214,11 @@ main() {
                 exit 0
                 ;;
             -r|--rkhunter-only)
-                run_chkrootkit=false
+                do_chkrootkit=false
                 shift
                 ;;
             -c|--chkrootkit-only)
-                run_rkhunter=false
+                do_rkhunter=false
                 shift
                 ;;
             -q|--quiet)
@@ -261,7 +261,7 @@ main() {
     local scan_count=0
     local failed_scans=0
 
-    if [[ "$run_rkhunter" == true ]]; then
+    if [[ "$do_rkhunter" == true ]]; then
         if run_rkhunter; then
             ((scan_count++))
         else
@@ -269,7 +269,7 @@ main() {
         fi
     fi
 
-    if [[ "$run_chkrootkit" == true ]]; then
+    if [[ "$do_chkrootkit" == true ]]; then
         if run_chkrootkit; then
             ((scan_count++))
         else
