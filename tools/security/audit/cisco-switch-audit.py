@@ -8,9 +8,14 @@ Description: Scans for Cisco switches, tests SSH/Telnet credentials, and generat
 Disclaimer: Only use on networks you're authorized to test!
 """
 
+import argparse
+import sys
 import nmap
 import paramiko
-import telnetlib
+import telnetlib  # NOTE: deprecated, slated for removal in Python 3.13.
+# CI currently pins Python 3.11, where this still works. Will need a
+# replacement (e.g. Telnet via a subprocess wrapper, or dropping Telnet
+# support) before upgrading past 3.12.
 import json
 import re
 from datetime import datetime
@@ -45,9 +50,9 @@ def validate_ip_range(ip_range):
 def scan_network(target_ip_range):
     """Scan for devices with open SSH or Telnet ports."""
     print(f"[*] Scanning {target_ip_range} for Cisco switches...")
-    nm = nmap.PortScanner()
 
     try:
+        nm = nmap.PortScanner()
         nm.scan(hosts=target_ip_range,
                 arguments=f'-p {SSH_PORT},{TELNET_PORT} --open')
     except nmap.PortScannerError as e:
@@ -122,7 +127,10 @@ def brute_force_logins(devices, username_list, password_list):
 
         if device["ssh_open"]:
             print("  [>] Testing SSH...")
+            found = False
             for username in username_list:
+                if found:
+                    break
                 for password in password_list:
                     if test_ssh_login(ip, username, password):
                         print(f"  [+] SSH Success: {username}:{password}")
@@ -133,4 +141,70 @@ def brute_force_logins(devices, username_list, password_list):
                             "password": password,
                             "timestamp": datetime.now().isoformat()
                         })
-                        break  # Stop
+                        found = True
+                        break  # Stop trying passwords for this user
+
+        if device["telnet_open"]:
+            print("  [>] Testing Telnet...")
+            found = False
+            for username in username_list:
+                if found:
+                    break
+                for password in password_list:
+                    if test_telnet_login(ip, username, password):
+                        print(f"  [+] Telnet Success: {username}:{password}")
+                        results.append({
+                            "ip": ip,
+                            "service": "Telnet",
+                            "username": username,
+                            "password": password,
+                            "timestamp": datetime.now().isoformat()
+                        })
+                        found = True
+                        break  # Stop trying passwords for this user
+
+    return results
+
+
+def save_report(results):
+    """Write brute-force results to REPORT_FILE as JSON."""
+    with open(REPORT_FILE, "w") as f:
+        json.dump(results, f, indent=2)
+    print(f"\n[*] Report saved to {REPORT_FILE}")
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description=(
+            "Cisco Switch Penetration Testing Tool - scans for Cisco "
+            "switches and tests default SSH/Telnet credentials."
+        )
+    )
+    parser.add_argument(
+        "target_ip_range",
+        help="Target network in CIDR notation, e.g. 192.168.1.0/24",
+    )
+    args = parser.parse_args()
+
+    if not validate_ip_range(args.target_ip_range):
+        print(f"[-] Invalid IP range: {args.target_ip_range}")
+        print("    Expected CIDR notation, e.g. 192.168.1.0/24")
+        sys.exit(1)
+
+    devices = scan_network(args.target_ip_range)
+    if not devices:
+        print("[-] No devices with SSH/Telnet open found.")
+        return
+
+    print(f"[*] Found {len(devices)} device(s) with SSH/Telnet open.")
+    results = brute_force_logins(devices, USERNAME_LIST, PASSWORD_LIST)
+
+    if results:
+        print(f"\n[+] {len(results)} credential(s) found.")
+        save_report(results)
+    else:
+        print("\n[-] No valid credentials found.")
+
+
+if __name__ == "__main__":
+    main()
