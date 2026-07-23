@@ -32,6 +32,12 @@ echo -e "${YELLOW}[+] Routing table:${RESET}"
 ip route
 echo
 
+if command -v ss &>/dev/null; then
+    HAVE_SS=1
+else
+    HAVE_SS=0
+fi
+
 # ------------------------------------------------------------
 # 3. Listening ports (TCP/UDP)
 # ------------------------------------------------------------
@@ -44,17 +50,21 @@ echo
 # ------------------------------------------------------------
 echo -e "${YELLOW}[+] Services listening on ALL interfaces:${RESET}"
 
-exposed=$(ss -tulnp | awk '
-    $5 ~ /0\.0\.0\.0|:::/ {
-        print $1, $5, $7
-    }
-')
+if [[ "$HAVE_SS" == 1 ]]; then
+    exposed=$(ss -tulnp | awk '
+        $5 ~ /0\.0\.0\.0|:::/ {
+            print $1, $5, $7
+        }
+    ')
 
-if [[ -n "$exposed" ]]; then
-    echo -e "${RED}  WARNING: Externally exposed services:${RESET}"
-    echo "$exposed" | sed 's/^/   - /'
+    if [[ -n "$exposed" ]]; then
+        echo -e "${RED}  WARNING: Externally exposed services:${RESET}"
+        echo "$exposed" | sed 's/^/   - /'
+    else
+        echo -e "${GREEN}  OK: No services listening on all interfaces${RESET}"
+    fi
 else
-    echo -e "${GREEN}  OK: No services listening on all interfaces${RESET}"
+    echo "  ss not available"
 fi
 echo
 
@@ -63,11 +73,15 @@ echo
 # ------------------------------------------------------------
 echo -e "${YELLOW}[+] SSH exposure:${RESET}"
 
-if ss -tlnp | grep -q ':22 '; then
-    echo -e "${YELLOW}  SSH is listening:${RESET}"
-    ss -tlnp | grep ':22 '
+if [[ "$HAVE_SS" == 1 ]]; then
+    if ss -tlnp | grep -q ':22 '; then
+        echo -e "${YELLOW}  SSH is listening:${RESET}"
+        ss -tlnp | grep ':22 '
+    else
+        echo -e "${GREEN}  SSH is not listening${RESET}"
+    fi
 else
-    echo -e "${GREEN}  SSH is not listening${RESET}"
+    echo "  ss not available"
 fi
 echo
 
@@ -93,7 +107,7 @@ echo
 # ------------------------------------------------------------
 echo -e "${YELLOW}[+] IP forwarding:${RESET}"
 
-ipv4_fwd=$(sysctl -n net.ipv4.ip_forward)
+ipv4_fwd=$(sysctl -n net.ipv4.ip_forward 2>/dev/null || echo "N/A")
 ipv6_fwd=$(sysctl -n net.ipv6.conf.all.forwarding 2>/dev/null || echo "N/A")
 
 if [[ "$ipv4_fwd" == "1" ]]; then
@@ -113,11 +127,15 @@ echo
 # 8. Established external connections
 # ------------------------------------------------------------
 echo -e "${YELLOW}[+] Established external connections:${RESET}"
-ss -tunp | awk '
-    $1 == "ESTAB" && $5 !~ /127\.0\.0\.1|::1/ {
-        print
-    }
-'
+if [[ "$HAVE_SS" == 1 ]]; then
+    ss -tunp | awk '
+        $1 == "ESTAB" && $5 !~ /127\.0\.0\.1|::1/ {
+            print
+        }
+    '
+else
+    echo "  ss not available"
+fi
 echo
 
 # ------------------------------------------------------------
