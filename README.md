@@ -1,6 +1,11 @@
 # Sysadmin Security Lab
 
-[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE) ![Platform](https://img.shields.io/badge/platform-Linux-blue) ![Vagrant](https://img.shields.io/badge/Vagrant-Lab-orange) ![Security](https://img.shields.io/badge/Security-Research-red) ![DevSecOps](https://img.shields.io/badge/DevSecOps-Lab-purple) [![CI](https://github.com/solo2121/sysadmin-security-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/solo2121/sysadmin-security-lab/actions/workflows/ci.yml)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)  
+![Platform](https://img.shields.io/badge/platform-Linux-blue)  
+![Vagrant](https://img.shields.io/badge/Vagrant-Lab-orange)  
+![Security](https://img.shields.io/badge/Security-Research-red)  
+![DevSecOps](https://img.shields.io/badge/DevSecOps-Lab-purple)  
+[![CI](https://github.com/solo2121/sysadmin-security-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/solo2121/sysadmin-security-lab/actions/workflows/ci.yml)
 
 **Sysadmin Security Lab is a modular, Vagrant-provisioned security and infrastructure engineering lab repository for practicing Active Directory security, network segmentation, Kubernetes, DevSecOps workflows, Linux administration, and infrastructure automation on Linux hosts.**
 
@@ -11,7 +16,7 @@ This repository is designed to be **runnable, not static**. The environments, au
 
 ---
 
-Start here: `docs/learning-path.md` provides the recommended path through the labs, from Active Directory security fundamentals to segmented environments and DevSecOps workflows.
+Start here: [Learning Path](./docs/learning-path.md) provides the recommended path through the labs, from Active Directory security fundamentals to segmented environments and DevSecOps workflows.
 
 ## What this project demonstrates
 
@@ -33,8 +38,8 @@ The repository contains independent lab environments. Each environment can be de
 
 See:
 
-- `docs/architecture/architecture.md`
-- `docs/architecture/security-scope.md`
+- [Architecture Overview](./docs/architecture/architecture.md)
+- [Security Scope](./docs/architecture/security-scope.md)
 
 for architecture details, trust boundaries, and design decisions.
 
@@ -44,11 +49,7 @@ for architecture details, trust boundaries, and design decisions.
 
 ### Lab 1 — Active Directory Pentest Lab
 
-**Path:**
-
-```text
-labs/security/ad-pentest/
-```
+**Path:** [labs/security/ad-pentest/](./labs/security/ad-pentest/)
 
 Focus areas:
 
@@ -64,11 +65,7 @@ Focus areas:
 
 ### Lab 2 — Active Directory Pentest Lab (VLAN Edition)
 
-**Path:**
-
-```text
-labs/security/ad-pentest-vlan/
-```
+**Path:** [labs/security/ad-pentest-vlan/](./labs/security/ad-pentest-vlan/)
 
 Focus areas:
 
@@ -84,11 +81,7 @@ This environment demonstrates how segmentation influences attack paths, trust bo
 
 ### Lab 3 — DevOps / DevSecOps Lab
 
-**Path:**
-
-```text
-labs/infrastructure/devops-linux-lab/
-```
+**Path:** [labs/infrastructure/devops-linux-lab/](./labs/infrastructure/devops-linux-lab/)
 
 Focus areas:
 
@@ -98,7 +91,7 @@ Focus areas:
 - Observability.
 - Runtime security.
 - Policy enforcement.
-- Platform engineering.
+- Platform engineering workflows.
 
 ---
 
@@ -203,74 +196,6 @@ sysadmin-security-lab/
 
 ---
 
-## Requirements
-
-Before deploying any environment:
-
-- Linux host.
-- Hardware virtualization enabled.
-- KVM/QEMU installed.
-- libvirt installed and running.
-- Vagrant installed.
-- virt-manager recommended.
-- Sufficient CPU, memory, and storage.
-
-The labs are designed for local deployment on a single physical machine.
-
----
-
-## Quick start
-
-### Clone the repository
-
-```bash
-git clone https://github.com/solo2121/sysadmin-security-lab.git
-cd sysadmin-security-lab
-```
-
-### Install dependencies
-
-Follow:
-
-```text
-docs/setup/installation.md
-```
-
-for:
-
-- Vagrant.
-- libvirt.
-- Required plugins.
-- Host validation.
-
-### Deploy Lab 1
-
-```bash
-cd labs/security/ad-pentest
-
-vagrant up dc01
-vagrant up
-```
-
-### Deploy Lab 2
-
-```bash
-cd labs/security/ad-pentest-vlan
-
-vagrant up dc01
-vagrant up
-```
-
-### Deploy Lab 3
-
-```bash
-cd labs/infrastructure/devops-linux-lab
-
-vagrant up
-```
-
----
-
 ## Skills demonstrated
 
 | Area | Technologies |
@@ -296,14 +221,14 @@ vagrant up
 
 | Document | Purpose |
 |---|---|
-| `docs/learning-path.md` | Recommended learning progression |
-| `docs/architecture/architecture.md` | Infrastructure design |
-| `docs/architecture/security-scope.md` | Security boundaries |
-| `docs/roadmap.md` | Planned improvements and future lab development |
-| `docs/guides/` | Security and deployment guides |
-| `docs/setup/installation.md` | Host setup |
-| `docs/setup/troubleshooting.md` | Common issues |
-| `docs/optimization/minimal-resource-deployment.md` | Reduced-resource deployment |
+| [Learning Path](./docs/learning-path.md) | Recommended learning progression |
+| [Architecture](./docs/architecture/architecture.md) | Infrastructure design |
+| [Security Scope](./docs/architecture/security-scope.md) | Security boundaries |
+| [Roadmap](./docs/roadmap.md) | Planned improvements and future lab development |
+| [Guides](./docs/guides/) | Security and deployment guides |
+| [Installation Guide](./docs/setup/installation.md) | Host setup |
+| [Troubleshooting](./docs/setup/troubleshooting.md) | Common issues |
+| [Minimal Resource Deployment](./docs/optimization/minimal-resource-deployment.md) | Reduced-resource deployment |
 
 ---
 
@@ -345,13 +270,7 @@ Please:
 - Update documentation when required.
 - Follow repository contribution guidelines.
 
-See:
-
-```text
-CONTRIBUTING.md
-```
-
-for details.
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for details.
 
 ---
 
@@ -359,12 +278,6 @@ for details.
 
 This project is licensed under the MIT License.
 
-See:
-
-```text
-LICENSE
-```
-
-for details.
+See [LICENSE](./LICENSE) for details.
 
 Copyright © 2023–2026 Miguel A. Carlo
