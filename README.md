@@ -161,7 +161,7 @@ The goal is to provide a realistic but isolated environment for learning how mod
 
 ## Portfolio and learning goals
 
-This repository demonstrates practical experience with:
+This repository demonstrates practical hands-on experience with:
 
 - Linux administration.
 - Active Directory environments.
