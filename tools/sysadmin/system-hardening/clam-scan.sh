@@ -134,6 +134,7 @@ run_scan() {
 
     local target="$1"
     local quarantine="${2:-false}"
+    local exclude_dirs="${3:-}"
 
     [[ ! -e "$target" ]] && return
 
@@ -148,16 +149,20 @@ run_scan() {
 
     if [[ "$quarantine" == "true" ]]; then
 
+        # shellcheck disable=SC2086
         clamscan \
             -r \
+            $exclude_dirs \
             --move="$QUARANTINE_DIR" \
             "$target" \
             2>&1 | tee "$tmp_log" >> "$SCAN_LOG" &
 
     else
 
+        # shellcheck disable=SC2086
         clamscan \
             -r \
+            $exclude_dirs \
             "$target" \
             2>&1 | tee "$tmp_log" >> "$SCAN_LOG" &
     fi
@@ -225,7 +230,8 @@ home_scan() {
 # ------------------------------------------------------------
 system_scan() {
 
-    run_scan "/"
+    run_scan "/" false \
+        "--exclude-dir=^/proc --exclude-dir=^/sys --exclude-dir=^/dev --exclude-dir=^/run"
 }
 
 # ------------------------------------------------------------
