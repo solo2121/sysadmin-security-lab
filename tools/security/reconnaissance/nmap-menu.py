@@ -7,10 +7,12 @@ import re
 import socket
 import os
 
+
 def validate_ip(ip):
     """Validate if a string is a valid IP address"""
     pattern = r'^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
     return re.match(pattern, ip) is not None
+
 
 def validate_hostname(hostname):
     """Validate if a string is a valid hostname"""
@@ -20,9 +22,11 @@ def validate_hostname(hostname):
     except (socket.gaierror, UnicodeError):
         return False
 
+
 def validate_target(target):
     """Validate if target is a valid IP address or hostname"""
     return validate_ip(target) or validate_hostname(target)
+
 
 def get_network_interfaces():
     """Get list of available network interfaces"""
@@ -30,12 +34,14 @@ def get_network_interfaces():
         result = subprocess.run(['ip', '-o', 'link', 'show'], capture_output=True, text=True)
         interfaces = [line.split(':')[1].strip() for line in result.stdout.splitlines()]
         return interfaces
-    except:
+    except Exception:
         # Fallback to common interface names if ip command fails
         return ['eth0', 'wlan0', 'enp0s3', 'en0', 'lo']
 
+
 # Initialize colorama
 init(autoreset=True)
+
 
 def get_decoys():
     """Prompt user for decoy configuration and return nmap arguments"""
@@ -84,6 +90,7 @@ def get_decoys():
         print(Fore.RED + "Invalid choice")
         return []
 
+
 def get_spoof_options():
     """Prompt user for spoof configuration and return nmap arguments"""
     spoof = input(Fore.MAGENTA + "Spoof source IP address? (y/n): ").strip().lower()
@@ -117,15 +124,24 @@ def get_spoof_options():
 
     return ['-e', interface, '-S', ip, '-Pn']
 
-def run_nmap(args, target, description=""):
-    """Execute nmap command with given arguments"""
+
+def run_nmap(args, target, description="", decoy_args=None, spoof_args=None):
+    """Execute nmap command with given arguments.
+
+    decoy_args/spoof_args: pass pre-computed lists to skip the interactive
+    evasion prompts (used by complete_scan() so it only asks once for a
+    whole batch of scans instead of once per sub-scan). Leave as None for
+    the normal single-scan menu flow, which prompts as before.
+    """
     if not validate_target(target):
         print(Fore.RED + f"Invalid target: {target}")
         return
 
-    # Get evasion techniques
-    decoy_args = get_decoys()
-    spoof_args = get_spoof_options()
+    # Get evasion techniques (unless the caller already collected them)
+    if decoy_args is None:
+        decoy_args = get_decoys()
+    if spoof_args is None:
+        spoof_args = get_spoof_options()
 
     # Add evasion options to nmap arguments
     full_args = args + decoy_args + spoof_args
@@ -149,6 +165,7 @@ def run_nmap(args, target, description=""):
         print(Fore.RED + "\nScan interrupted by user")
         sys.exit(1)
 
+
 def menu():
     """Display main menu options"""
     print(Fore.YELLOW + Style.BRIGHT + """
@@ -167,6 +184,7 @@ Nmap Scan Automation Menu
 11) Exit
 """)
 
+
 def firewall_evasion_scan(target):
     """Perform advanced firewall evasion techniques"""
     base_args = [
@@ -179,8 +197,13 @@ def firewall_evasion_scan(target):
     ]
     run_nmap(base_args, target, "Advanced Firewall Evasion Scan")
 
+
 def complete_scan(target):
     """Run comprehensive sequence of scans"""
+    # Ask once for the whole batch, not once per sub-scan below.
+    decoy_args = get_decoys()
+    spoof_args = get_spoof_options()
+
     scans = [
         (['-T4', '-F'], "Quick Scan"),
         (['-sS', '-p-', '--open'], "TCP SYN Scan (All Ports)"),
@@ -191,7 +214,8 @@ def complete_scan(target):
     ]
 
     for args, desc in scans:
-        run_nmap(args, target, desc)
+        run_nmap(args, target, desc, decoy_args=decoy_args, spoof_args=spoof_args)
+
 
 def custom_scan(target):
     """Run user-defined nmap command"""
@@ -204,6 +228,7 @@ def custom_scan(target):
 
     args = user_input.split()
     run_nmap(args, target, "Custom Scan")
+
 
 def main():
     """Main program loop"""
@@ -253,6 +278,7 @@ def main():
             complete_scan(target)
         elif choice == '10':
             custom_scan(target)
+
 
 if __name__ == "__main__":
     main()
