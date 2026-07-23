@@ -102,7 +102,7 @@ echo
 echo -e "${YELLOW}[+] SSH root login configuration:${RESET}"
 
 if [[ -f /etc/ssh/sshd_config ]]; then
-    ssh_setting=$(grep -Ei '^PermitRootLogin' /etc/ssh/sshd_config | tail -1)
+    ssh_setting=$(grep -Ei '^PermitRootLogin' /etc/ssh/sshd_config | tail -1 || true)
     if [[ -z "$ssh_setting" ]]; then
         echo "  PermitRootLogin not explicitly set (default applies)"
     else
