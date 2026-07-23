@@ -31,6 +31,16 @@ print_header() {
 pause() { read -rp "Press [Enter] to continue..."; }
 log() { echo -e "$1" >> "$REPORT"; }
 
+check_root_warning() {
+    if [ "$(id -u)" -ne 0 ]; then
+        echo -e "${YELLOW}Warning: not running as root.${NC}"
+        echo -e "${YELLOW}Some checks (password policy, shadow file, full SUID scan) will be incomplete.${NC}"
+        echo -e "${YELLOW}Re-run with sudo for a complete report.${NC}"
+        echo
+        pause
+    fi
+}
+
 # ---------------- Audit Functions ----------------
 
 audit_system_info() {
@@ -105,8 +115,8 @@ audit_processes() {
 audit_suid_files() {
     echo -e "${BLUE}Searching for SUID/SGID files...${NC}"
     log ">>> SUID / SGID FILES"
-    find / -perm /4000 -type f 2>/dev/null >> "$REPORT"
-    find / -perm /2000 -type f 2>/dev/null >> "$REPORT"
+    find / \( -path /proc -o -path /sys -o -path /dev -o -path /run \) -prune -o -perm /4000 -type f -print 2>/dev/null >> "$REPORT"
+    find / \( -path /proc -o -path /sys -o -path /dev -o -path /run \) -prune -o -perm /2000 -type f -print 2>/dev/null >> "$REPORT"
     log ""
     echo -e "${GREEN}SUID/SGID files audit completed.${NC}"
 }
@@ -142,7 +152,7 @@ audit_password_policy() {
     echo -e "${BLUE}Checking password policies...${NC}"
     log ">>> PASSWORD POLICY"
     if command -v chage >/dev/null; then
-        awk -F: '{print $1}' /etc/shadow | while read user; do
+        awk -F: '{print $1}' /etc/shadow | while read -r user; do
             chage -l "$user" >> "$REPORT" 2>/dev/null
         done
     fi
@@ -153,7 +163,7 @@ audit_password_policy() {
 audit_cron_jobs() {
     echo -e "${BLUE}Collecting cron jobs...${NC}"
     log ">>> CRON JOBS"
-    for user in $(cut -f1 -d: /etc/passwd); do
+    cut -f1 -d: /etc/passwd | while read -r user; do
         log "User: $user"
         crontab -l -u "$user" 2>/dev/null >> "$REPORT"
         log ""
@@ -184,6 +194,7 @@ full_audit() {
 }
 
 # ---------------- Menu ----------------
+check_root_warning
 while true; do
     clear
     print_header
