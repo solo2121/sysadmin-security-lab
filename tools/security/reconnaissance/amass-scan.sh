@@ -87,7 +87,10 @@ run_passive_scan() {
     local domain=$1
     local output_dir=$2
     log "info" "Starting passive enumeration (no active probing)"
-    amass enum -passive -d "$domain" -o "$output_dir/passive.txt" -log "$output_dir/amass.log"
+    if ! amass enum -passive -d "$domain" -o "$output_dir/passive.txt" -log "$output_dir/amass.log"; then
+        log "error" "Passive scan failed for $domain (see $output_dir/amass.log)"
+        return 1
+    fi
 }
 
 # Perform active enumeration
@@ -95,7 +98,10 @@ run_active_scan() {
     local domain=$1
     local output_dir=$2
     log "info" "Starting active enumeration with DNS resolution"
-    amass enum -active -d "$domain" -o "$output_dir/active.txt" -log "$output_dir/amass.log"
+    if ! amass enum -active -d "$domain" -o "$output_dir/active.txt" -log "$output_dir/amass.log"; then
+        log "error" "Active scan failed for $domain (see $output_dir/amass.log)"
+        return 1
+    fi
 }
 
 # Perform full enumeration with brute forcing
@@ -103,7 +109,10 @@ run_full_scan() {
     local domain=$1
     local output_dir=$2
     log "info" "Starting full enumeration with brute forcing"
-    amass enum -brute -d "$domain" -o "$output_dir/full.txt" -json "$output_dir/full.json" -log "$output_dir/amass.log"
+    if ! amass enum -brute -d "$domain" -o "$output_dir/full.txt" -json "$output_dir/full.json" -log "$output_dir/amass.log"; then
+        log "error" "Full scan failed for $domain (see $output_dir/amass.log)"
+        return 1
+    fi
 }
 
 # Process results and generate summary
@@ -156,6 +165,10 @@ while [[ $# -gt 0 ]]; do
             shift
             ;;
         -s|--scan-types)
+            if [ -z "${2:-}" ]; then
+                log "error" "--scan-types requires a value (e.g. -s passive,active)"
+                exit 1
+            fi
             IFS=',' read -r -a SCAN_TYPES <<< "$2"
             shift 2
             ;;
@@ -207,13 +220,13 @@ log "info" "Running scan types: ${SCAN_TYPES[*]}"
 for scan_type in "${SCAN_TYPES[@]}"; do
     case $scan_type in
         passive)
-            run_passive_scan "$DOMAIN" "$OUTPUT_DIR"
+            run_passive_scan "$DOMAIN" "$OUTPUT_DIR" || SCAN_FAILED=1
             ;;
         active)
-            run_active_scan "$DOMAIN" "$OUTPUT_DIR"
+            run_active_scan "$DOMAIN" "$OUTPUT_DIR" || SCAN_FAILED=1
             ;;
         full)
-            run_full_scan "$DOMAIN" "$OUTPUT_DIR"
+            run_full_scan "$DOMAIN" "$OUTPUT_DIR" || SCAN_FAILED=1
             ;;
         *)
             log "warn" "Unknown scan type: $scan_type"
@@ -223,6 +236,12 @@ done
 
 # Process and display results
 process_results "$OUTPUT_DIR"
+
+if [ "${SCAN_FAILED:-0}" -eq 1 ]; then
+    log "warn" "One or more scans failed; results in $OUTPUT_DIR/ may be incomplete. Check amass.log."
+    log "info" "Amass scan finished with errors. Results saved in $OUTPUT_DIR/"
+    exit 1
+fi
 
 log "info" "Amass scan completed. Results saved in $OUTPUT_DIR/"
 exit 0
