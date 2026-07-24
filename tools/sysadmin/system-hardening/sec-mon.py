@@ -62,10 +62,11 @@ PortInfo = namedtuple("PortInfo", "proto local_addr pid process_name")
 # Logging Configuration
 # ──────────────────────────────────────────────────────────────────────────────
 
+
 def setup_logging(log_file: str, verbose: bool):
     """
     Configure logging with rotating file handler and stream output.
-    
+
     Args:
         log_file: Path to log file
         verbose: Enable debug-level logging
@@ -80,10 +81,11 @@ def setup_logging(log_file: str, verbose: bool):
 # System Monitoring Functions
 # ──────────────────────────────────────────────────────────────────────────────
 
+
 def list_listening_ports() -> list:
     """
     Retrieve all listening TCP and UDP ports with process information.
-    
+
     Returns:
         List of PortInfo namedtuples with protocol, address, PID, and process name
     """
@@ -115,10 +117,11 @@ def list_listening_ports() -> list:
             ports.append(PortInfo(proto.upper(), local_addr, pid, name))
     return ports
 
+
 def get_resource_snapshot() -> dict:
     """
     Capture current system resource utilization metrics.
-    
+
     Returns:
         Dictionary with CPU%, load averages, memory%, and disk% usage
     """
@@ -157,6 +160,7 @@ def get_resource_snapshot() -> dict:
 # Main Monitoring Loop
 # ──────────────────────────────────────────────────────────────────────────────
 
+
 def main():
     parser = argparse.ArgumentParser(
         description="Security port & resource monitor",
@@ -179,19 +183,29 @@ def main():
 
     # Graceful shutdown
     shutdown = False
+
     def _sig_handler(signum, frame):
         nonlocal shutdown
         shutdown = True
     signal.signal(signal.SIGINT, _sig_handler)
     signal.signal(signal.SIGTERM, _sig_handler)
 
-    last_ports = set()
+    last_ports = None  # None until the first iteration establishes a baseline
     while not shutdown:
         # Monitor port changes
         ports = list_listening_ports()
         port_set = {(p.proto, p.local_addr, p.pid) for p in ports}
-        new = port_set - last_ports
-        closed = last_ports - port_set
+
+        if last_ports is None:
+            # First iteration: these ports were already open before monitoring
+            # started, so they aren't "new" - just record the baseline.
+            logging.info("Baseline: %d listening port(s) detected.", len(port_set))
+            new = set()
+            closed = set()
+        else:
+            new = port_set - last_ports
+            closed = last_ports - port_set
+
         last_ports = port_set
 
         for p in ports:
@@ -210,6 +224,7 @@ def main():
         time.sleep(args.interval)
 
     logging.info("Security monitor stopped.")
+
 
 if __name__ == "__main__":
     main()
